@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>NPS Feedback</title>
     <style>
       * {
@@ -11,10 +14,19 @@
         outline: none;
       }
 
+      html {
+        overscroll-behavior: none;
+      }
+
       body {
         margin: 0;
         font-family: sans-serif;
         background-color: transparent;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        touch-action: manipulation;
       }
 
       .overlay {
@@ -268,6 +280,30 @@
     </div>
 
     <script>
+      // Prevent default touch behaviors to avoid left/right swiping
+      document.addEventListener(
+        "touchmove",
+        function (e) {
+          e.preventDefault();
+        },
+        { passive: false }
+      );
+
+      document.addEventListener(
+        "touchstart",
+        function (e) {
+          // Allow interaction with form elements and buttons
+          if (
+            e.target.tagName === "TEXTAREA" ||
+            e.target.tagName === "BUTTON"
+          ) {
+            return;
+          }
+          e.preventDefault();
+        },
+        { passive: false }
+      );
+
       let selectedRating = null;
 
       function selectRating(rating) {
@@ -310,7 +346,7 @@
           const comment = document.getElementById("comment").value.trim();
           const props = {
             selectedRating: selectedRating,
-            comment: comment, // Include comment in properties
+            comment: comment,
           };
 
           var message = {
@@ -318,6 +354,7 @@
             event: "Ratings Submitted",
             properties: props,
           };
+
           if (window.CleverTap) {
             CleverTap.pushEvent("Ratings Submitted", JSON.stringify(props));
           } else if (
@@ -371,11 +408,9 @@
         const popup = document.getElementById("popup");
         popup.style.animation = "slideDown 0.4s ease-in forwards";
         setTimeout(() => {
-          // Redirect user after 1 second (adjust this time accordingly)
           window.location.href = "wzrk://exit";
         }, 400);
       }
     </script>
   </body>
 </html>
-
