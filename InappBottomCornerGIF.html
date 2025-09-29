@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Responsive Box with Clickable Image</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+
+            #responsiveBox {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                width: 50%;
+                padding: 10px;
+                box-sizing: border-box;
+                border: none;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+                pointer-events: none; /* This allows click events to pass through the box */
+            }
+
+            #boxContent {
+                pointer-events: auto; /* This re-enables click events for the content inside the box */
+                position: relative;
+            }
+
+            #closeButton {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: bold;
+                border: none;
+                background: white; /* Add white background color */
+                padding: 5px;
+                border-radius: 50%; /* Make it circular */
+            }
+
+            #closeButton:hover {
+                color: red;
+            }
+
+            #boxContent img {
+                width: 100%;
+                height: auto;
+                cursor: pointer;
+                border-radius: 15px;
+                border: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="responsiveBox">
+            <div id="boxContent">
+                <span id="closeButton" onclick="closeBox()">X</span>
+                <img src="https://iili.io/deVO9OF.gif" alt="Clickable Image" onclick="imageClick()" />
+            </div>
+        </div>
+
+        <script>
+            function closeBox() {
+                document.location.href = "wzrk://thisleadstonowhere";
+            }
+
+            function imageClick() {
+                window.location.href = "mosl://superapp.com/mflanding";
+            }
+        </script>
+    </body>
+</html>

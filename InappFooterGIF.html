@@ -1,0 +1,80 @@
+InApp Footer GIF New.html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Responsive Box with Clickable Image</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
+            #responsiveBox {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                padding: 10px;
+                box-sizing: border-box;
+                border: none;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+                pointer-events: none;
+            }
+            #boxContent {
+                pointer-events: auto;
+                position: relative;
+            }
+            #closeButton {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+                border: none;
+                background: white;
+                padding: 5px;
+                border-radius: 5px;
+                transition: all 0.3s ease-in-out;
+            }
+            #closeButton:hover {
+                color: red;
+                background: #f1f1f1;
+                transform: scale(1.1);
+            }
+            #closeButton:active {
+                transform: scale(0.9);
+            }
+            #boxContent img {
+                width: 100%;
+                height: auto;
+                cursor: pointer;
+                border-radius: 15px;
+                border: none;
+            }
+            #closeIcon {
+                cursor: pointer;
+                font-size: 14px;
+                margin-right: 10px;
+            }
+            #closeIcon:hover {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="responsiveBox">
+            <div id="boxContent">
+                <span id="closeButton" onclick="closeBox()">Close</span>
+                <img src="https://iili.io/deVe6Cb.gif" alt="Clickable Image" />
+            </div>
+        </div>
+        <script>
+            function closeBox() {
+                window.location.href = "wzrk://thisleadstonowhere";
+            }
+        </script>
+    </body>
+</html>

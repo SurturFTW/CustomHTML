@@ -1,0 +1,99 @@
+InApp Copy Coupon Code New.html
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://rocket.ixigo.com/microsurvey/microsurvey.css?v3" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="https://rocket.ixigo.com/slider/glide.core.min.css" />
+        <link rel="stylesheet" href="https://rocket.ixigo.com/slider/glide.theme.css" />
+        <link rel="stylesheet" href="https://rocket.ixigo.com/slider/slider.css?v1" />
+        <style>
+            .copy-button {
+                position: absolute;
+                bottom: 6px;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                padding: 8px 15px;
+                font-size: 20px;
+                background-color: #c32629;
+                color: #fff;
+                border: none;
+                border-radius: 0px;
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            window.PARAM_GLOBAL_TIMEOUT = 60000;
+            window.PARAM_TRACK_EVENT_NAME = "New Popunder Widget CTA Click";
+            window.PARAM_WIDGET_VERSION = "0.1.POP_UNDER_BUS_WELCOME";
+            window.PARAM_CTA_URL = "abhibus://main/activity=0&action=bus";
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body style="background-color: #00000050;">
+        <div id="overlay" onclick="document.location.href = 'wzrk://thisleadstonowhere';"></div>
+        <div class="fix slide-in-bottom">
+            <div id="middle-block">
+                <div style="position: absolute; top: 15px; right: 0px; z-index: 10;">
+                    <div id="closeIcon" onclick="document.location.href = 'wzrk://thisleadstonowhere';"><img src="https://rocket.ixigo.com/slider/close.svg" height="30" width="30" /></div>
+                </div>
+                <div class="glide">
+                    <div class="glide__bullets" data-glide-el="controls[nav]"></div>
+                    <div class="glide__track" data-glide-el="track">
+                        <ul class="glide__slides">
+                            <li class="glide__slide">
+                                <img style="width: 100%;" src="https://iili.io/de5WeLv.png" onmousedown="startPress();" ontouchstart="startPress();" onmouseup="endPress();" ontouchend="endPress();" />
+                                <button class="copy-button" onclick="copyToClipboard()">Copy Coupon</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var start;
+            var end;
+            var delay = 500;
+            function startPress() {
+                start = new Date().getTime();
+            }
+            function endPress() {
+                end = new Date().getTime();
+                if (end - start >= delay) {
+                    copyToClipboard();
+                }
+            }
+            function copyToClipboard() {
+                var couponCode = "200OFF";
+                var textArea = document.createElement("textarea");
+                textArea.value = couponCode;
+                textArea.style.position = "fixed";
+                textArea.style.top = 0;
+                textArea.style.left = 0;
+                textArea.style.width = "2em";
+                textArea.style.height = "2em";
+                textArea.style.padding = 0;
+                textArea.style.border = "none";
+                textArea.style.outline = "none";
+                textArea.style.boxShadow = "none";
+                textArea.style.background = "transparent";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+                Swal.fire({ title: "Success!", text: "Coupon code copied to clipboard.", icon: "success", confirmButtonText: "OK" });
+            }
+            var api = new Glide(".glide", { perView: 1, gap: 0, peek: 0, type: "carousel", autoplay: false }).mount();
+            if (document.readyState !== "complete") {
+                document.addEventListener("readystatechange", () => {
+                    if (document.readyState === "complete") {
+                        api.update();
+                    }
+                });
+            }
+        </script>
+        <script src="https://demo.abhibus.com/tpscripts/slider.js"></script>
+        <script src="https://rocket.ixigo.com/slider/glide.js"></script>
+    </body>
+</html>
