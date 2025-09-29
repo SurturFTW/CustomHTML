@@ -2,11 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Scratch Card</title>
     <style>
       html {
         --color: #ffa827;
+        overscroll-behavior: none;
       }
 
       body {
@@ -19,6 +23,10 @@
         background-color: rgba(0, 0, 0, 0.3);
         font-family: sans-serif;
         margin: 0;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
       }
 
       .scratch-card {
@@ -209,7 +217,7 @@
   </head>
   <body>
     <div class="scratch-card">
-      <button class="close-button" onclick="closePopup()">
+      <button class="close-button" id="closeButton">
         <img
           src="https://cdn-icons-png.flaticon.com/512/665/665304.png"
           alt="Close"
@@ -287,6 +295,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
+      // Prevent default touch behaviors to avoid left/right swiping
+      document.addEventListener(
+        "touchmove",
+        function (e) {
+          e.preventDefault();
+        },
+        { passive: false }
+      );
+
+      // Fix close button functionality
+      document
+        .getElementById("closeButton")
+        .addEventListener("click", closePopup);
+
       const isSafari =
         /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
         /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -300,6 +322,11 @@
       );
       const scratchCardText = document.querySelector(".scratch-card-text");
       const scratchCardImage = document.querySelector(".scratch-card-image");
+
+      scratchCardImage.addEventListener("click", function () {
+        window.location.href =
+          "https://www.mcaffeine.com/products/complete-coffee-skin-care?srsltid=AfmBOoqJGIjJrY9JdIoYGlbx8A_4ZXVM1TcOk8bV8ILSCMlt7k0zvutx";
+      });
 
       const canvas = document.querySelector(".scratch-card-canvas");
       const context = canvas.getContext("2d");
@@ -322,6 +349,55 @@
 
       if (isSafari) {
         canvas.classList.add("hidden");
+      }
+
+      // Add touch events for iOS
+      canvas.addEventListener("touchstart", handleTouchStart);
+      canvas.addEventListener("touchmove", handleTouchMove);
+      canvas.addEventListener("touchend", handleTouchEnd);
+
+      function handleTouchStart(e) {
+        e.preventDefault();
+
+        // Record scratch event only once
+        if (!hasRecordedEvent) {
+          recordEvent("Scratch", {});
+          hasRecordedEvent = true;
+        }
+
+        scratchCardCover.classList.remove("shine");
+
+        const touch = e.touches[0];
+        positionX = touch.clientX - canvas.getBoundingClientRect().left;
+        positionY = touch.clientY - canvas.getBoundingClientRect().top;
+
+        clearTimeout(clearDetectionTimeout);
+      }
+
+      function handleTouchMove(e) {
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const x = touch.clientX - canvas.getBoundingClientRect().left;
+        const y = touch.clientY - canvas.getBoundingClientRect().top;
+
+        context.fillStyle = "black";
+        plotLine(context, positionX, positionY, x, y);
+        positionX = x;
+        positionY = y;
+
+        if (isSafari) {
+          clearTimeout(setImageTimeout);
+          setImageTimeout = setTimeout(() => {
+            setImageFromCanvas();
+          }, 5);
+        }
+      }
+
+      function handleTouchEnd(e) {
+        clearDetectionTimeout = setTimeout(() => {
+          checkBlackFillPercentage();
+        }, 500);
       }
 
       canvas.addEventListener("pointerdown", (e) => {
@@ -439,6 +515,7 @@
       let setImageTimeout = null;
 
       const plot = (e) => {
+        e.preventDefault();
         const { x, y } = getPosition(e);
         context.fillStyle = "black";
         plotLine(context, positionX, positionY, x, y);
@@ -454,19 +531,24 @@
       };
 
       function closePopup() {
+        console.log("Close button clicked"); // Debug log
+
         if (
           window.webkit &&
           window.webkit.messageHandlers &&
           window.webkit.messageHandlers.clevertap
         ) {
           // iOS
+          console.log("Closing via iOS method");
           window.location.href = "wzrk://exit";
         } else if (window.CleverTap) {
           // Android
+          console.log("Closing via Android method");
           window.CleverTap.dismissInAppNotification();
         } else {
           // Fallback for web or other environments
-          console.log("Closing popup.");
+          console.log("Closing via fallback method");
+          alert("Close button clicked (web fallback)");
         }
       }
 
