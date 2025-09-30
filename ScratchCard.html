@@ -276,6 +276,51 @@
 
     <p class="scratch-card-text">🎁 Scratch for a surprise!</p>
 
+    <!-- Coupon container for code and copy button -->
+    <div
+      class="coupon-container"
+      id="couponContainer"
+      style="
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5em;
+        margin-top: 1em;
+      "
+    >
+      <div
+        class="coupon-code"
+        id="couponCode"
+        style="
+          background: white;
+          padding: 0.5em 1em;
+          border-radius: 8px;
+          font-weight: bold;
+          font-size: 1.2em;
+          color: var(--color);
+          border: 2px dashed var(--color);
+        "
+      >
+        MC50OFF
+      </div>
+      <button
+        class="copy-button"
+        id="copyButton2"
+        style="
+          background: var(--color);
+          color: white;
+          border: none;
+          padding: 0.5em 1.5em;
+          border-radius: 6px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: transform 0.2s;
+        "
+      >
+        Copy Code
+      </button>
+    </div>
+
     <svg width="0" height="0">
       <filter id="remove-black" color-interpolation-filters="sRGB">
         <feColorMatrix
@@ -322,6 +367,9 @@
       );
       const scratchCardText = document.querySelector(".scratch-card-text");
       const scratchCardImage = document.querySelector(".scratch-card-image");
+      const couponContainer = document.getElementById("couponContainer");
+      const copyButton2 = document.getElementById("copyButton2");
+      const couponCodeDiv = document.getElementById("couponCode");
 
       scratchCardImage.addEventListener("click", function () {
         window.location.href =
@@ -425,6 +473,7 @@
         );
       });
 
+      // Show coupon container when scratched
       const checkBlackFillPercentage = () => {
         const imageData = context.getImageData(0, 0, canvasWidth, canvasHeight);
         const pixelData = imageData.data;
@@ -458,6 +507,7 @@
           });
           scratchCardText.textContent = "🎉 You won a $50 gift card!";
           scratchCardImage.classList.add("animate");
+          couponContainer.style.display = "flex"; // Show coupon container
           scratchCardCoverContainer.addEventListener(
             "transitionend",
             () => {
@@ -467,6 +517,53 @@
           );
         }
       };
+
+      // Copy code logic for new button
+      copyButton2.addEventListener("click", function (e) {
+        e.preventDefault();
+        const code = couponCodeDiv.textContent.trim(); // <-- trim spaces
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(code)
+            .then(() => {
+              const originalText = copyButton2.textContent;
+              copyButton2.textContent = "Copied!";
+              setTimeout(() => {
+                copyButton2.textContent = originalText;
+              }, 2000);
+            })
+            .catch((err) => {
+              fallbackCopy(code);
+            });
+        } else {
+          fallbackCopy(code);
+        }
+      });
+
+      function fallbackCopy(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text.trim(); // <-- trim spaces
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand("copy");
+          const originalText = copyButton2.textContent;
+          copyButton2.textContent = "Copied!";
+          setTimeout(() => {
+            copyButton2.textContent = originalText;
+          }, 2000);
+        } catch (err) {
+          console.error("Failed to copy:", err);
+          alert("Code: " + text);
+        }
+
+        document.body.removeChild(textArea);
+      }
 
       const getPosition = ({ clientX, clientY }) => {
         const { left, top } = canvas.getBoundingClientRect();
