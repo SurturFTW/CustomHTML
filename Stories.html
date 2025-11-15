@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Stories Carousel</title>
+    <script>
+      // Enhanced configuration variables
+      const appConfig = {
+        autoAdvance: true,
+        imageViewDuration: 5000,
+        videoBuffer: 1000,
+        cardWidth: "400px",
+        cardHeight: "400px",
+        cardBorderRadius: "24px",
+        // "theme": "dark",
+        buttonColor: "#ffffff",
+        buttonTextColor: "#333333",
+        captionColor: "#ffffff",
+        captionShadow: true,
+      };
+
+      // Stories content
+      let stories = [
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2025-07/29/full/1753808699-2566.jpg?im=FitAndFill=(826,465)",
+          type: "image",
+          link: "https://www.business-standard.com/finance/personal-finance/luxury-real-estate-sees-inventory-build-up-investors-should-diversify-125110601932_1.html",
+          caption:
+            "Luxury real estate sees inventory build-up, investors should diversify",
+          buttonText: "Learn More",
+        },
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2025-10/24/full/1761285904-0126.jpg?im=FitAndFill=(826,465)",
+          type: "image",
+          link: "https://www.business-standard.com/economy/news/cbdt-plans-nationwide-outreach-ahead-of-new-income-tax-act-rollout-125111001634_1.html",
+          caption:
+            "CBDT plans nationwide outreach ahead of new Income Tax Act, 2025 rollout",
+          buttonText: "Learn More",
+        },
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2025-11/05/full/1762364434-1947.jpg?im=FitAndFill=(826,465)",
+          type: "image",
+          link: "https://www.business-standard.com/industry/news/bernhard-schulte-s-india-arm-buys-mumbai-office-space-for-304-crore-125111100635_1.html",
+          caption:
+            "Bernhard Schulte's India arm buys Mumbai office space for ₹304 crore",
+          buttonText: "Learn More",
+        },
+      ];
+
+      // For backward compatibility with existing code
+      const displayStories = stories;
+    </script>
+    <style>
+      /* Modern reset and base styles */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --primary-color: #ff385c;
+        --button-color: #ff385c;
+        --button-text-color: #ffffff;
+        --text-light: #ffffff;
+        --text-dark: #333333;
+        --bg-light: #ffffff;
+        --bg-dark: #121212;
+        --overlay-light: rgba(255, 255, 255, 0.8);
+        --overlay-dark: rgba(0, 0, 0, 0.5);
+        --shadow-light: 0 8px 30px rgba(0, 0, 0, 0.12);
+        --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.25);
+        --radius-sm: 12px;
+        --radius-md: 20px;
+        --radius-lg: 24px;
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s ease;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
+        background: transparent !important;
+        color: var(--text-dark);
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+        padding: clamp(10px, 3vw, 20px);
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        overflow: hidden;
+      }
+
+      /* Dark mode support */
+      body.dark-theme {
+        background: var(--bg-dark);
+        color: var(--text-light);
+      }
+
+      /* Stories wrapper */
+      .stories-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: auto;
+        max-width: min(400px, 90vw);
+        margin: 0;
+        position: fixed;
+        bottom: clamp(10px, 3vw, 20px);
+        right: clamp(10px, 3vw, 20px);
+        z-index: 1000;
+      }
+
+      /* Main carousel card */
+      .stories-card {
+        position: relative;
+        width: clamp(280px, 80vw, 320px);
+        height: clamp(450px, 85vh, 550px);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-light);
+        background: var(--bg-light);
+        margin: 0;
+        transition: transform var(--transition-normal);
+        will-change: transform;
+      }
+
+      .dark-theme .stories-card {
+        background: var(--bg-dark);
+        box-shadow: var(--shadow-dark);
+      }
+
+      /* Top bar with indicators */
+      .stories-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+        padding: clamp(12px, 3vw, 16px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.6) 0%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+
+      /* Story progress indicators */
+      .story-indicators {
+        display: flex;
+        flex: 1;
+        gap: 4px;
+        margin-right: 12px;
+      }
+
+      .story-indicator {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .story-indicator-progress {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 0%;
+        background: #ffffff;
+        border-radius: 2px;
+      }
+
+      .story-indicator.complete .story-indicator-progress {
+        width: 100%;
+      }
+
+      /* Control buttons */
+      .icon-button {
+        background: rgba(0, 0, 0, 0.3);
+        border: none;
+        color: white;
+        width: clamp(32px, 8vw, 36px);
+        height: clamp(32px, 8vw, 36px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        transition: background-color var(--transition-fast);
+      }
+
+      .icon-button:hover {
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .icon-button svg {
+        width: clamp(16px, 5vw, 20px);
+        height: clamp(16px, 5vw, 20px);
+        fill: currentColor;
+      }
+
+      /* Media container */
+      .story-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .story-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transform: scale(1.05);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        pointer-events: none;
+      }
+
+      .story-item.active {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+
+      .story-item img,
+      .story-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* External caption and button container */
+      .story-content {
+        width: 100%;
+        margin-top: clamp(12px, 3vw, 16px);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(8px, 2vw, 12px);
+        text-align: center;
+        padding: 0 clamp(8px, 2vw, 10px);
+      }
+
+      .story-caption {
+        color: var(--text-dark);
+        font-size: clamp(14px, 4vw, 18px);
+        font-weight: 500;
+        letter-spacing: 0.2px;
+        line-height: 1.4;
+      }
+
+      .dark-theme .story-caption {
+        color: var(--text-light);
+      }
+
+      .action-button {
+        background: var(--button-color);
+        color: var(--button-text-color);
+        border: none;
+        padding: clamp(12px, 3vw, 14px) clamp(20px, 6vw, 28px);
+        font-size: clamp(14px, 3.5vw, 16px);
+        font-weight: 600;
+        border-radius: 30px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        filter: brightness(1.05);
+      }
+
+      .action-button:active {
+        transform: translateY(0);
+      }
+
+      /* Controls for video playback */
+      .video-controls {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        z-index: 15;
+      }
+
+      /* Navigation overlay for touch areas */
+      .navigation-overlay {
+        position: absolute;
+        top: 60px;
+        bottom: 20px;
+        width: 100%;
+        z-index: 10;
+        display: flex;
+      }
+
+      .nav-prev,
+      .nav-next {
+        width: 50%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 480px) {
+        .stories-wrapper {
+          bottom: 10px;
+          right: 10px;
+          max-width: 95vw;
+        }
+
+        .stories-card {
+          width: min(300px, 90vw);
+          height: min(500px, 80vh);
+        }
+
+        .story-content {
+          padding: 0 12px;
+          margin-top: 12px;
+          gap: 10px;
+        }
+
+        .story-caption {
+          font-size: 14px;
+          line-height: 1.3;
+        }
+
+        .action-button {
+          padding: 12px 20px;
+          font-size: 14px;
+        }
+
+        .stories-header {
+          padding: 12px;
+        }
+
+        .icon-button {
+          width: 32px;
+          height: 32px;
+        }
+
+        .icon-button svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      @media (max-width: 320px) {
+        .stories-wrapper {
+          bottom: 5px;
+          right: 5px;
+        }
+
+        .stories-card {
+          width: min(280px, 95vw);
+          height: min(450px, 75vh);
+        }
+
+        .story-content {
+          padding: 0 8px;
+          margin-top: 10px;
+          gap: 8px;
+        }
+
+        .story-caption {
+          font-size: 13px;
+        }
+
+        .action-button {
+          padding: 10px 16px;
+          font-size: 13px;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .stories-card {
+          width: 320px;
+          height: 550px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="stories-wrapper">
+      <div class="stories-card" id="stories-card">
+        <div class="stories-header">
+          <div class="story-indicators" id="story-indicators"></div>
+          <button id="close-btn" class="icon-button">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="story-container" id="story-container"></div>
+
+        <div class="navigation-overlay">
+          <div class="nav-prev" id="nav-prev"></div>
+          <div class="nav-next" id="nav-next"></div>
+        </div>
+
+        <div class="video-controls">
+          <button id="mute-btn" class="icon-button">
+            <svg
+              id="mute-icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="story-content">
+        <div class="story-caption" id="story-caption"></div>
+        <a
+          id="action-btn"
+          class="action-button"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn More
+        </a>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const storyCard = document.getElementById("stories-card");
+      const storyContainer = document.getElementById("story-container");
+      const storyIndicators = document.getElementById("story-indicators");
+      const storyCaption = document.getElementById("story-caption");
+      const actionBtn = document.getElementById("action-btn");
+      const muteBtn = document.getElementById("mute-btn");
+      const closeBtn = document.getElementById("close-btn");
+      const navPrev = document.getElementById("nav-prev");
+      const navNext = document.getElementById("nav-next");
+      const muteIcon = document.getElementById("mute-icon");
+
+      // Apply button color from appConfig
+      document.documentElement.style.setProperty(
+        "--button-color",
+        appConfig.buttonColor
+      );
+      document.documentElement.style.setProperty(
+        "--button-text-color",
+        appConfig.buttonTextColor
+      );
+
+      // Set caption color
+      if (appConfig.captionColor) {
+        storyCaption.style.color = appConfig.captionColor;
+      }
+
+      // Remove caption shadow if disabled
+      if (!appConfig.captionShadow) {
+        storyCaption.style.textShadow = "none";
+      }
+
+      // Set theme
+      if (appConfig.theme === "dark") {
+        document.body.classList.add("dark-theme");
+      }
+
+      // Apply appConfig styles
+      storyCard.style.width = appConfig.cardWidth;
+      storyCard.style.height = appConfig.cardHeight;
+      storyCard.style.borderRadius = appConfig.cardBorderRadius;
+
+      // State variables
+      let currentStoryIndex = 0;
+      let isMuted = true;
+      let autoAdvanceTimer = null;
+      let animationStartTime = 0;
+      let isPlaying = true;
+      let buttonClicked = false;
+
+      // Create story indicator elements
+      displayStories.forEach((_, index) => {
+        const indicator = document.createElement("div");
+        indicator.className = "story-indicator";
+
+        const progress = document.createElement("div");
+        progress.className = "story-indicator-progress";
+
+        indicator.appendChild(progress);
+        storyIndicators.appendChild(indicator);
+      });
+
+      // Create story elements
+      displayStories.forEach((story, index) => {
+        const storyItem = document.createElement("div");
+        storyItem.className = `story-item ${index === 0 ? "active" : ""}`;
+
+        if (story.type === "video") {
+          const video = document.createElement("video");
+          video.src = story.src;
+          video.loop = true;
+          video.muted = true;
+          video.autoplay = false;
+          video.playsInline = true;
+          video.preload = "auto";
+          storyItem.appendChild(video);
+        } else {
+          const img = document.createElement("img");
+          img.src = story.src;
+          img.alt = story.caption || `Story ${index + 1}`;
+          storyItem.appendChild(img);
+        }
+
+        storyContainer.appendChild(storyItem);
+      });
+
+      // Smooth progress animation
+      function animateProgress(progressElement, duration) {
+        let startTime = null;
+
+        function step(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          progressElement.style.width = `${progress * 100}%`;
+
+          if (progress < 1) {
+            animationFrameId = window.requestAnimationFrame(step);
+          }
+        }
+
+        let animationFrameId = window.requestAnimationFrame(step);
+
+        return {
+          cancel: () => {
+            window.cancelAnimationFrame(animationFrameId);
+          },
+        };
+      }
+
+      let currentAnimation = null;
+
+      // Update the display for the current story
+      function updateStoryView() {
+        // Track story view
+
+        // Clear any existing timer
+        if (autoAdvanceTimer) {
+          clearTimeout(autoAdvanceTimer);
+        }
+
+        // Cancel current animation if exists
+        if (currentAnimation) {
+          currentAnimation.cancel();
+        }
+
+        const allStories = storyContainer.querySelectorAll(".story-item");
+        const allIndicators =
+          storyIndicators.querySelectorAll(".story-indicator");
+        const currentStory = displayStories[currentStoryIndex];
+
+        // Reset all indicator progress
+        allIndicators.forEach((indicator, idx) => {
+          const progress = indicator.querySelector(".story-indicator-progress");
+          if (idx < currentStoryIndex) {
+            indicator.classList.add("complete");
+            progress.style.width = "100%";
+          } else if (idx > currentStoryIndex) {
+            indicator.classList.remove("complete");
+            progress.style.width = "0%";
+          } else {
+            indicator.classList.remove("complete");
+            progress.style.width = "0%";
+
+            // Start new animation for current story
+            let duration = appConfig.imageViewDuration;
+
+            if (currentStory.type === "video") {
+              const videoElement =
+                allStories[currentStoryIndex].querySelector("video");
+              if (videoElement && videoElement.duration) {
+                duration = videoElement.duration * 1000 + appConfig.videoBuffer;
+              }
+            }
+
+            currentAnimation = animateProgress(progress, duration);
+          }
+        });
+
+        // Update story visibility
+        allStories.forEach((item, index) => {
+          item.classList.toggle("active", index === currentStoryIndex);
+        });
+
+        // Stop all videos
+        const allVideos = storyContainer.querySelectorAll("video");
+        allVideos.forEach((video) => {
+          video.pause();
+        });
+
+        // Handle current media
+        if (currentStory.type === "video") {
+          const currentVideo =
+            allStories[currentStoryIndex].querySelector("video");
+          if (currentVideo) {
+            currentVideo.muted = isMuted;
+            currentVideo.currentTime = 0;
+            currentVideo.play();
+            muteBtn.style.display = "flex";
+          }
+        } else {
+          muteBtn.style.display = "none";
+        }
+
+        // Update caption and action button
+        storyCaption.textContent = currentStory.caption || "";
+
+        if (currentStory.link) {
+          actionBtn.style.display = "inline-block";
+          actionBtn.href = currentStory.link;
+          actionBtn.textContent =
+            currentStory.buttonText || appConfig.buttonText;
+        } else {
+          actionBtn.style.display = "none";
+        }
+
+        // Set auto advance if enabled
+        if (appConfig.autoAdvance) {
+          let duration = appConfig.imageViewDuration;
+
+          if (currentStory.type === "video") {
+            const currentVideo =
+              allStories[currentStoryIndex].querySelector("video");
+            if (currentVideo && currentVideo.duration) {
+              duration = currentVideo.duration * 1000 + appConfig.videoBuffer;
+            }
+          }
+
+          autoAdvanceTimer = setTimeout(() => {
+            goToNextStory();
+          }, duration);
+        }
+      }
+
+      function goToNextStory() {
+        if (currentStoryIndex < displayStories.length - 1) {
+          currentStoryIndex++;
+          updateStoryView();
+        } else {
+          // Last story ended
+          closeStories();
+        }
+      }
+
+      function goToPrevStory() {
+        if (currentStoryIndex > 0) {
+          currentStoryIndex--;
+          updateStoryView();
+        }
+      }
+
+      function closeStories() {
+        // CleverTap web popup close functionality
+        try {
+          if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.clevertap
+          ) {
+            // iOS - Send close notification first, then close
+            // console.log("Closing via iOS method");
+            try {
+              window.webkit.messageHandlers.clevertap.postMessage({
+                action: "notificationDismissed",
+                dismissType: "close_button",
+              });
+            } catch (e) {
+              //   console.log("iOS notification error:", e);
+            }
+            // Then close the popup
+            window.location.href = "wzrk://exit";
+          } else if (
+            window.CleverTap &&
+            window.CleverTap.dismissInAppNotification
+          ) {
+            // Android - Send close notification first
+            // console.log("Closing via Android method");
+            try {
+              // Send close notification
+              window.CleverTap.onInAppButtonClick("close_button");
+            } catch (e) {
+              //   console.log("Android notification error:", e);
+            }
+            // Then dismiss the notification
+            window.CleverTap.dismissInAppNotification();
+          } else if (window.CleverTap) {
+            // Alternative Android method
+            // console.log("Closing via alternative Android method");
+            window.CleverTap.dismissInAppNotification();
+          } else {
+            // Web or other environments
+            // console.log("Closing via web/fallback method");
+            try {
+              // Try to send web close notification
+              if (typeof clevertap !== "undefined") {
+                clevertap.notifications.callback("close_button");
+              }
+            } catch (e) {
+              //   console.log("Web notification error:", e);
+            }
+
+            try {
+              var overlay =
+                window.parent.document.getElementById("intentOpacityDiv");
+              var wrapper =
+                window.parent.document.getElementById("intentPreview");
+              if (overlay) overlay.remove();
+              if (wrapper) wrapper.remove();
+            } catch (error) {
+              console.error("Error removing parent elements:", error);
+            }
+
+            // Fallback: hide the stories wrapper
+            const storiesWrapper = document.querySelector(".stories-wrapper");
+            if (storiesWrapper) {
+              storiesWrapper.style.display = "none";
+            }
+          }
+        } catch (error) {
+          //   console.log("CleverTap close error:", error);
+          // Fallback: hide the element
+          const storiesWrapper = document.querySelector(".stories-wrapper");
+          if (storiesWrapper) {
+            storiesWrapper.style.display = "none";
+          }
+        }
+      }
+
+      function toggleMute() {
+        isMuted = !isMuted;
+
+        // Update mute icon
+        muteIcon.innerHTML = isMuted
+          ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+          : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+
+        // Update current video
+        if (stories[currentStoryIndex].type === "video") {
+          const currentVideo = storyContainer.querySelector(
+            ".story-item.active video"
+          );
+          if (currentVideo) currentVideo.muted = isMuted;
+        }
+
+        // Restart auto-advance timer and animation to prevent pause
+        // This ensures the story continues to progress after mute toggle
+        if (appConfig.autoAdvance) {
+          // Clear existing timers first
+          if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+          }
+          if (typeof animationFrame !== "undefined") {
+            cancelAnimationFrame(animationFrame);
+          }
+
+          // Calculate remaining duration based on current story type
+          let duration = appConfig.imageViewDuration;
+          if (stories[currentStoryIndex].type === "video") {
+            const videoElement = storyContainer.querySelector(
+              ".story-item.active video"
+            );
+            if (videoElement && videoElement.duration) {
+              const elapsed = videoElement.currentTime * 1000;
+              duration =
+                videoElement.duration * 1000 + appConfig.videoBuffer - elapsed;
+            }
+          }
+
+          // Restart progress animation
+          const progressElement = storyIndicators
+            .querySelectorAll(".story-indicator")
+            [currentStoryIndex].querySelector(".story-indicator-progress");
+
+          // Get current width percentage to continue from where it left off
+          const currentWidth = parseFloat(progressElement.style.width || "0");
+          const remainingDuration = duration * (1 - currentWidth / 100);
+
+          animateProgress(progressElement, remainingDuration);
+
+          // Restart auto advance timer
+          autoAdvanceTimer = setTimeout(goToNextStory, remainingDuration);
+        }
+      }
+
+      // Track button clicks - remove CleverTap event
+      actionBtn.addEventListener("click", () => {
+        buttonClicked = true;
+      });
+
+      // Event Listeners
+      navPrev.addEventListener("click", (e) => {
+        e.stopPropagation();
+        goToPrevStory();
+      });
+
+      navNext.addEventListener("click", (e) => {
+        e.stopPropagation();
+        goToNextStory();
+      });
+
+      muteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleMute();
+      });
+
+      closeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // console.log("Close button clicked");
+        closeStories();
+      });
+
+      // Handle touch events for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      storyCard.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+          // Pause auto advance while touching
+          if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+          }
+          if (currentAnimation) {
+            currentAnimation.cancel();
+          }
+        },
+        { passive: true }
+      );
+
+      storyCard.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        },
+        { passive: true }
+      );
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold) {
+          // Swiped left
+          goToNextStory();
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+          // Swiped right
+          goToPrevStory();
+        }
+      }
+
+      // Handle visibility change (when user switches tabs/apps)
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          // User has switched away - pause videos and timers
+          const currentVideo = storyContainer.querySelector(
+            ".story-item.active video"
+          );
+          if (currentVideo) currentVideo.pause();
+
+          if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+          }
+          if (currentAnimation) {
+            currentAnimation.cancel();
+          }
+
+          // Send analytics when the user leaves
+          // sendCarouselCompletionEvent();
+        } else {
+          // User has returned - resume current story
+          updateStoryView();
+        }
+      });
+
+      // Initialize
+      updateStoryView();
+    </script>
+  </body>
+</html>

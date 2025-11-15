@@ -407,12 +407,6 @@
       function handleTouchStart(e) {
         e.preventDefault();
 
-        // Record scratch event only once
-        if (!hasRecordedEvent) {
-          recordEvent("Scratch", {});
-          hasRecordedEvent = true;
-        }
-
         scratchCardCover.classList.remove("shine");
 
         const touch = e.touches[0];
@@ -521,6 +515,13 @@
       // Copy code logic for new button
       copyButton2.addEventListener("click", function (e) {
         e.preventDefault();
+
+        // Record copy code event
+        recordEvent("Copy Code", {
+          coupon_code: couponCodeDiv.textContent.trim(),
+          source: "scratch_card",
+        });
+
         const code = couponCodeDiv.textContent.trim(); // <-- trim spaces
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -643,9 +644,20 @@
           console.log("Closing via Android method");
           window.CleverTap.dismissInAppNotification();
         } else {
-          // Fallback for web or other environments
-          console.log("Closing via fallback method");
-          alert("Close button clicked (web fallback)");
+          // web or other environments
+          console.log("Closing via web/fallback method");
+          try {
+            var overlay =
+              window.parent.document.getElementById("intentOpacityDiv");
+            var wrapper =
+              window.parent.document.getElementById("intentPreview");
+            if (overlay) overlay.remove();
+            if (wrapper) wrapper.remove();
+          } catch (error) {
+            console.error("Error removing parent elements:", error);
+          }
+
+          document.getElementById("overlay").style.display = "none";
         }
       }
 
@@ -670,6 +682,7 @@
         } else {
           // Fallback for environments where CleverTap is not available
           console.log("Event recorded:", eventName, props);
+          window.parent.clevertap.event.push(eventName, JSON.stringify(props));
         }
       }
     </script>

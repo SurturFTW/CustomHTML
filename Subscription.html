@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Email Collection Popup</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: rgba(0, 0, 0, 0.15);
+        height: 100vh;
+        overflow: hidden;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        animation: fadeIn 0.3s ease-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .popup {
+        background: #fff;
+        border-radius: 2px;
+        padding: 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+        min-width: 440px;
+        max-width: 90vw;
+        position: relative;
+        overflow: hidden;
+        animation: slideUp 0.4s ease-out;
+        border-top: 4px solid #e31837;
+      }
+      .popup-header {
+        padding: 36px 40px 24px;
+        text-align: left;
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
+      }
+      .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: #e31837;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+      }
+      .logo-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        letter-spacing: 0.3px;
+      }
+      .popup-header h2 {
+        margin: 0 0 10px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1a1a1a;
+        line-height: 1.3;
+      }
+      .popup-header p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+      }
+      .popup-content {
+        background: #fafafa;
+        padding: 32px 40px;
+      }
+      .input-wrapper {
+        position: relative;
+        margin-bottom: 20px;
+      }
+      .input-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .popup input[type="email"] {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid #d1d1d1;
+        border-radius: 2px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        background: #fff;
+        color: #333;
+        font-family: inherit;
+      }
+      .popup input[type="email"]:focus {
+        outline: none;
+        border-color: #e31837;
+        box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
+      }
+      .error {
+        color: #e31837;
+        font-size: 13px;
+        margin-top: 8px;
+        margin-bottom: 12px;
+        display: none;
+        text-align: left;
+        font-weight: 500;
+      }
+      .error.show {
+        display: block;
+        animation: shake 0.4s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        75% {
+          transform: translateX(8px);
+        }
+      }
+      .button-group {
+        display: flex;
+        gap: 12px;
+      }
+      .popup button {
+        flex: 1;
+        padding: 14px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-family: inherit;
+      }
+      .submit-btn {
+        background: #e31837;
+        color: #fff;
+      }
+      .submit-btn:hover {
+        background: #c91530;
+        box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+      }
+      .submit-btn:active {
+        transform: translateY(1px);
+      }
+      .close-btn {
+        background: transparent;
+        color: #666;
+        border: 1px solid #d1d1d1;
+      }
+      .close-btn:hover {
+        background: #f5f5f5;
+        border-color: #999;
+        color: #333;
+      }
+      .success {
+        color: #27ae60;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 16px;
+        display: none;
+        text-align: center;
+        padding: 14px;
+        background: #d4edda;
+        border-radius: 2px;
+        border-left: 3px solid #27ae60;
+      }
+      .success.show {
+        display: block;
+        animation: slideDown 0.4s ease;
+      }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .close-icon {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 28px;
+        height: 28px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border-radius: 2px;
+      }
+      .close-icon:hover {
+        background: #f5f5f5;
+      }
+      .close-icon svg {
+        width: 16px;
+        height: 16px;
+        fill: #666;
+      }
+      .benefits {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e5e5;
+      }
+      .benefit-item {
+        display: flex;
+        align-items: start;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: #555;
+      }
+      .benefit-item:last-child {
+        margin-bottom: 0;
+      }
+      .benefit-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .benefit-icon svg {
+        width: 100%;
+        height: 100%;
+        fill: #27ae60;
+      }
+      @media (max-width: 480px) {
+        .popup {
+          min-width: 90vw;
+          margin: 16px;
+        }
+        .popup-header,
+        .popup-content {
+          padding: 24px;
+        }
+        .button-group {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay">
+      <div class="popup">
+        <button class="close-icon" onclick="closePopup()" aria-label="Close">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+            />
+          </svg>
+        </button>
+        <div class="popup-header">
+          <div class="logo-wrapper">
+            <div class="logo-icon">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
+                />
+              </svg>
+            </div>
+            <span class="logo-text">BUSINESS STANDARD</span>
+          </div>
+          <h2>Stay Ahead with Business News</h2>
+          <p>
+            Get the latest market updates, financial insights, and breaking
+            business news delivered to your inbox.
+          </p>
+        </div>
+        <div class="popup-content">
+          <div class="error" id="errorMsg">
+            Please enter a valid email address.
+          </div>
+          <div class="input-wrapper">
+            <label class="input-label" for="emailInput">Email Address</label>
+            <input
+              type="email"
+              id="emailInput"
+              placeholder="your.email@example.com"
+              autocomplete="off"
+            />
+          </div>
+          <div class="button-group">
+            <button class="submit-btn" onclick="submitEmail()">
+              Subscribe Now
+            </button>
+            <button class="close-btn" onclick="closePopup()">Not Now</button>
+          </div>
+          <div class="success" id="successMsg">
+            ✓ Successfully subscribed! Check your inbox.
+          </div>
+          <div class="benefits">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <span>Daily market analysis and stock updates</span>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <span>Exclusive interviews with industry leaders</span>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <span>Breaking news alerts on major developments</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+      function submitEmail() {
+        const emailInput = document.getElementById("emailInput");
+        const errorMsg = document.getElementById("errorMsg");
+        const successMsg = document.getElementById("successMsg");
+        const email = emailInput.value.trim();
+        if (!validateEmail(email)) {
+          errorMsg.classList.add("show");
+          successMsg.classList.remove("show");
+          emailInput.focus();
+          return;
+        }
+        errorMsg.classList.remove("show");
+        successMsg.classList.add("show");
+        // Send event to clevertap using safe pattern
+        pushNewsletterEvent(email);
+        setTimeout(closePopup, 1500);
+      }
+      // Optional CleverTap events
+      function pushNewsletterEvent(email) {
+        try {
+          // Check if CleverTap is available and properly initialized
+          if (
+            !window.parent.clevertap ||
+            !window.parent.clevertap.event ||
+            !window.parent.clevertap.event.push
+          ) {
+            console.warn("CleverTap is not available.");
+            return;
+          }
+          const props = {
+            "Newsletter name": "Promotions",
+            "Newsletter email ID": email,
+            Channel: "Web pop-up",
+          };
+          window.parent.clevertap.event.push("Newsletter Subscription", props);
+        } catch (e) {
+          console.error("CleverTap event push failed:", e);
+        }
+      }
+      function closePopup() {
+        try {
+          // First try to close parent elements
+          var overlay =
+            window.parent.document.getElementById("intentOpacityDiv");
+          var wrapper = window.parent.document.getElementById("intentPreview");
+          if (overlay) overlay.remove();
+          if (wrapper) wrapper.remove();
+        } catch (error) {
+          console.error("Error removing parent elements:", error);
+        }
+        // Also hide the local overlay as fallback
+        document.getElementById("overlay").style.display = "none";
+      }
+      // Allow Enter key to submit
+      document
+        .getElementById("emailInput")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            submitEmail();
+          }
+        });
+    </script>
+  </body>
+</html>
