@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blueprint Survey</title>
+
+    <style>
+      :root {
+        --primary-color: #b01116;
+        --secondary-color: #000000;
+        --background-color: #ffffff;
+        --text-color: #000000;
+        --inactive-color: #d3d3d3;
+        --hover-color: #c0c0c0;
+        --border-radius: 20px;
+        --button-radius: 100px;
+        --animation-time: 400ms;
+        --error-color: #ff3b30;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Inter", sans-serif;
+      }
+
+      /* Overlay for web popup */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .cl-container {
+        background-color: var(--background-color);
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        position: relative;
+        animation: slideUp 0.4s ease-out;
+        overflow-y: auto;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .cl-subcontainer {
+        padding: 30px;
+      }
+
+      .form-header {
+        padding-bottom: 10px;
+        padding-top: 10px;
+      }
+
+      .form-header h2 {
+        font-size: 18px;
+        margin: 0;
+        color: var(--text-color);
+      }
+
+      .close-button {
+        background: none;
+        border: 0px;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--primary-color);
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        width: 30px;
+        height: 30px;
+        outline: none;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+      }
+
+      .close-button:hover {
+        background-color: #f5f5f5;
+      }
+
+      .radio-group,
+      .checkbox-group {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .styled-radio,
+      .styled-checkbox {
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+      .button-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: var(--button-radius);
+        cursor: pointer;
+        font-size: 16px;
+        height: 44px;
+        padding: 0 20px;
+        transition: all 0.3s ease;
+        flex: 1;
+        font-family: inherit;
+      }
+
+      .btn-primary {
+        background-color: #b01116 !important;
+        color: white !important;
+      }
+
+      .btn-primary:hover {
+        background-color: #900d11 !important;
+      }
+
+      #back-button {
+        background-color: #ffffff !important;
+        color: #b01116 !important;
+        border: 1px solid #b01116 !important;
+      }
+
+      #back-button:hover {
+        background-color: #f8f8f8 !important;
+      }
+
+      .questions-wrapper {
+        position: relative;
+        overflow: hidden;
+        min-height: 150px;
+        transition: height var(--animation-time) ease-out;
+      }
+
+      #questions-container {
+        position: relative;
+      }
+
+      .question-container {
+        width: 100%;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all var(--animation-time) ease;
+        position: absolute;
+        left: 0;
+        top: 0;
+        visibility: hidden;
+      }
+
+      .question-container.active {
+        opacity: 1;
+        transform: translateX(0);
+        position: relative;
+        visibility: visible;
+      }
+
+      .question-container.left {
+        transform: translateX(-100%);
+      }
+
+      .progress-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
+
+      .progress-dot {
+        height: 8px;
+        width: 8px;
+        margin: 0 4px;
+        background-color: var(--inactive-color);
+        border-radius: 50%;
+      }
+
+      .progress-dot.active {
+        background-color: var(--primary-color);
+      }
+
+      .error-text {
+        color: var(--error-color);
+        font-size: 14px;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .error-text.visible {
+        max-height: 50px;
+        opacity: 1;
+        margin: 10px 0;
+      }
+
+      textarea {
+        width: 100%;
+        height: 80px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 14px;
+        resize: vertical;
+        box-sizing: border-box;
+        font-family: inherit;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(176, 17, 22, 0.1);
+      }
+
+      /* CONFETTI ANIMATION */
+      @keyframes confetti-burst {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(25px) scale(0.3);
+          opacity: 0;
+        }
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 480px) {
+        .cl-container {
+          width: 95%;
+          max-height: 95vh;
+        }
+        .cl-subcontainer {
+          padding: 20px;
+        }
+      }
+    </style>
+
+    <script>
+      const surveyQuestions = [
+        {
+          type: "intro",
+          heading: "Blueprint Survey",
+          description:
+            "Blueprint is a monthly magazine on defence and geopolitics. As we refine the experience, we're gathering quick inputs from readers like you to make the product offering better and more aligned with your expectations.",
+        },
+        {
+          type: "radio",
+          question: "How satisfied are you with Blueprint's content overall?",
+          answers: [
+            "Very satisfied",
+            "Satisfied",
+            "Neutral",
+            "Somewhat dissatisfied",
+            "Dissatisfied",
+          ],
+        },
+        {
+          type: "checkbox",
+          question: "What do you find most valuable in Blueprint?",
+          answers: [
+            "Depth of reporting",
+            "Strategic analysis",
+            "Topic selection",
+            "Expert perspectives",
+            "Other",
+          ],
+        },
+        {
+          type: "radio",
+          question:
+            "Which annual price range feels reasonable for Blueprint as a year-long product?",
+          answers: [
+            "₹3,000 – ₹4,999",
+            "₹5,000 – ₹6,999",
+            "₹7,000 – ₹8,999",
+            "₹9,000 or above",
+          ],
+        },
+        {
+          type: "checkbox",
+          question:
+            "What would make Blueprint feel appropriately priced at around ₹7,000 per year?",
+          answers: [
+            "More exclusive stories",
+            "More expert-led explainers",
+            "Additional formats (video, podcasts, briefings)",
+            "Community interactions or closed-door sessions",
+            "Early access or special editions",
+            "Nothing additional needed",
+            "Others",
+          ],
+        },
+        {
+          type: "text",
+          question: "Any quick suggestions for us?",
+          optional: true,
+        },
+      ];
+    </script>
+  </head>
+
+  <body>
+    <div class="overlay" id="overlay">
+      <div class="cl-container">
+        <button class="close-button" onclick="closePopup()" aria-label="Close">
+          &times;
+        </button>
+
+        <div class="cl-subcontainer">
+          <form id="exit-form">
+            <div class="progress-indicator" id="progress-indicator"></div>
+
+            <div class="questions-wrapper" id="questions-wrapper">
+              <div id="questions-container"></div>
+            </div>
+
+            <div class="error-text" id="error-text">
+              Please select an option to continue
+            </div>
+
+            <div class="button-container">
+              <button
+                type="button"
+                class="btn"
+                id="back-button"
+                style="display: none"
+              >
+                Back
+              </button>
+              <button type="button" class="btn btn-primary" id="next-button">
+                Next
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="submit-button"
+                style="display: none"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+
+          <!-- THANK YOU SCREEN -->
+          <div
+            id="thankyou-screen"
+            style="display: none; text-align: center; padding: 35px 20px"
+          >
+            <div
+              id="tick-animation"
+              style="
+                width: 75px;
+                height: 75px;
+                border-radius: 50%;
+                border: 4px solid #b01116;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 20px;
+                position: relative;
+              "
+            >
+              <span style="font-size: 42px; color: #b01116; font-weight: bold"
+                >✔</span
+              >
+
+              <div id="confetti" style="position: absolute; inset: -12px"></div>
+            </div>
+
+            <h2 style="margin: 0 0 6px 0; color: #000">
+              Thank you for your valuable feedback!
+            </h2>
+            <p style="color: #555; font-size: 15px; margin: 0">
+              Your response helps us improve Blueprint.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Close popup function
+      function closePopup() {
+        try {
+          // First try to close parent elements (for web popup integration)
+          var overlay =
+            window.parent.document.getElementById("intentOpacityDiv");
+          var wrapper = window.parent.document.getElementById("intentPreview");
+          if (overlay) overlay.remove();
+          if (wrapper) wrapper.remove();
+        } catch (error) {
+          console.error("Error removing parent elements:", error);
+        }
+
+        // Also hide the local overlay as fallback
+        document.getElementById("overlay").style.display = "none";
+
+        // Send event to CleverTap if available
+        try {
+          if (
+            window.parent.clevertap &&
+            window.parent.clevertap.event &&
+            window.parent.clevertap.event.push
+          ) {
+            window.parent.clevertap.event.push("Survey Dismissed");
+          } else if (window.clevertap && window.clevertap.event) {
+            window.clevertap.event.push("Survey Dismissed");
+          }
+        } catch (error) {
+          console.error("Error sending dismiss event to CleverTap:", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        let currentQuestion = 0;
+        const responses = {};
+        let isAnimating = false;
+
+        const questionsContainer = document.getElementById(
+          "questions-container"
+        );
+        const questionsWrapper = document.getElementById("questions-wrapper");
+        const nextButton = document.getElementById("next-button");
+        const backButton = document.getElementById("back-button");
+        const submitButton = document.getElementById("submit-button");
+        const progressIndicator = document.getElementById("progress-indicator");
+        const errorText = document.getElementById("error-text");
+
+        // build dots
+        for (let i = 1; i < surveyQuestions.length; i++) {
+          const dot = document.createElement("span");
+          dot.className = "progress-dot" + (i === 1 ? " active" : "");
+          progressIndicator.appendChild(dot);
+        }
+
+        // build screens
+        surveyQuestions.forEach((q, i) => {
+          const container = document.createElement("div");
+          container.className = "question-container";
+          container.id = `question-${i}`;
+          if (i === 0) container.classList.add("active");
+
+          if (q.type === "intro") {
+            const h = document.createElement("h2");
+            h.textContent = q.heading;
+
+            const p = document.createElement("p");
+            p.textContent = q.description;
+
+            container.appendChild(h);
+            container.appendChild(p);
+          } else {
+            const header = document.createElement("div");
+            header.className = "form-header";
+
+            const h2 = document.createElement("h2");
+            h2.textContent = q.question;
+            header.appendChild(h2);
+            container.appendChild(header);
+          }
+
+          if (q.type === "radio") {
+            q.answers.forEach((ans) => {
+              const grp = document.createElement("div");
+              grp.className = "radio-group";
+
+              const input = document.createElement("input");
+              input.type = "radio";
+              input.name = `q${i}`;
+              input.value = ans;
+              input.className = "styled-radio";
+
+              const label = document.createElement("label");
+              label.textContent = ans;
+
+              grp.appendChild(input);
+              grp.appendChild(label);
+              container.appendChild(grp);
+            });
+          }
+
+          if (q.type === "checkbox") {
+            q.answers.forEach((ans) => {
+              const grp = document.createElement("div");
+              grp.className = "checkbox-group";
+
+              const input = document.createElement("input");
+              input.type = "checkbox";
+              input.name = `q${i}`;
+              input.value = ans;
+              input.className = "styled-checkbox";
+
+              const label = document.createElement("label");
+              label.textContent = ans;
+
+              grp.appendChild(input);
+              grp.appendChild(label);
+              container.appendChild(grp);
+            });
+          }
+
+          if (q.type === "text") {
+            const ta = document.createElement("textarea");
+            ta.id = `textarea-${i}`;
+            ta.placeholder = "Write your suggestion (optional)...";
+            container.appendChild(ta);
+          }
+
+          questionsContainer.appendChild(container);
+        });
+
+        function adjustHeight() {
+          const active = document.querySelector(".question-container.active");
+          if (active)
+            questionsWrapper.style.height = active.offsetHeight + "px";
+        }
+        setTimeout(adjustHeight, 50);
+
+        function validateSelection() {
+          const q = surveyQuestions[currentQuestion];
+          if (q.type === "intro") return true;
+          if (q.optional) return true;
+
+          if (q.type === "radio")
+            return document.querySelector(
+              `input[name="q${currentQuestion}"]:checked`
+            );
+
+          if (q.type === "checkbox")
+            return (
+              [
+                ...document.querySelectorAll(
+                  `input[name="q${currentQuestion}"]:checked`
+                ),
+              ].length > 0
+            );
+
+          return true;
+        }
+
+        function storeAnswer() {
+          const q = surveyQuestions[currentQuestion];
+
+          if (q.type === "radio") {
+            const sel = document.querySelector(
+              `input[name="q${currentQuestion}"]:checked`
+            );
+            if (sel) responses[`Q${currentQuestion}`] = sel.value;
+          }
+
+          if (q.type === "checkbox") {
+            const checked = [
+              ...document.querySelectorAll(
+                `input[name="q${currentQuestion}"]:checked`
+              ),
+            ].map((i) => i.value);
+            if (checked.length)
+              responses[`Q${currentQuestion}`] = checked.join(", ");
+          }
+
+          if (q.type === "text") {
+            const txt = document
+              .getElementById(`textarea-${currentQuestion}`)
+              .value.trim();
+            if (txt) responses[`Q${currentQuestion}`] = txt;
+          }
+        }
+
+        function goToQuestion(next) {
+          if (isAnimating) return;
+
+          if (next && !validateSelection()) {
+            errorText.classList.add("visible");
+            return;
+          }
+
+          errorText.classList.remove("visible");
+          storeAnswer();
+
+          document
+            .getElementById(`question-${currentQuestion}`)
+            .classList.remove("active");
+          currentQuestion = next ? currentQuestion + 1 : currentQuestion - 1;
+          document
+            .getElementById(`question-${currentQuestion}`)
+            .classList.add("active");
+
+          backButton.style.display = currentQuestion === 0 ? "none" : "block";
+          nextButton.style.display =
+            currentQuestion === surveyQuestions.length - 1 ? "none" : "block";
+          submitButton.style.display =
+            currentQuestion === surveyQuestions.length - 1 ? "block" : "none";
+
+          if (surveyQuestions[currentQuestion].type !== "intro") {
+            document
+              .querySelectorAll(".progress-dot")
+              .forEach((d) => d.classList.remove("active"));
+            document
+              .querySelectorAll(".progress-dot")
+              [currentQuestion - 1].classList.add("active");
+          }
+
+          adjustHeight();
+        }
+
+        nextButton.addEventListener("click", () => goToQuestion(true));
+        backButton.addEventListener("click", () => goToQuestion(false));
+
+        document
+          .getElementById("exit-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            storeAnswer();
+
+            // Send event to CleverTap with Q1, Q2, Q3 format
+            try {
+              if (
+                window.parent.clevertap &&
+                window.parent.clevertap.event &&
+                window.parent.clevertap.event.push
+              ) {
+                window.parent.clevertap.event.push(
+                  "Survey Submitted",
+                  responses
+                );
+                console.log("Survey data sent to CleverTap:", responses);
+              } else if (window.clevertap && window.clevertap.event) {
+                window.clevertap.event.push("Survey Submitted", responses);
+                console.log("Survey data sent to CleverTap:", responses);
+              } else {
+                console.log("CleverTap not available. Survey data:", responses);
+              }
+            } catch (error) {
+              console.error("Error sending to CleverTap:", error);
+              console.log("Survey data:", responses);
+            }
+
+            // SHOW THANK YOU SCREEN
+            document.getElementById("exit-form").style.display = "none";
+            document.getElementById("thankyou-screen").style.display = "block";
+
+            // CONFETTI
+            const confetti = document.getElementById("confetti");
+            const colors = ["#B01116", "#000000", "#ffffff"];
+
+            for (let i = 0; i < 12; i++) {
+              const piece = document.createElement("div");
+              piece.classList.add("confetti-piece");
+              piece.style.width = "6px";
+              piece.style.height = "6px";
+              piece.style.position = "absolute";
+              piece.style.animation = "confetti-burst 0.8s ease-out forwards";
+              piece.style.backgroundColor = colors[i % 3];
+              piece.style.left = 35 + (Math.random() * 40 - 20) + "px";
+              piece.style.top = 35 + (Math.random() * 40 - 20) + "px";
+              confetti.appendChild(piece);
+            }
+
+            // AUTO CLOSE after 3 seconds
+            setTimeout(() => {
+              closePopup();
+            }, 3000);
+          });
+
+        // ESC key to close
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            closePopup();
+          }
+        });
+
+        // Click outside to close
+        document
+          .getElementById("overlay")
+          .addEventListener("click", function (e) {
+            if (e.target === this) {
+              closePopup();
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
