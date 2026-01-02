@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CT Top Timer Banner</title>
+    <style>
+      /* --- RESET --- */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* --- TOP BANNER --- */
+      .top-banner {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 99999;
+
+        /* Deep Red Background */
+        background-color: #a81919;
+        background-image: linear-gradient(to bottom, #a81919 0%, #961616 100%);
+
+        /* Bottom Border for definition */
+        border-bottom: 2px solid #850f0f;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
+        min-height: 70px;
+      }
+
+      /* Container for Label + Timer */
+      .content-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      /* Label Text */
+      .offer-label {
+        color: white;
+        font-weight: 700;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+      }
+
+      /* Timer Container */
+      .timer-display {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* THE 3D CUBES */
+      .time-cube {
+        background-color: #ffffff;
+        color: #901818;
+        min-width: 50px;
+        padding: 4px 6px;
+        border-radius: 4px;
+        box-shadow: 0 4px 0 #dcdcdc;
+        font-weight: 800;
+        font-size: 20px;
+        font-family: Arial, sans-serif;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .unit-char {
+        font-size: 11px;
+        font-weight: 800;
+        margin-left: 2px;
+      }
+
+      .colon {
+        color: white;
+        font-size: 18px;
+        font-weight: 800;
+        margin: 0 1px;
+      }
+
+      /* Close Button */
+      .close-btn {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: 0.8;
+        padding: 4px;
+      }
+
+      .close-btn:hover {
+        opacity: 1;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 600px) {
+        .top-banner {
+          padding: 10px;
+        }
+        .content-wrapper {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .offer-label {
+          font-size: 14px;
+          margin-top: 0;
+        }
+        .time-cube {
+          min-width: 45px;
+          font-size: 18px;
+          padding: 3px 5px;
+        }
+        .unit-char {
+          font-size: 10px;
+        }
+      }
+
+      /* Remove body margin since it's not needed for CleverTap */
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- CleverTap Top Banner Version -->
+    <div class="top-banner">
+      <div class="content-wrapper">
+        <span class="offer-label">Offer Ending In:</span>
+        <div class="timer-display">
+          <div class="time-cube">
+            <span id="h-val">00</span><span class="unit-char">H</span>
+          </div>
+          <div class="colon">:</div>
+          <div class="time-cube">
+            <span id="m-val">00</span><span class="unit-char">M</span>
+          </div>
+          <div class="colon">:</div>
+          <div class="time-cube">
+            <span id="s-val">00</span><span class="unit-char">S</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Target: Nov 28, 2025 11:59 PM
+      const targetDate = new Date("November 28, 2025 23:59:00").getTime();
+
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance < 0) {
+          document.getElementById("h-val").innerText = "00";
+          document.getElementById("m-val").innerText = "00";
+          document.getElementById("s-val").innerText = "00";
+          return;
+        }
+
+        const hours = Math.floor(distance / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("h-val").innerText =
+          hours < 10 ? "0" + hours : hours;
+        document.getElementById("m-val").innerText =
+          minutes < 10 ? "0" + minutes : minutes;
+        document.getElementById("s-val").innerText =
+          seconds < 10 ? "0" + seconds : seconds;
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    </script>
+  </body>
+</html>

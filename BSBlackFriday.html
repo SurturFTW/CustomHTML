@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      #popup-wrapper {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.88);
+        transform-origin: center;
+        z-index: 999999;
+        text-align: center;
+        background: transparent !important;
+        font-family: "Inter", sans-serif;
+        transition: opacity 0.4s ease;
+        opacity: 1;
+        width: 80%;
+        max-width: 500px;
+      }
+
+      /* Fade-out */
+      .fade-out {
+        opacity: 0;
+      }
+
+      body.no-scroll {
+        overflow: hidden !important;
+      }
+
+      /* Close Button */
+      .close-btn {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #000;
+        color: #fff;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
+        z-index: 99999999;
+        border: 2px solid #fff;
+      }
+
+      .timer-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: transparent;
+      }
+
+      .offer-ends {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 800;
+        margin-right: 8px;
+      }
+
+      .timer-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      @keyframes blockBounce {
+        0% {
+          transform: scale(0.6);
+          opacity: 0;
+        }
+        80% {
+          transform: scale(1.08);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes tickPop {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.12);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .timer-box {
+        background: linear-gradient(#d8181e, #a50f12);
+        color: #ffffff;
+        padding: 5px 8px;
+        min-width: 34px;
+        font-size: 15px;
+        font-weight: 900;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.5px;
+        gap: 1px;
+        box-shadow: inset 0px 2px 3px rgba(255, 255, 255, 0.18),
+          inset 0px -3px 4px rgba(0, 0, 0, 0.35), 0px 3px 0px #5b080a,
+          0px 6px 10px rgba(0, 0, 0, 0.4);
+        animation: blockBounce 0.45s ease-out;
+      }
+
+      .timer-box.tick {
+        animation: tickPop 0.25s ease-out;
+      }
+
+      .timer-number {
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .timer-label {
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .timer-colon {
+        font-size: 16px;
+        font-weight: 900;
+        color: #ffffff;
+      }
+
+      .banner-click {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+      }
+
+      .popup-image {
+        width: 100%;
+        max-width: 100%;
+        display: block;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      /* MOBILE */
+      @media (max-width: 768px) {
+        #popup-wrapper {
+          width: 90%;
+          max-width: 400px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      @media (max-width: 480px) {
+        #popup-wrapper {
+          width: 92%;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="no-scroll">
+    <div id="popup-wrapper">
+      <div class="close-btn" onclick="closePopup()">x</div>
+
+      <div class="timer-section">
+        <div class="offer-ends">OFFER ENDING IN:</div>
+
+        <div class="timer-row">
+          <div class="timer-box" id="h">
+            <span class="timer-number">00</span>
+            <div class="timer-label">H</div>
+          </div>
+          <div class="timer-colon">:</div>
+          <div class="timer-box" id="m">
+            <span class="timer-number">00</span>
+            <div class="timer-label">M</div>
+          </div>
+          <div class="timer-colon">:</div>
+          <div class="timer-box" id="s">
+            <span class="timer-number">00</span>
+            <div class="timer-label">S</div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        class="banner-click"
+        onclick="onBannerClick(event)"
+        data-href="https://bsppd.business-standard.com/subscription-cart/product-offer"
+      >
+        <img
+          src="https://d17wxfn72dhxb.cloudfront.net/1712316416/assets/69030fffdc484623a49f4552b73ec4c8.png"
+          class="popup-image"
+          alt="Popup Banner"
+        />
+      </button>
+    </div>
+
+    <script>
+      function updateTimer() {
+        const end = new Date("November 28, 2025 23:59:59").getTime();
+        const now = Date.now();
+        const diff = end - now;
+
+        if (diff <= 0) return;
+
+        const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+        const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+        const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+
+        document.querySelector("#h .timer-number").textContent = h;
+        document.querySelector("#m .timer-number").textContent = m;
+        document.querySelector("#s .timer-number").textContent = s;
+
+        document.querySelector("#s").classList.add("tick");
+        setTimeout(() => {
+          document.querySelector("#s").classList.remove("tick");
+        }, 250);
+      }
+
+      setInterval(updateTimer, 1000);
+      updateTimer();
+
+      function launchConfetti() {
+        const canvas = document.createElement("canvas");
+        canvas.style.position = "fixed";
+        canvas.style.top = 0;
+        canvas.style.left = 0;
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        canvas.style.pointerEvents = "none";
+        canvas.style.zIndex = 99999999;
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext("2d");
+        const colors = ["#000000", "#F7C6D9"];
+        const pieces = [];
+
+        for (let i = 0; i < 150; i++) {
+          pieces.push({
+            x: Math.random() * innerWidth,
+            y: Math.random() * innerHeight,
+            size: Math.random() * 7 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speedX: (Math.random() - 0.5) * 3,
+            speedY: Math.random() * 5 + 2,
+            alpha: 1,
+          });
+        }
+
+        function animate() {
+          ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+          pieces.forEach((p) => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.alpha -= 0.01;
+
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+          });
+
+          if (pieces.some((p) => p.alpha > 0)) {
+            requestAnimationFrame(animate);
+          } else {
+            canvas.remove();
+          }
+        }
+
+        animate();
+      }
+
+      function closePopup() {
+        launchConfetti();
+
+        try {
+          var overlay =
+            window.parent.document.getElementById("intentOpacityDiv");
+          var wrapper = window.parent.document.getElementById("intentPreview");
+          if (overlay) overlay.remove();
+          if (wrapper) wrapper.remove();
+        } catch (error) {}
+
+        const popupWrapper = document.getElementById("popup-wrapper");
+
+        if (popupWrapper) {
+          popupWrapper.classList.add("fade-out");
+          setTimeout(() => {
+            popupWrapper.style.display = "none";
+          }, 400);
+        }
+
+        document.body.classList.remove("no-scroll");
+      }
+
+      function onBannerClick(event) {
+        const link = event.currentTarget.getAttribute("data-href");
+
+        launchConfetti();
+
+        // Redirect in the same window
+        setTimeout(() => {
+          window.open(link, "_blank");
+          closePopup();
+        }, 300);
+      }
+
+      setTimeout(launchConfetti, 300);
+    </script>
+  </body>
+</html>

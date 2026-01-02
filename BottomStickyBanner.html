@@ -1,0 +1,291 @@
+<style>
+  /* General Reset */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* --- Sticky Bottom Banner Styles --- */
+  .sticky-banner {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    z-index: 9999;
+
+    /* Deep Red Gradient Background */
+    background-color: #a71919;
+    background-image: linear-gradient(180deg, #b01a1a 0%, #961515 100%);
+    color: white;
+
+    border-top: 2px solid #7d0c0c;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+    padding: 15px 50px 15px 20px;
+  }
+
+  /* Container to group elements horizontally */
+  .banner-content {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+  }
+
+  /* 1. Text Section */
+  .text-section {
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .headline {
+    font-size: 24px;
+    font-weight: 800; /* BOLD */
+    text-transform: uppercase;
+    line-height: 1.1;
+    display: block;
+    letter-spacing: -0.5px;
+  }
+
+  .subtext {
+    font-size: 16px;
+    font-weight: 400;
+    display: block;
+    margin-top: 4px;
+    opacity: 0.95;
+  }
+
+  /* 2. Timer Section */
+  .timer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timer-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    margin-left: 2px;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.5px;
+  }
+
+  .timer-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* 3D Timer Blocks */
+  .time-box {
+    background-color: #ffffff;
+    color: #8f1313; /* Dark Red Text */
+    font-weight: 800;
+    font-size: 22px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 0 #d6d6d6; /* 3D depth */
+    min-width: 65px;
+    text-align: center;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+  }
+
+  .unit {
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 2px;
+    color: #8f1313;
+  }
+
+  .colon {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: -8px;
+  }
+
+  /* 3. Button (Link) */
+  .cta-btn {
+    background-color: white;
+    color: #8f1313;
+    text-decoration: none; /* Remove underline for anchor tag */
+    border: none;
+    padding: 0 25px;
+    height: 48px; /* Match visual height of timer */
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 5px;
+
+    box-shadow: 0 4px 0 #cfcfcf; /* 3D button effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    margin-top: 16px; /* Align with timer boxes visually */
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .cta-btn:hover {
+    background-color: #f9f9f9;
+  }
+
+  .cta-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #cfcfcf;
+  }
+
+  /* 4. Close Button - Update for CleverTap */
+  .close-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 5px;
+    line-height: 1;
+  }
+  .close-btn:hover {
+    opacity: 1;
+  }
+
+  /* --- RESPONSIVE / MOBILE CSS (MWeb) --- */
+  @media (max-width: 950px) {
+    .sticky-banner {
+      flex-direction: column;
+      height: auto;
+      padding: 35px 20px 20px 20px; /* More top padding for close btn */
+    }
+
+    .banner-content {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .text-section {
+      text-align: center;
+      width: 100%;
+    }
+
+    .headline {
+      font-size: 22px;
+    }
+
+    .subtext {
+      font-size: 15px;
+    }
+
+    .timer-wrapper {
+      align-items: center;
+    }
+
+    /* Make button full width on mobile for easier tapping */
+    .cta-btn {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .close-btn {
+      top: 10px;
+      right: 10px;
+      transform: none;
+      font-size: 24px;
+    }
+  }
+</style>
+
+<!-- START: Sticky Banner Code -->
+<div class="sticky-banner" id="bsStickyBanner">
+  <div class="banner-content">
+    <!-- Text Section -->
+    <div class="text-section">
+      <span class="headline">BLACK FRIDAY SALE IS LIVE</span>
+      <span class="subtext">BS Digital Subscription at just <b>Rs.999</b></span>
+    </div>
+
+    <!-- Timer Section -->
+    <div class="timer-wrapper">
+      <span class="timer-label">OFFER ENDING IN</span>
+      <div class="timer-display">
+        <div class="time-box">
+          <span id="hours">00</span><span class="unit">H</span>
+        </div>
+        <div class="colon">:</div>
+        <div class="time-box">
+          <span id="minutes">00</span><span class="unit">M</span>
+        </div>
+        <div class="colon">:</div>
+        <div class="time-box">
+          <span id="seconds">00</span><span class="unit">S</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Button with CleverTap tracking -->
+    <a
+      href="https://bsppd.business-standard.com/subscription-cart/product-offer"
+      target="_blank"
+      class="cta-btn"
+    >
+      SUBSCRIBE NOW
+    </a>
+  </div>
+
+  <!-- Close Button with CleverTap event -->
+  <button
+    class="close-btn"
+    onclick="document.getElementById('bsStickyBanner').style.display='none';"
+  >
+    ×
+  </button>
+</div>
+
+<script>
+  // Set the Target Date: November 28, 2025 11:59 PM
+  const targetDate = new Date("November 28, 2025 23:59:00").getTime();
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+      document.getElementById("hours").innerText = "00";
+      document.getElementById("minutes").innerText = "00";
+      document.getElementById("seconds").innerText = "00";
+      return;
+    }
+
+    const hours = Math.floor(distance / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("hours").innerText =
+      hours < 10 ? "0" + hours : hours;
+    document.getElementById("minutes").innerText =
+      minutes < 10 ? "0" + minutes : minutes;
+    document.getElementById("seconds").innerText =
+      seconds < 10 ? "0" + seconds : seconds;
+  }
+
+  updateCountdown();
+  const interval = setInterval(updateCountdown, 1000);
+</script>

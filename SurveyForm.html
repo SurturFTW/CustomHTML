@@ -643,6 +643,10 @@
 
             // Send event to CleverTap with Q1, Q2, Q3 format
             try {
+              const eventData = {
+                "Survey Name": "Blueprint Magazine Survey",
+                ...responses,
+              };
               if (
                 window.parent.clevertap &&
                 window.parent.clevertap.event &&
@@ -650,18 +654,18 @@
               ) {
                 window.parent.clevertap.event.push(
                   "Survey Submitted",
-                  responses
+                  eventData
                 );
-                console.log("Survey data sent to CleverTap:", responses);
+                console.log("Survey data sent to CleverTap:", eventData);
               } else if (window.clevertap && window.clevertap.event) {
-                window.clevertap.event.push("Survey Submitted", responses);
-                console.log("Survey data sent to CleverTap:", responses);
+                window.clevertap.event.push("Survey Submitted", eventData);
+                console.log("Survey data sent to CleverTap:", eventData);
               } else {
-                console.log("CleverTap not available. Survey data:", responses);
+                console.log("CleverTap not available. Survey data:", eventData);
               }
             } catch (error) {
               console.error("Error sending to CleverTap:", error);
-              console.log("Survey data:", responses);
+              console.log("Survey data:", eventData);
             }
 
             // SHOW THANK YOU SCREEN
