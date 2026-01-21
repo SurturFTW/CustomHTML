@@ -1,0 +1,527 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice</title>
+
+    <!-- IBM Plex Sans -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: transparent;
+        font-family: "IBM Plex Sans", sans-serif;
+        padding: 12px;
+        overflow: hidden;
+      }
+
+      /* ROLL-UP WRAPPER */
+      .roll-wrapper {
+        transform: translateY(100%);
+        animation: rollUp 1.4s ease-out forwards;
+      }
+
+      @keyframes rollUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      /* RECEIPT WRAPPER */
+      .invoice {
+        max-width: 760px;
+        margin: auto;
+        background: #ffffff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* RECEIPT WRAPPER */
+      .invoice {
+        max-width: 760px;
+        margin: auto;
+        background: #f4f6f8;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* PERFORATION HOLES */
+      .invoice::before,
+      .invoice::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 14px;
+        background: radial-gradient(
+          circle at 7px 7px,
+          transparent 6px,
+          #f4f6f8 6px
+        );
+        background-size: 14px 14px;
+      }
+
+      .invoice::before {
+        top: -7px;
+      }
+      .invoice::after {
+        bottom: -7px;
+      }
+
+      /* WATERMARK */
+      .watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-18deg);
+        font-size: 60px;
+        font-weight: 700;
+        color: #b01116;
+        opacity: 0.08;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      /* CONTENT */
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* HEADER */
+      .header-top {
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .brand {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+
+      .brand-logo img {
+        width: 36px;
+        display: block;
+      }
+
+      .brand-text h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #b01116;
+        text-align: left;
+      }
+
+      .brand-text p {
+        margin: 2px 0 0;
+        font-size: 10px;
+        font-weight: 500;
+        color: #666;
+        letter-spacing: 0.6px;
+      }
+
+      /* RED BAR */
+      .bar-row {
+        display: flex;
+        align-items: center;
+        margin: 14px 0;
+      }
+
+      .bar {
+        height: 10px;
+        background: #b01116;
+      }
+
+      .bar.left {
+        flex: 1;
+      }
+      .bar.right {
+        width: 28px;
+      }
+
+      .bar-text {
+        font-size: 20px;
+        font-weight: 700;
+        padding: 0 10px;
+        color: #111;
+      }
+
+      /* INFO */
+      .info {
+        display: flex;
+        justify-content: space-between;
+        gap: 40px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #000;
+        text-align: left;
+      }
+
+      /* TABLE */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+        font-size: 12.5px;
+        color: #000;
+      }
+
+      thead th {
+        text-align: left;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e5e7eb;
+        padding: 6px 6px 6px 0;
+      }
+
+      thead th:first-child,
+      thead th:nth-child(2) {
+        padding-left: 0;
+        text-align: left;
+      }
+
+      thead th:nth-child(3),
+      thead th:nth-child(4) {
+        text-align: right;
+      }
+
+      tbody td {
+        padding: 6px 6px 6px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      tbody td:first-child,
+      tbody td:nth-child(2) {
+        padding-left: 0;
+        text-align: left;
+      }
+
+      tbody td:nth-child(3),
+      tbody td:nth-child(4) {
+        text-align: right;
+      }
+
+      .amount {
+        text-align: right;
+      }
+
+      /* TOTAL ROWS */
+      .total-pay td,
+      .total-get td {
+        border-top: 2px solid #000;
+        font-weight: 700;
+        font-size: 14px;
+        text-align: left;
+      }
+
+      /* FOOTER */
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+      }
+
+      .footer-text {
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .footer-text strong {
+        color: #374151;
+      }
+
+      .tc {
+        font-size: 10px;
+        color: #6b7280;
+        text-align: left;
+      }
+
+      /* CTA */
+      .cta-link {
+        text-decoration: none;
+      }
+
+      .cta {
+        background: #b01116;
+        color: #fff;
+        padding: 9px 18px;
+        font-weight: 700;
+        font-size: 13px;
+        border-radius: 4px;
+        transition:
+          transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.25s ease;
+      }
+
+      .cta:hover {
+        transform: scale(1.08);
+        box-shadow: 0 12px 28px rgba(176, 17, 22, 0.35);
+      }
+
+      /* CONFETTI CANVAS */
+      #confetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 999;
+      }
+
+      /* CLOSE BUTTON */
+      .close-icon {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 28px;
+        height: 28px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border-radius: 2px;
+        z-index: 10;
+      }
+      .close-icon:hover {
+        background: #f5f5f5;
+      }
+      .close-icon .close-text {
+        font-size: 24px;
+        font-weight: bold;
+        color: #000;
+        line-height: 1;
+      }
+
+      /* MOBILE */
+      @media (max-width: 640px) {
+        .info {
+          flex-direction: column;
+          gap: 6px;
+        }
+        .watermark {
+          font-size: 42px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="confetti"></canvas>
+
+    <div class="roll-wrapper">
+      <div class="invoice">
+        <button class="close-icon" onclick="closePopup()" aria-label="Close">
+          <span class="close-text">×</span>
+        </button>
+
+        <div class="watermark">NOT A BIG DEAL!</div>
+
+        <div class="content">
+          <div class="header-top">
+            <div class="brand">
+              <div class="brand-logo">
+                <img
+                  src="https://d17wxfn72dhxb.cloudfront.net/1712316416/assets/c10c9f0e7ca54cfcb5a5db6bd3a40861.png"
+                />
+              </div>
+              <div class="brand-text">
+                <h1>Business Standard</h1>
+                <p>START READING. SPEND NOTHING</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bar-row">
+            <div class="bar left"></div>
+            <div class="bar-text">VALUE BACK INVOICE</div>
+            <div class="bar right"></div>
+          </div>
+
+          <div class="info">
+            <div>
+              <strong>Invoice From:</strong><br />
+              Business Standard Private Limited
+            </div>
+            <div>
+              <strong>Date:</strong><br />
+              <span id="currentDate"></span>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 6%">SL</th>
+                <th>Item Description</th>
+                <th class="amount">Payable Amount</th>
+                <th class="amount">Vouchers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Subscription Amount</td>
+                <td class="amount">₹2700</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Flat Cashback</td>
+                <td>—</td>
+                <td class="amount">₹500</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Couple Movie Tickets Voucher</td>
+                <td>—</td>
+                <td class="amount">₹750</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Pizza Voucher</td>
+                <td>—</td>
+                <td class="amount">₹750</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Uber Voucher</td>
+                <td>—</td>
+                <td class="amount">₹750</td>
+              </tr>
+
+              <tr class="total-pay">
+                <td colspan="1">TOTAL</td>
+                <td>PAY</td>
+                <td class="amount">₹2700</td>
+                <td class="amount">₹2700</td>
+              </tr>
+
+              <tr class="total-get">
+                <td colspan="2">Pay ₹2700 Get & ₹2700 Vouchers Back</td>
+                <td style="text-align: end">₹0</td>
+                <td class="amount">₹2700</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="footer">
+            <div class="footer-text">
+              <strong>No bidding. No tricks. 100% value back.</strong>
+              <div class="tc">T&C Apply</div>
+            </div>
+
+            <a
+              href="https://www.business-standard.com/subscription-cart/product"
+              target="_blank"
+              class="cta-link"
+            >
+              <div class="cta">Subscribe Now</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function closePopup() {
+        try {
+          var overlay =
+            window.parent.document.getElementById("intentOpacityDiv");
+          var wrapper = window.parent.document.getElementById("intentPreview");
+          if (overlay) overlay.remove();
+          if (wrapper) wrapper.remove();
+        } catch (error) {
+          console.error("Error removing parent elements:", error);
+        }
+
+        document.querySelector(".roll-wrapper").style.display = "none";
+      }
+
+      /* DATE */
+      const d = new Date();
+      document.getElementById("currentDate").textContent =
+        `${String(d.getDate()).padStart(2, "0")} / ${String(d.getMonth() + 1).padStart(2, "0")} / ${d.getFullYear()}`;
+
+      /* PREMIUM CONFETTI */
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+
+      const colors = ["#B01116", "#E6B800", "#FFFFFF"];
+      let particles = [];
+
+      function createConfetti() {
+        particles = [];
+        for (let i = 0; i < 140; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: Math.random() * 2 + 1.5,
+            size: Math.random() * 8 + 6,
+            rot: Math.random() * 360,
+            vr: (Math.random() - 0.5) * 1.2,
+            sway: Math.random() * 0.6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            shape: Math.random() > 0.65 ? "circle" : "rect",
+            life: Math.random() * 300 + 240,
+          });
+        }
+        animate();
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p) => {
+          p.x += Math.sin(p.y * 0.02) * p.sway + p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+          p.life--;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.globalAlpha = Math.min(p.life / 80, 1);
+          ctx.fillStyle = p.color;
+
+          if (p.shape === "rect") {
+            ctx.fillRect(-p.size / 2, -p.size / 6, p.size, p.size / 3);
+          } else {
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size / 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        });
+
+        particles = particles.filter(
+          (p) => p.life > 0 && p.y < canvas.height + 40,
+        );
+        if (particles.length) requestAnimationFrame(animate);
+      }
+
+      setTimeout(createConfetti, 1300);
+
+      window.addEventListener("resize", () => {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+      });
+    </script>
+  </body>
+</html>

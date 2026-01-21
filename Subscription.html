@@ -403,6 +403,7 @@
             Channel: "Web pop-up",
           };
           window.parent.clevertap.event.push("Newsletter Subscription", props);
+          window.parent.clevertap.profile.push(props["Newsletter email ID"]);
         } catch (e) {
           console.error("CleverTap event push failed:", e);
         }

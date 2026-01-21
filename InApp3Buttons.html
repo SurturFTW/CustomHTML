@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dil Dhokha aur Desire - ShemarooME</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", "Helvetica", sans-serif;
+        background: #0a0a0a;
+        color: #fff;
+        overflow: hidden;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding: 20px;
+        background: radial-gradient(circle at center, #1a0a14 0%, #0a0a0a 100%);
+      }
+
+      .shemaroo-logo {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 120px;
+        height: auto;
+        z-index: 10;
+      }
+
+      .background-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("https://i.pinimg.com/originals/76/53/16/765316684f81c8ae099d7e8fed6ee5e0.gif");
+        background-size: cover;
+        background-position: center;
+        opacity: 0.12;
+        z-index: 0;
+        filter: blur(1px);
+      }
+
+      .content-wrapper {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 650px;
+        width: 100%;
+        animation: fadeIn 0.8s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .series-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #e50914 0%, #b20710 100%);
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: bold;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .logo-title {
+        font-size: 2.8em;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(
+          135deg,
+          #ff4458 0%,
+          #d4145a 50%,
+          #8b0a3d 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 1px;
+        line-height: 1.2;
+      }
+
+      .subtitle {
+        font-size: 1.15em;
+        margin-bottom: 45px;
+        color: #d4a5b8;
+        font-style: italic;
+        opacity: 0.95;
+      }
+
+      .prompt-text {
+        font-size: 1.9em;
+        margin-bottom: 50px;
+        line-height: 1.5;
+        color: #fff;
+        text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.8);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .option-button {
+        padding: 28px 45px;
+        font-size: 1.6em;
+        font-weight: 700;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 1px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+        text-transform: capitalize;
+      }
+
+      .option-button::after {
+        content: "→";
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%) translateX(-10px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        font-size: 1.2em;
+      }
+
+      .option-button:hover::after {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+      }
+
+      .option-button:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+      }
+
+      .option-button:active {
+        transform: translateY(-1px) scale(1.01);
+      }
+
+      .btn-hadh {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-hadh:hover {
+        background: linear-gradient(135deg, #7c8ff0 0%, #8a5bb0 100%);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-thoda {
+        background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+        color: white;
+      }
+
+      .btn-thoda:hover {
+        background: linear-gradient(135deg, #f5371f 0%, #f7b82d 100%);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-poora {
+        background: linear-gradient(135deg, #c31432 0%, #240b36 100%);
+        color: white;
+        border: 2px solid rgba(195, 20, 50, 0.5);
+        animation: intensePulse 3s infinite;
+      }
+
+      .btn-poora:hover {
+        background: linear-gradient(135deg, #d81d3f 0%, #2d0d42 100%);
+        border-color: rgba(216, 29, 63, 0.8);
+      }
+
+      @keyframes intensePulse {
+        0%,
+        100% {
+          box-shadow: 0 6px 25px rgba(195, 20, 50, 0.4),
+            0 0 20px rgba(195, 20, 50, 0.2);
+        }
+        50% {
+          box-shadow: 0 8px 35px rgba(195, 20, 50, 0.7),
+            0 0 30px rgba(195, 20, 50, 0.4);
+        }
+      }
+
+      .description {
+        font-size: 0.5em;
+        margin-top: 5px;
+        opacity: 0.9;
+        font-style: italic;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+      }
+
+      .warning-badge {
+        display: inline-block;
+        background: rgba(229, 9, 20, 0.3);
+        border: 1.5px solid rgba(229, 9, 20, 0.7);
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.45em;
+        margin-top: 8px;
+        color: #ff6b6b;
+        font-weight: 600;
+      }
+
+      .footer-text {
+        position: absolute;
+        bottom: 20px;
+        font-size: 0.85em;
+        color: #666;
+        opacity: 0.7;
+      }
+
+      @media (max-width: 768px) {
+        .shemaroo-logo {
+          width: 100px;
+        }
+
+        .logo-title {
+          font-size: 2em;
+        }
+
+        .prompt-text {
+          font-size: 1.4em;
+          margin-bottom: 40px;
+        }
+
+        .option-button {
+          padding: 22px 35px;
+          font-size: 1.3em;
+        }
+
+        .series-badge {
+          font-size: 0.75em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo-title {
+          font-size: 1.6em;
+        }
+
+        .prompt-text {
+          font-size: 1.2em;
+        }
+
+        .option-button {
+          padding: 20px 30px;
+          font-size: 1.2em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-overlay"></div>
+
+    <div class="container">
+      <!-- ShemarooME Logo placeholder - replace with actual logo URL -->
+      <svg
+        class="shemaroo-logo"
+        viewBox="0 0 120 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <text
+          x="0"
+          y="30"
+          font-family="Arial"
+          font-weight="bold"
+          font-size="20"
+          fill="#e50914"
+        >
+          ShemarooME
+        </text>
+      </svg>
+
+      <div class="content-wrapper">
+        <div class="series-badge">Original Series</div>
+
+        <h1 class="logo-title">Dil Dhokha aur Desire</h1>
+        <p class="subtitle">Where passion meets betrayal</p>
+
+        <p class="prompt-text">आप कितना आगे जाने के लिए तैयार हैं?</p>
+
+        <div class="options-container">
+          <button
+            class="option-button btn-hadh"
+            onclick="handleSelection('hadh')"
+          >
+            <div>
+              हद
+              <div class="description">Watch the official trailer</div>
+            </div>
+          </button>
+
+          <button
+            class="option-button btn-thoda"
+            onclick="handleSelection('thoda-behadh')"
+          >
+            <div>
+              थोड़ा बेहद
+              <div class="description">Character POV experience</div>
+            </div>
+          </button>
+
+          <button
+            class="option-button btn-poora"
+            onclick="handleSelection('poora-behadh')"
+          >
+            <div>
+              पूरा बेहद
+              <div class="description">Intense & unfiltered preview</div>
+              <div class="warning-badge">18+ Mature Content</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="footer-text">© ShemarooME - Stream Responsibly</div>
+    </div>
+
+    <script>
+      function handleSelection(choice) {
+        // ShemarooME content routing
+        const destinations = {
+          hadh: "/content/dil-dhokha-desire/trailer",
+          "thoda-behadh": "/content/dil-dhokha-desire/character-pov",
+          "poora-behadh": "/content/dil-dhokha-desire/mature-preview",
+        };
+
+        // Smooth transition
+        document.body.style.transition = "opacity 0.4s ease-out";
+        document.body.style.opacity = "0";
+
+        setTimeout(() => {
+          window.location.href = destinations[choice];
+        }, 400);
+      }
+    </script>
+  </body>
+</html>

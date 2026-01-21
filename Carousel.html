@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Carousel with Close Button</title>
+    <style>
+      .carousel-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .carousel {
+        display: flex;
+        transition: transform 0.5s ease;
+      }
+
+      .carousel img {
+        width: 100%;
+        height: auto;
+      }
+
+      /* Close icon fixed to the top-right corner of the carousel */
+      .close-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 25%;
+        z-index: 1000;
+      }
+
+      .close-icon:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="carousel-container">
+      <span class="close-icon" onclick="closepop()">X</span>
+      <!-- Close icon here -->
+      <div class="carousel">
+        <img
+          src="https://pbs.twimg.com/media/FBY0AfEVgAUU8km.jpg:large"
+          alt="Image 1"
+        />
+        <img
+          src="https://rukminim2.flixcart.com/image/850/1000/xif0q/watch/4/w/1/1-crystal-studded-rose-gold-carlington-women-original-imagvxy984krxgue.jpeg?q=20&crop=false"
+          alt="Image 2"
+        />
+        <img
+          src="https://img.pikbest.com/origin/08/95/90/94npIkbEsTV3c.jpg!w700wp"
+          alt="Image 3"
+        />
+      </div>
+    </div>
+
+    <script>
+      const carousel = document.querySelector(".carousel");
+      const images = document.querySelectorAll(".carousel img");
+      let counter = 0;
+      const intervalTime = 2000;
+
+      function nextSlide() {
+        counter++;
+        if (counter === images.length) {
+          counter = 0;
+        }
+        carousel.style.transform = `translateX(-${counter * 100}%)`;
+      }
+
+      function closepop() {
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.clevertap
+        ) {
+          // iOS
+          console.log("Closing via iOS method");
+          window.location.href = "wzrk://exit";
+        } else {
+          CleverTap.dismissInAppNotification();
+        }
+      }
+
+      setInterval(nextSlide, intervalTime);
+    </script>
+  </body>
+</html>

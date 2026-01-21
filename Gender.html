@@ -1,265 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
- <meta charset="UTF-8" />
- <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
- <title>Gender Selection</title>
- <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
- <style>
-   :root {
-     --primary-color: #ff6700;
-   }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gender Selection</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Rubik&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #ff6700;
+      }
 
-   * {
-     box-sizing: border-box;
-   }
+      * {
+        box-sizing: border-box;
+      }
 
-   body {
-     margin: 0;
-     font-family: 'Rubik', sans-serif;
-     background-color: transparent;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     height: 100vh;
-   }
+      body {
+        margin: 0;
+        font-family: "Rubik", sans-serif;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
 
-   .popup {
-     display: none;
-     position: fixed;
-     z-index: 10;
-     left: 0;
-     top: 0;
-     width: 100%;
-     height: 100%;
-     background: rgba(0, 0, 0, 0.4);
-     justify-content: center;
-     align-items: end;
-   }
+      .popup {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+        align-items: end;
+      }
 
-   .popup.show {
-     display: flex;
-   }
+      .popup.show {
+        display: flex;
+      }
 
-   .popup-content {
-     background: #ffffff;
-     border-radius: 16px 16px 0 0;
-     padding: 30px;
-     width: 100%;
-     max-width: 420px;
-     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-     transform: translateY(20px);
-     opacity: 0;
-     transition: all 0.4s ease;
-   }
+      .popup-content {
+        background: #ffffff;
+        border-radius: 16px 16px 0 0;
+        padding: 30px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.4s ease;
+      }
 
-   .popup.show .popup-content {
-     transform: translateY(0);
-     opacity: 1;
-   }
+      .popup.show .popup-content {
+        transform: translateY(0);
+        opacity: 1;
+      }
 
-   .close {
-     position: absolute;
-     top: 16px;
-     right: 16px;
-     background: rgba(116,116,128,0.08);
-     border: none;
-     border-radius: 50%;
-     width: 32px;
-     height: 32px;
-     cursor: pointer;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-   }
+      .close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(116, 116, 128, 0.08);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-   .top-heading {
-     text-align: center;
-     margin-bottom: 20px;
-   }
+      .top-heading {
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
-   .top-heading h5 {
-     font-size: 20px;
-     color: #1f2937;
-     margin: 0 0 8px;
-   }
+      .top-heading h5 {
+        font-size: 20px;
+        color: #1f2937;
+        margin: 0 0 8px;
+      }
 
-   .top-heading p {
-     font-size: 14px;
-     color: #4b5563;
-     margin: 0;
-   }
+      .top-heading p {
+        font-size: 14px;
+        color: #4b5563;
+        margin: 0;
+      }
 
-   .action-container {
-     display: flex;
-     justify-content: center;
-     gap: 20px;
-     flex-wrap: wrap;
-     margin-top: 20px;
-   }
+      .action-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
 
-   .cat.action button {
-     background-color: #f9fafb;
-     border: 2px solid #e5e7eb;
-     border-radius: 16px;
-     width: 120px;
-     height: 130px;
-     padding: 10px;
-     text-align: center;
-     cursor: pointer;
-     transition: all 0.3s ease;
-     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-     display: flex;
-     flex-direction: column;
-     justify-content: center;
-     align-items: center;
-   }
+      .cat.action button {
+        background-color: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        width: 120px;
+        height: 130px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
 
-   .cat.action button:hover {
-     background-color: #f3f4f6;
-     transform: translateY(-4px);
-     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-   }
+      .cat.action button:hover {
+        background-color: #f3f4f6;
+        transform: translateY(-4px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+      }
 
-   .cat.action button:active {
-     transform: scale(0.96);
-     background-color: #e5e7eb;
-   }
+      .cat.action button:active {
+        transform: scale(0.96);
+        background-color: #e5e7eb;
+      }
 
-   .cat.action button.selected {
-     border-color: var(--primary-color);
-     background-color: #fff7f2;
-   }
+      .cat.action button.selected {
+        border-color: var(--primary-color);
+        background-color: #fff7f2;
+      }
 
-   .cat.action button span {
-     margin-top: 10px;
-     font-size: 15px;
-     font-weight: 500;
-     color: #1f2937;
-   }
+      .cat.action button span {
+        margin-top: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #1f2937;
+      }
 
-   .cat.action button img {
-     width: 64px;
-     height: 64px;
-     border-radius: 50%;
-   }
+      .cat.action button img {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+      }
 
-   @media (max-width: 480px) {
-     .cat.action button {
-       width: 100px;
-       height: 110px;
-     }
-   }
- </style>
-</head>
-<body>
+      @media (max-width: 480px) {
+        .cat.action button {
+          width: 100px;
+          height: 110px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="myPopup" class="popup">
+      <div class="popup-content">
+        <button class="close" id="closeBtn">
+          <img
+            src="https://files.catbox.moe/jf8in6.svg"
+            alt="close"
+            width="18"
+            height="18"
+          />
+        </button>
 
-<div id="myPopup" class="popup">
- <div class="popup-content">
-   <button class="close" id="closeBtn">
-     <img src="https://files.catbox.moe/jf8in6.svg" alt="close" width="18" height="18"/>
-   </button>
+        <div class="top-heading">
+          <h5>Tell us more about you...</h5>
+          <p>What's your gender?</p>
+        </div>
 
-   <div class="top-heading">
-     <h5>Tell us more about you...</h5>
-     <p>What's your gender?</p>
-   </div>
+        <div class="action-container">
+          <div class="cat action">
+            <button class="gender-btn" data-gender="Male">
+              <img src="https://files.catbox.moe/2fmdy6.png" alt="Male" />
+              <span>Male</span>
+            </button>
+          </div>
+          <div class="cat action">
+            <button class="gender-btn" data-gender="Female">
+              <img src="https://files.catbox.moe/lu4jfs.png" alt="Female" />
+              <span>Female</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-   <div class="action-container">
-     <div class="cat action">
-       <button class="gender-btn" data-gender="Male">
-         <img src="https://files.catbox.moe/2fmdy6.png" alt="Male"/>
-         <span>Male</span>
-       </button>
-     </div>
-     <div class="cat action">
-       <button class="gender-btn" data-gender="Female">
-         <img src="https://files.catbox.moe/lu4jfs.png" alt="Female"/>
-         <span>Female</span>
-       </button>
-     </div>
-   </div>
- </div>
-</div>
+    <script>
+      const eventName = "first_party_data";
 
-<script>
- const eventName = "first_party_data";
+      window.onload = () => {
+        document.getElementById("myPopup").classList.add("show");
+      };
 
- window.onload = () => {
-   document.getElementById("myPopup").classList.add("show");
- };
+      document.getElementById("closeBtn").addEventListener("click", () => {
+        document.getElementById("myPopup").classList.remove("show");
 
- document.getElementById("closeBtn").addEventListener("click", () => {
-   document.getElementById("myPopup").classList.remove("show");
+        if (window.CleverTap) {
+          CleverTap.dismissInAppNotification();
+        }
+        closePopupFn();
+      });
 
-   if (window.CleverTap) {
-       CleverTap.dismissInAppNotification();
-     }
-     closePopupFn();
- });
+      document.querySelectorAll(".gender-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".gender-btn")
+            .forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          const selectedGender1 = btn.getAttribute("data-gender");
 
- document.querySelectorAll(".gender-btn").forEach(btn => {
-   btn.addEventListener("click", () => {
-     document.querySelectorAll(".gender-btn").forEach(b => b.classList.remove("selected"));
-     btn.classList.add("selected");
-     const selectedGender1 =  btn.getAttribute("data-gender")
-   
-     const props1 = {
-       Gender : selectedGender1
-     }
-     
-     console.log("Selected Gender:", selectedGender1);
-     if (window.CleverTap) {
-       CleverTap.pushEvent(eventName, JSON.stringify(props1) );
-       CleverTap.pushProfile(JSON.stringify(props1));          
+          const props1 = {
+            Gender: selectedGender1,
+          };
 
-     }
+          console.log("Selected Gender:", selectedGender1);
+          if (window.CleverTap) {
+            CleverTap.pushEvent(eventName, JSON.stringify(props1));
+            CleverTap.pushProfile(JSON.stringify(props1));
+          }
 
-     if (window.CleverTap) {
-       CleverTap.dismissInAppNotification();
-     }
+          if (window.CleverTap) {
+            CleverTap.dismissInAppNotification();
+          }
 
+          const props = { Gender: selectedGender1 };
+          const message = { action: "profilePush", properties: props };
+          if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.clevertap
+          ) {
+            window.webkit.messageHandlers.clevertap.postMessage(message);
+          }
 
+          var eventprops = { Gender: selectedGender1 };
+          var eventmessage = {
+            action: "recordEventWithProps",
+            event: "first_party_data",
+            properties: eventprops,
+          };
+          if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.clevertap
+          ) {
+            window.webkit.messageHandlers.clevertap.postMessage(eventmessage);
+          }
 
-       const props = { Gender: selectedGender1};
-       const message = { action:'profilePush', properties: props };
-       if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
-       window.webkit.messageHandlers.clevertap.postMessage(message);
-       }
+          //  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
+          //    window.webkit.messageHandlers.clevertap.postMessage(message);
+          //  }
 
-       var eventprops = {Gender: selectedGender1};
-       var eventmessage = { action:'recordEventWithProps', event:'first_party_data', properties: eventprops};
-       if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
-         window.webkit.messageHandlers.clevertap.postMessage(eventmessage);
-       }
+          // Close the in-app message
+          var closeMsg = { action: "close" };
+          if (
+            window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.clevertap
+          ) {
+            window.webkit.messageHandlers.clevertap.postMessage(closeMsg);
+          }
 
-
-
-   //  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
-   //    window.webkit.messageHandlers.clevertap.postMessage(message);
-   //  }
-
-    // Close the in-app message
-    var closeMsg = { action: "close" };
-    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap) {
-      window.webkit.messageHandlers.clevertap.postMessage(closeMsg);
-    }
-
-    closePopupFn();
-
-
-
-
-
-
-   });
- });
- function closePopupFn() {
-     document.location.href = "wzrk://thisleadstonowhere";
-   }
-
-
-</script>
-
-</body>
+          closePopupFn();
+        });
+      });
+      function closePopupFn() {
+        document.location.href = "wzrk://thisleadstonowhere";
+      }
+    </script>
+  </body>
 </html>

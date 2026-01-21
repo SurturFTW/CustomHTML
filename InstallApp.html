@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code App Install Banner</title>
+  </head>
+  <body>
+    <style>
+      /* General Reset */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* --- QR Code Banner for CleverTap Box Template --- */
+      .qr-banner {
+        position: relative;
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+
+        /* Deep Red Gradient Background */
+        background-color: #a71919;
+        background-image: linear-gradient(180deg, #b01a1a 0%, #961515 100%);
+        color: white;
+
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+        /* Layout */
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        min-height: 240px;
+      }
+
+      /* Banner Content */
+      .qr-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+      }
+
+      /* Text Section */
+      .qr-text-section {
+        text-align: center;
+      }
+
+      .qr-headline {
+        font-size: 18px;
+        font-weight: 800;
+        text-transform: uppercase;
+        line-height: 1.2;
+        margin-bottom: 4px;
+        letter-spacing: -0.3px;
+      }
+
+      .qr-subtext {
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.95;
+        line-height: 1.3;
+      }
+
+      /* QR Code Container */
+      .qr-code-container {
+        background-color: white;
+        padding: 8px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: 8px 0;
+      }
+
+      .qr-code-container img {
+        display: block;
+        width: 100px;
+        height: 100px;
+      }
+
+      /* App Store Links */
+      .app-links {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .app-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        background-color: white;
+        color: #8f1313;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        box-shadow: 0 2px 0 #cfcfcf;
+        transition: transform 0.1s, box-shadow 0.1s;
+        flex: 1;
+        min-width: 60px;
+      }
+
+      .app-link:hover {
+        background-color: #f9f9f9;
+      }
+
+      .app-link:active {
+        transform: translateY(2px);
+        box-shadow: 0 0px 0 #cfcfcf;
+      }
+
+      /* Close Button - adjusted for CleverTap */
+      .qr-close-btn {
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        opacity: 0.9;
+        padding: 6px;
+        line-height: 1;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .qr-close-btn:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      /* Compact version for smaller CleverTap templates */
+      @media (max-width: 350px) {
+        .qr-banner {
+          padding: 12px;
+          min-height: 250px;
+        }
+
+        .qr-headline {
+          font-size: 16px;
+        }
+
+        .qr-subtext {
+          font-size: 13px;
+        }
+
+        .qr-code-container img {
+          width: 80px;
+          height: 80px;
+        }
+
+        .app-link {
+          font-size: 11px;
+          padding: 6px 12px;
+        }
+      }
+    </style>
+
+    <!-- QR Code Banner optimized for CleverTap Box Template -->
+    <div class="qr-banner" id="qrCodeBanner">
+      <div class="qr-content">
+        <!-- Text Section -->
+        <div class="qr-text-section">
+          <div class="qr-headline">Download Our App</div>
+          <div class="qr-subtext">
+            Scan QR code to install<br />BS Digital App
+          </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-code-container">
+          <!-- Replace this with your actual QR code image -->
+          <img
+            src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iNDAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjcwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSIxMCIgeT0iNDAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iNDAiIHk9IjQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjcwIiB5PSI0MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSIxMCIgeT0iNzAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iNDAiIHk9IjcwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjcwIiB5PSI3MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4="
+            alt="QR Code for App Download"
+          />
+        </div>
+
+        <!-- App Store Links -->
+        <div class="app-links">
+          <a
+            href="https://apps.apple.com/by/app/business-standard-stocks-news/id581918934"
+            class="app-link"
+            target="_blank"
+            >📱 iOS</a
+          >
+          <a
+            href="https://play.google.com/store/apps/details?id=com.businessstandard.bs&hl=en_IN"
+            class="app-link"
+            target="_blank"
+            >🤖 Android</a
+          >
+        </div>
+      </div>
+
+      <!-- Close Button -->
+      <button
+        class="qr-close-btn"
+        onclick="document.getElementById('qrCodeBanner').style.display='none';"
+        title="Close"
+      >
+        x
+      </button>
+    </div>
+
+    <script>
+      // CleverTap specific tracking (add your CleverTap events here)
+      function trackQRScan() {
+        // Add CleverTap event tracking for QR scan
+        console.log("QR Code viewed");
+      }
+
+      function trackAppStoreClick(platform) {
+        // Add CleverTap event tracking for app store clicks
+        console.log("App store clicked:", platform);
+      }
+
+      // Initialize tracking
+      document.addEventListener("DOMContentLoaded", function () {
+        trackQRScan();
+
+        // Add click tracking to app links
+        document.querySelectorAll(".app-link").forEach((link, index) => {
+          link.addEventListener("click", function () {
+            const platform = index === 0 ? "iOS" : "Android";
+            trackAppStoreClick(platform);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

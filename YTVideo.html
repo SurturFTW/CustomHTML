@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resizable Movable Video PIP</title>
+<!-- USERS: JUST CHANGE THIS URL TO YOUR VIDEO LINK -->
+
+<script>
+var videoURL = "https://www.youtube.com/watch?v=Mdi5_PYFezU";
+var websiteLink = "";
+var needRedirection = false; // Change this to true if redirection is needed
+var needFullscreen = "Not Required"; // Change this to "Required" if fullscreen button is needed
+var needPlayback = "Disable";  // Change this to "Enable" if playback button is needed
+</script>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  background: transparent; 
+  color: #fff; 
+  height: 100vh; 
+  overflow: hidden; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+.video-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 290px; /* Base size, will adjust based on video */
+  height: auto; /* Height will be determined by aspect ratio */
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  touch-action: none;
+  z-index: 1000;
+  min-width: 120px;
+  min-height: 67.5px;  /* 16:9 minimum height */
+}
+video, iframe { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain; /* This preserves aspect ratio */
+  border: none;
+  background: #000;
+}
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1001;
+}
+.loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid #fff;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.mute-btn, .new-btn {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 5px;
+  border: none;
+  cursor: pointer;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+}
+#close-image { height: 17px; width: 17px; }
+.mute-btn { top: 8px; left: 10px; }
+.new-btn { top: 8px; right: 10px; }
+.mute-btn img, .new-btn img { width: 20px; height: 20px; }
+.mute-btn:focus, .new-btn:focus { outline: none; }
+.resize-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize;
+  z-index: 1001;
+}
+.resize-handle::before {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 15px;
+  height: 15px;
+  border-right: 3px solid rgba(255, 255, 255, 0.7);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.7);
+}
+.fullscreen-btn {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+  bottom: 8px;
+  left: 10px;
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.fullscreen-btn img {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.fullscreen-btn.fullscreen img {
+  transform: rotate(180deg) scale(1.2);
+}
+
+.video-container.fullscreen {
+  position: fixed !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transform: none !important;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.video-container.fullscreen #video-wrapper {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  position: relative;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  margin: auto;
+  transition: all 0.5s ease;
+}
+
+.video-container.fullscreen video,
+.video-container.fullscreen iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Fullscreen transition animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.9); }
+}
+
+.video-container #video-wrapper {
+  transition: all 0.1s ease-in-out;  /* Changed from 0.3s */
+}
+
+.video-container.entering-fullscreen #video-wrapper {
+  animation: fadeIn 0.3s ease-in-out forwards;  /* Keep entry animation at 0.3s */
+}
+
+.video-container.exiting-fullscreen #video-wrapper {
+  animation: fadeOut 0.1s ease-in-out forwards;  /* Changed from 0.3s */
+}
+
+.playback-btn {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);  /* Match other buttons */
+  padding: 20px;  /* Adjusted padding */
+  border: none;
+  cursor: pointer;
+  border-radius: 100px;
+  display: flex;  /* Changed from 'none' to always be flex */
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+  opacity: 0;
+  width: 45px;   /* Increased width */
+  height: 45px;  /* Increased height */
+  -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on mobile */
+  touch-action: manipulation; /* Optimize for touch */
+  touch-action: none;  /* Prevent any default touch actions */
+  pointer-events: auto;  /* Ensure touch events work */
+  will-change: transform, opacity;  /* Optimize for animations */
+}
+
+.playback-btn:hover {
+}
+
+.video-container:hover .playback-btn {
+  opacity: 1;
+}
+
+.playback-btn img {
+  width: 30px;   /* Increased from 20px */
+  height: 30px;  /* Increased from 20px */
+  opacity: 1;  /* Keep full opacity */
+  /* Removing the filter that was making it white */
+}
+
+.playback-btn.video-paused {
+  opacity: 1;
+  display: flex;
+  background: rgba(255, 255, 255, 0.3);  /* Ensure consistent background when paused */
+}
+
+.video-container.fullscreen .playback-btn {
+  opacity: 0;
+  z-index: 1003;
+  transform: translate(-50%, -50%) scale(2);
+  display: flex;  /* Always keep display flex */
+  width: 60px;    /* Larger size for fullscreen */
+  height: 60px;
+}
+
+.video-container.fullscreen .playback-btn img {
+  width: 40px;    /* Larger icon for fullscreen */
+  height: 40px;
+}
+
+.video-container.fullscreen:hover .playback-btn {
+  opacity: 1;
+}
+
+.video-container.fullscreen .playback-btn.video-paused {
+  opacity: 1;
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .playback-btn {
+    transform: translate(-50%, -50%) scale(1.2);  /* Slightly larger on mobile */
+  }
+  
+  .video-container.fullscreen .playback-btn {
+    transform: translate(-50%, -50%) scale(2.5);  /* Even larger in fullscreen */
+  }
+}
+</style>
+</head>
+<body>
+<div class="video-container" id="video-container">
+  <div id="loading" class="loading">
+    <div class="loading-spinner"></div>
+  </div>
+  <div id="video-wrapper"></div>
+  <button id="mute-btn" class="mute-btn">
+    <img id="mute-icon" src="https://cdn-icons-png.flaticon.com/512/5949/5949045.png" alt="Mute">
+  </button>
+  <button id="new-btn" class="new-btn" onclick="close_btn()">
+    <img id="close-image" src="https://cdn-icons-png.flaticon.com/512/665/665304.png" alt="New Button">
+  </button>
+  <button id="fullscreen-btn" class="fullscreen-btn">
+    <img id="fullscreen-icon" src="https://cdn-icons-png.flaticon.com/512/3354/3354155.png" alt="Fullscreen">
+  </button>
+  <button id="playback-btn" class="playback-btn">
+    <img id="playback-icon" src="https://inapp-asset.s3.ap-south-1.amazonaws.com/assets_media/dynamicPIP_play-circle.png" alt="Play/Pause">
+  </button>
+  <div id="resize-handle" class="resize-handle"></div>
+
+<script>
+const videoContainer = document.getElementById('video-container');
+const videoWrapper = document.getElementById('video-wrapper');
+const muteBtn = document.getElementById('mute-btn');
+const muteIcon = document.getElementById('mute-icon');
+const newBtn = document.getElementById('new-btn');
+const resizeHandle = document.getElementById('resize-handle');
+const loading = document.getElementById('loading');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const fullscreenIcon = document.getElementById('fullscreen-icon');
+
+const muteImage = "https://cdn-icons-png.flaticon.com/512/5949/5949045.png"; // Mute icon
+const unmuteImage = "https://cdn-icons-png.flaticon.com/512/1705/1705050.png"; // Unmute icon
+const fullscreenImage = "https://cdn-icons-png.flaticon.com/512/3354/3354155.png"; // Original fullscreen icon
+const minimizeImage = "https://cdn-icons-png.flaticon.com/512/3502/3502504.png"; // New minimize icon
+
+let videoElement = null;
+let isMuted = true;
+let originalAspectRatio = 16/9; // Default aspect ratio (will be updated when video loads)
+let isClick = false; // Flag to distinguish between click and drag
+let isFullscreen = false;
+const playbackBtn = document.getElementById('playback-btn');
+const playbackIcon = document.getElementById('playback-icon');
+let isPlaying = true;
+
+// Function to detect the device
+function detectDevice() {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  
+  // Check if Android
+  if (/android/i.test(userAgent)) {
+    return 'android';
+  }
+  
+  // Check if iOS
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    return 'ios';
+  }
+  
+  // If not Android or iOS, assume web
+  return 'web';
+}
+
+// Function to redirect based on device
+function redirectBasedOnDevice() {
+  // Only redirect if needRedirection is true
+  
+  if (needRedirection) {
+    const device = detectDevice();
+    
+    if (device === 'android') {
+      window.location.href = websiteLink;
+    } else if (device === 'ios') {
+      window.location.href = websiteLink;
+    } else {
+      window.location.href = websiteLink;
+    }
+  } else {
+    console.log("No redirection needed");
+  }
+}
+
+// Function to detect video type and load accordingly
+function loadVideo(url) {
+  // Show loading indicator
+  loading.style.display = 'flex';
+  
+  // Clear previous content
+  videoWrapper.innerHTML = '';
+  
+  // Check if it's a YouTube link
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const videoId = extractYouTubeId(url);
+    if (videoId) {
+      // For YouTube, we need to fetch video info to get aspect ratio
+      // Since we can't directly access YouTube API here, we'll use a default 16:9 ratio
+      originalAspectRatio = 16/9;
+      
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&enablejsapi=1`;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.id = "video";
+      
+      videoWrapper.appendChild(iframe);
+      videoElement = iframe;
+      
+      // Update container size based on aspect ratio
+      updateContainerSize(originalAspectRatio);
+      
+      // Hide loading after a short delay
+      setTimeout(() => {
+        loading.style.display = 'none';
+      }, 1000);
+      
+      return;
+    }
+  }
+  
+  // For direct video URLs
+  const video = document.createElement('video');
+  video.autoplay = true;
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.id = "video";
+  
+  // Function to handle video metadata loaded
+  video.addEventListener('loadedmetadata', () => {
+    // Get the natural aspect ratio of the video
+    originalAspectRatio = video.videoWidth / video.videoHeight;
+    
+    // Update container size based on video's natural aspect ratio
+    updateContainerSize(originalAspectRatio);
+    
+    loading.style.display = 'none';
+  });
+
+  // Add play event listener to handle initial playback button state
+  video.addEventListener('play', () => {
+    if (isPlaying) {
+      playbackBtn.classList.remove('video-paused');
+      playbackBtn.style.opacity = '0';
+    }
+  });
+  
+  // Try to detect if URL is a direct video file
+  const source = document.createElement('source');
+  source.src = url;
+  
+  // Set proper MIME type if detected from URL
+  if (url.match(/\.(mp4)$/i)) {
+    source.type = "video/mp4";
+  } else if (url.match(/\.(webm)$/i)) {
+    source.type = "video/webm";
+  } else if (url.match(/\.(ogg|ogv)$/i)) {
+    source.type = "video/ogg";
+  }
+  
+  video.appendChild(source);
+  videoWrapper.appendChild(video);
+  videoElement = video;
+  
+  // Handle video loading error
+  video.addEventListener('error', () => {
+    console.error("Video failed to load:", url);
+    // If error, load the default video
+    video.innerHTML = '';
+    const fallbackSource = document.createElement('source');
+    fallbackSource.src = "https://inapp-asset.s3.ap-south-1.amazonaws.com/assets_media/dynamic_PIP_video.mp4";
+    fallbackSource.type = "video/mp4";
+    video.appendChild(fallbackSource);
+    video.load();
+  });
+}
+
+// Function to update container size based on aspect ratio
+function updateContainerSize(aspectRatio) {
+  originalAspectRatio = aspectRatio;
+  
+  // Determine initial size based on aspect ratio
+  let initialWidth, initialHeight;
+  
+  if (aspectRatio >= 1) {
+    // Landscape video
+    initialWidth = 220;
+    initialHeight = initialWidth / aspectRatio;
+  } else {
+    // Portrait video
+    initialHeight = 220;
+    initialWidth = initialHeight * aspectRatio;
+  }
+  
+  // Apply the new dimensions
+  videoContainer.style.width = `${initialWidth}px`;
+  videoContainer.style.height = `${initialHeight}px`;
+}
+
+// Extract YouTube video ID from various YouTube URL formats
+function extractYouTubeId(url) {
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[7].length === 11) ? match[7] : null;
+}
+
+// Handle mute button click
+muteBtn.addEventListener('click', (event) => {
+  event.stopPropagation(); // Prevent click from affecting dragging
+  
+  isMuted = !isMuted;
+  muteIcon.src = isMuted ? muteImage : unmuteImage;
+  
+  if (videoElement) {
+    if (videoElement.tagName === 'VIDEO') {
+      videoElement.muted = isMuted;
+    } else if (videoElement.tagName === 'IFRAME') {
+      // For YouTube iframes
+      try {
+        const message = isMuted ? 'mute' : 'unmute';
+        videoElement.contentWindow.postMessage(`{"event":"command","func":"${message}","args":""}`, '*');
+      } catch (e) {
+        console.error('Could not mute/unmute iframe:', e);
+      }
+    }
+  }
+});
+
+// Prevent new button from triggering dragging
+newBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+});
+
+// ----- DRAGGING FUNCTIONALITY -----
+let isDragging = false;
+let offsetX = 0, offsetY = 0;
+let startDragTime = 0;
+
+// Desktop Dragging
+videoContainer.addEventListener('mousedown', (e) => {
+  // Ignore if the click is on buttons or resize handle
+  if (e.target === muteBtn || e.target === muteIcon || e.target === newBtn || 
+      e.target === document.getElementById('close-image') || e.target === resizeHandle) {
+    return;
+  }
+  
+  isDragging = true;
+  isClick = true;
+  startDragTime = Date.now();
+  offsetX = e.clientX - videoContainer.getBoundingClientRect().left;
+  offsetY = e.clientY - videoContainer.getBoundingClientRect().top;
+  videoContainer.style.cursor = "grabbing";
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    // If the mouse has moved more than a small threshold, it's not a click
+    if (isClick && (Math.abs(e.clientX - (videoContainer.getBoundingClientRect().left + offsetX)) > 5 || 
+                    Math.abs(e.clientY - (videoContainer.getBoundingClientRect().top + offsetY)) > 5)) {
+      isClick = false;
+    }
+    
+    const x = Math.min(window.innerWidth - videoContainer.offsetWidth, Math.max(0, e.clientX - offsetX));
+    const y = Math.min(window.innerHeight - videoContainer.offsetHeight, Math.max(0, e.clientY - offsetY));
+    
+    videoContainer.style.right = 'auto';
+    videoContainer.style.bottom = 'auto';
+    videoContainer.style.left = `${x}px`;
+    videoContainer.style.top = `${y}px`;
+  }
+});
+
+document.addEventListener('mouseup', (e) => {
+  // Consider it a click if the mouse was down for less than 200ms and didn't move much
+  if (isDragging && isClick && (Date.now() - startDragTime < 200)) {
+    // Ignore if the click was on buttons or resize handle
+    if (e.target !== muteBtn && e.target !== muteIcon && 
+        e.target !== newBtn && e.target !== document.getElementById('close-image') && 
+        e.target !== resizeHandle && e.target !== playbackBtn && 
+        e.target !== document.getElementById('playback-icon')) {
+      
+      if (needRedirection) {
+        redirectBasedOnDevice();
+      } else if (needPlayback === "Enable") {
+        // Toggle play/pause
+        isPlaying = !isPlaying;
+        if (videoElement) {
+          if (isPlaying) {
+            if (videoElement.tagName === 'VIDEO') {
+              videoElement.play();
+            } else if (videoElement.tagName === 'IFRAME') {
+              videoElement.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            }
+            playbackBtn.classList.remove('video-paused');
+            playbackBtn.style.opacity = '0';
+          } else {
+            if (videoElement.tagName === 'VIDEO') {
+              videoElement.pause();
+            } else if (videoElement.tagName === 'IFRAME') {
+              videoElement.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+            playbackBtn.classList.add('video-paused');
+            playbackBtn.style.opacity = '1';
+          }
+        }
+      }
+    }
+  }
+  
+  isDragging = false;
+  isClick = false;
+  videoContainer.style.cursor = "grab";
+});
+
+// Mobile Dragging
+let touchStartTime = 0;
+let touchStartX = 0, touchStartY = 0;
+
+videoContainer.addEventListener('touchstart', (e) => {
+  // Ignore if the touch is on buttons or resize handle
+  if (e.target === muteBtn || e.target === muteIcon || e.target === newBtn || 
+      e.target === document.getElementById('close-image') || e.target === resizeHandle) {
+    return;
+  }
+  
+  isDragging = true;
+  isClick = true;
+  touchStartTime = Date.now();
+  const touch = e.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  offsetX = touch.clientX - videoContainer.getBoundingClientRect().left;
+  offsetY = touch.clientY - videoContainer.getBoundingClientRect().top;
+  
+  // Prevent default to avoid scrolling while dragging
+  e.preventDefault();
+});
+
+document.addEventListener('touchmove', (e) => {
+  if (isDragging) {
+    const touch = e.touches[0];
+    
+    // If the touch has moved more than a small threshold, it's not a tap
+    if (isClick && (Math.abs(touch.clientX - touchStartX) > 10 || 
+                    Math.abs(touch.clientY - touchStartY) > 10)) {
+      isClick = false;
+    }
+    
+    const x = Math.min(window.innerWidth - videoContainer.offsetWidth, Math.max(0, touch.clientX - offsetX));
+    const y = Math.min(window.innerHeight - videoContainer.offsetHeight, Math.max(0, touch.clientY - offsetY));
+    
+    videoContainer.style.right = 'auto';
+    videoContainer.style.bottom = 'auto';
+    videoContainer.style.left = `${x}px`;
+    videoContainer.style.top = `${y}px`;
+    
+    // Prevent default to avoid scrolling while dragging
+    e.preventDefault();
+  }
+});
+
+document.addEventListener('touchend', (e) => {
+  // Consider it a tap if the touch was active for less than 200ms and didn't move much
+  if (isDragging && isClick && (Date.now() - touchStartTime < 200)) {
+    // Check if the target is not a button or resize handle
+    if (e.target !== muteBtn && e.target !== muteIcon && 
+        e.target !== newBtn && e.target !== document.getElementById('close-image') && 
+        e.target !== resizeHandle && e.target !== playbackBtn && 
+        e.target !== document.getElementById('playback-icon')) {
+      
+      if (needRedirection) {
+        redirectBasedOnDevice();
+      } else if (needPlayback === "Enable") {
+        // Toggle play/pause
+        isPlaying = !isPlaying;
+        if (videoElement) {
+          if (isPlaying) {
+            if (videoElement.tagName === 'VIDEO') {
+              videoElement.play();
+            } else if (videoElement.tagName === 'IFRAME') {
+              videoElement.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            }
+            playbackBtn.classList.remove('video-paused');
+            playbackBtn.style.opacity = '0';
+          } else {
+            if (videoElement.tagName === 'VIDEO') {
+              videoElement.pause();
+            } else if (videoElement.tagName === 'IFRAME') {
+              videoElement.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+            playbackBtn.classList.add('video-paused');
+            playbackBtn.style.opacity = '1';
+          }
+        }
+      }
+    }
+  }
+  
+  isDragging = false;
+  isClick = false;
+});
+
+// ----- RESIZING FUNCTIONALITY -----
+let isResizing = false;
+let originalWidth, originalHeight, originalX, originalY;
+let startX, startY;
+
+// Desktop Resizing
+resizeHandle.addEventListener('mousedown', (e) => {
+  isResizing = true;
+  e.stopPropagation(); // Prevent dragging when resizing
+  
+  originalWidth = videoContainer.offsetWidth;
+  originalHeight = videoContainer.offsetHeight;
+  originalX = videoContainer.getBoundingClientRect().left;
+  originalY = videoContainer.getBoundingClientRect().top;
+  startX = e.clientX;
+  startY = e.clientY;
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isResizing) {
+    // Calculate new width based on mouse position
+    const width = Math.max(120, originalWidth + (e.clientX - startX));
+    
+    // Calculate height based on original aspect ratio
+    const height = width / originalAspectRatio;
+    
+    videoContainer.style.width = `${width}px`;
+    videoContainer.style.height = `${height}px`;
+    
+    // Ensure it doesn't go off-screen
+    const right = window.innerWidth - (originalX + width);
+    const bottom = window.innerHeight - (originalY + height);
+    
+    if (right < 0) {
+      const adjustedWidth = window.innerWidth - originalX;
+      videoContainer.style.width = `${adjustedWidth}px`;
+      videoContainer.style.height = `${adjustedWidth / originalAspectRatio}px`;
+    }
+    
+    if (bottom < 0) {
+      const adjustedHeight = window.innerHeight - originalY;
+      videoContainer.style.height = `${adjustedHeight}px`;
+      videoContainer.style.width = `${adjustedHeight * originalAspectRatio}px`;
+    }
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  isResizing = false;
+});
+
+// Mobile Resizing
+resizeHandle.addEventListener('touchstart', (e) => {
+  isResizing = true;
+  e.stopPropagation(); // Prevent dragging when resizing
+  
+  const touch = e.touches[0];
+  originalWidth = videoContainer.offsetWidth;
+  originalHeight = videoContainer.offsetHeight;
+  originalX = videoContainer.getBoundingClientRect().left;
+  originalY = videoContainer.getBoundingClientRect().top;
+  startX = touch.clientX;
+  startY = touch.clientY;
+  
+  e.preventDefault(); // Prevent other touch events
+});
+
+document.addEventListener('touchmove', (e) => {
+  if (isResizing) {
+    const touch = e.touches[0];
+    
+    // Calculate new width based on touch position
+    const width = Math.max(120, originalWidth + (touch.clientX - startX));
+    
+    // Calculate height based on original aspect ratio
+    const height = width / originalAspectRatio;
+    
+    videoContainer.style.width = `${width}px`;
+    videoContainer.style.height = `${height}px`;
+    
+    // Ensure it doesn't go off-screen
+    const right = window.innerWidth - (originalX + width);
+    const bottom = window.innerHeight - (originalY + height);
+    
+    if (right < 0) {
+      const adjustedWidth = window.innerWidth - originalX;
+      videoContainer.style.width = `${adjustedWidth}px`;
+      videoContainer.style.height = `${adjustedWidth / originalAspectRatio}px`;
+    }
+    
+    if (bottom < 0) {
+      const adjustedHeight = window.innerHeight - originalY;
+      videoContainer.style.height = `${adjustedHeight}px`;
+      videoContainer.style.width = `${adjustedHeight * originalAspectRatio}px`;
+    }
+    
+    e.preventDefault(); // Prevent scrolling while resizing
+  }
+});
+
+document.addEventListener('touchend', () => {
+  isResizing = false;
+});
+
+fullscreenBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  
+  isFullscreen = !isFullscreen;
+  
+  if (isFullscreen) {
+    videoContainer.classList.add('entering-fullscreen');
+    videoContainer.classList.add('fullscreen');
+    fullscreenIcon.src = minimizeImage;
+    
+    // Reset any lingering transforms before applying fullscreen scale
+    playbackBtn.style.transform = '';
+    requestAnimationFrame(() => {
+      playbackBtn.style.transform = 'translate(-50%, -50%) scale(2)';
+    });
+
+    // Handle playback button in fullscreen
+    if (isPlaying) {
+      playbackBtn.classList.remove('video-paused');
+      setTimeout(() => {
+        if (isPlaying) playbackBtn.style.opacity = '0';
+      }, 500);
+    } else {
+      playbackBtn.classList.add('video-paused');
+      playbackBtn.style.opacity = '1';
+    }
+    
+    // Move playback button to video wrapper
+    videoWrapper.appendChild(playbackBtn);
+    
+    // Save current dimensions
+    videoContainer.dataset.prevWidth = videoContainer.style.width;
+    videoContainer.dataset.prevHeight = videoContainer.style.height;
+    videoContainer.dataset.prevLeft = videoContainer.style.left;
+    videoContainer.dataset.prevTop = videoContainer.style.top;
+    resizeHandle.style.display = 'none';
+    
+    // Calculate dimensions for video wrapper
+    const screenWidth = window.innerWidth * 0.99;
+    const screenHeight = window.innerHeight * 0.99;
+    let newWidth, newHeight;
+    
+    if (screenWidth / screenHeight > originalAspectRatio) {
+      newHeight = screenHeight;
+      newWidth = screenHeight * originalAspectRatio;
+    } else {
+      newWidth = screenWidth;
+      newHeight = screenWidth / originalAspectRatio;
+    }
+    
+    // Apply dimensions to video wrapper
+    videoWrapper.style.width = `${newWidth}px`;
+    videoWrapper.style.height = `${newHeight}px`;
+    
+    // Move buttons inside video wrapper and position them at corners
+    videoWrapper.appendChild(muteBtn);
+    videoWrapper.appendChild(newBtn);
+    videoWrapper.appendChild(fullscreenBtn);
+    
+    const margin = 10;
+    muteBtn.style.top = `${margin}px`;
+    muteBtn.style.left = `${margin}px`;
+    newBtn.style.top = `${margin}px`;
+    newBtn.style.right = `${margin}px`;
+    fullscreenBtn.style.bottom = `${margin}px`;
+    fullscreenBtn.style.left = `${margin}px`;
+  } else {
+    videoContainer.classList.add('exiting-fullscreen');
+    videoContainer.classList.remove('entering-fullscreen');
+    fullscreenIcon.src = fullscreenImage;
+    
+    const wasPlaying = isPlaying;
+    const wasPaused = playbackBtn.classList.contains('video-paused');
+    
+    // Reset transforms before normal mode
+    playbackBtn.style.transform = '';
+    requestAnimationFrame(() => {
+      playbackBtn.style.transform = 'translate(-50%, -50%)';
+    });
+
+    setTimeout(() => {
+      videoContainer.classList.remove('fullscreen');
+      videoContainer.classList.remove('exiting-fullscreen');
+      
+      // Ensure fullscreen button is visible and properly styled
+      fullscreenBtn.style.display = 'flex';
+      fullscreenBtn.style.opacity = '1';
+      
+      // Reset and reattach playback button
+      playbackBtn.style.transform = '';
+      videoContainer.appendChild(playbackBtn);
+      
+      // Force proper display state
+      requestAnimationFrame(() => {
+          playbackBtn.style.display = 'flex';
+          playbackBtn.style.opacity = wasPaused ? '1' : '0';
+          
+          if (wasPaused) {
+              playbackBtn.classList.add('video-paused');
+          } else {
+              playbackBtn.classList.remove('video-paused');
+              // Show briefly then hide if playing
+              if (wasPlaying) {
+                  playbackBtn.style.opacity = '1';
+                  setTimeout(() => {
+                      if (isPlaying) playbackBtn.style.opacity = '0';
+                  }, 1500); // Longer visibility on mobile
+              }
+          }
+      });
+      
+      // Move buttons back in correct order
+      videoContainer.appendChild(muteBtn);
+      videoContainer.appendChild(newBtn);
+      videoContainer.appendChild(fullscreenBtn);
+      videoContainer.appendChild(playbackBtn);
+
+      // Force reset playback button state
+      playbackBtn.style.transform = 'translate(-50%, -50%)';
+      playbackBtn.style.display = 'flex';
+      
+      if (!wasPlaying) {
+        playbackBtn.classList.add('video-paused');
+        playbackBtn.style.opacity = '1';
+      } else {
+        playbackBtn.classList.remove('video-paused');
+        // Show button briefly then fade out if playing
+        playbackBtn.style.opacity = '1';
+        setTimeout(() => {
+          if (isPlaying) {
+            playbackBtn.style.opacity = '0';
+          }
+        }, 1000);
+      }
+
+      // Restore previous dimensions and positions
+      videoContainer.style.width = videoContainer.dataset.prevWidth;
+      videoContainer.style.height = videoContainer.dataset.prevHeight;
+      videoContainer.style.left = videoContainer.dataset.prevLeft;
+      videoContainer.style.top = videoContainer.dataset.prevTop;
+      videoWrapper.style.width = '';
+      videoWrapper.style.height = '';
+      resizeHandle.style.display = 'block';
+
+      // Reset control positions
+      muteBtn.style.top = '8px';
+      muteBtn.style.left = '10px';
+      newBtn.style.top = '8px';
+      newBtn.style.right = '10px';
+      fullscreenBtn.style.bottom = '8px';
+      fullscreenBtn.style.left = '10px';
+    }, 100);
+  }
+  
+  fullscreenBtn.classList.toggle('fullscreen');
+});
+
+fullscreenBtn.addEventListener('mousedown', (event) => {
+  event.stopPropagation();
+});
+
+fullscreenBtn.addEventListener('touchstart', (event) => {
+  event.stopPropagation();
+});
+
+playbackBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  
+  isPlaying = !isPlaying;
+  
+  if (videoElement) {
+    if (isPlaying) {
+      if (videoElement.tagName === 'VIDEO') {
+        videoElement.play();
+      } else if (videoElement.tagName === 'IFRAME') {
+        videoElement.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      }
+      playbackBtn.classList.remove('video-paused');
+      // Hide button immediately when clicking play
+      playbackBtn.style.opacity = '0';
+    } else {
+      if (videoElement.tagName === 'VIDEO') {
+        videoElement.pause();
+      } else if (videoElement.tagName === 'IFRAME') {
+        videoElement.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      }
+      playbackBtn.classList.add('video-paused');
+      playbackBtn.style.opacity = '1';
+    }
+  }
+});
+
+// Add these event listeners after the existing playback button click handler
+playbackBtn.addEventListener('touchstart', (event) => {
+  event.preventDefault(); // Prevent default touch behavior
+  event.stopPropagation();
+}, { passive: false });
+
+playbackBtn.addEventListener('touchend', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  // Trigger playback toggle
+  isPlaying = !isPlaying;
+  
+  if (videoElement) {
+    if (videoElement.tagName === 'VIDEO') {
+      if (isPlaying) {
+        videoElement.play();
+        playbackBtn.classList.remove('video-paused');
+        // Hide button immediately on touch
+        playbackBtn.style.opacity = '0';
+      } else {
+        videoElement.pause();
+        playbackBtn.classList.add('video-paused');
+        playbackBtn.style.opacity = '1';
+      }
+    } else if (videoElement.tagName === 'IFRAME') {
+      try {
+        const action = isPlaying ? 'playVideo' : 'pauseVideo';
+        videoElement.contentWindow.postMessage(`{"event":"command","func":"${action}","args":""}`, '*');
+        if (isPlaying) {
+          playbackBtn.classList.remove('video-paused');
+        } else {
+          playbackBtn.classList.add('video-paused');
+        }
+      } catch (e) {
+        console.error('Could not control video playback:', e);
+      }
+    }
+  }
+}, { passive: false });
+
+// Update the button HTML
+document.getElementById('playback-icon').src = "https://inapp-asset.s3.ap-south-1.amazonaws.com/assets_media/dynamicPIP_playback.png";
+
+function close_btn() {
+  if (window.CleverTap) { 
+    // Send a message to Android native code to close WebView window
+    window.CleverTap.dismissInAppNotification(); 
+  } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.CleverTap) { 
+    window.location.href = 'wzrk://exit'; 
+  } else { 
+    window.location.href = "wzrk://thisleads";
+  }
+}
+
+// Initialize video from the single videoURL variable
+window.addEventListener('DOMContentLoaded', () => {
+  // Use the videoURL variable defined in the head
+  if (typeof videoURL !== 'undefined' && videoURL) {
+    loadVideo(videoURL);
+  } else {
+    // Default video if videoURL is not defined
+    loadVideo("https://inapp-asset.s3.ap-south-1.amazonaws.com/assets_media/dynamic_PIP_video.mp4");
+  }
+
+  // Update this block to handle string values
+  if (needFullscreen === "Required") {
+    requestAnimationFrame(() => {
+      fullscreenBtn.style.display = 'flex';
+      fullscreenBtn.style.opacity = '1';
+    });
+  } else {
+    fullscreenBtn.style.display = 'none';
+  }
+
+  // Add this block to handle playback button visibility
+  if (needPlayback === "Enable") {
+    playbackBtn.style.display = 'flex';
+    playbackBtn.style.opacity = '0'; // Start with button hidden
+  } else {
+    playbackBtn.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

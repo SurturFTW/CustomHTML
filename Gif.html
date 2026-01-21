@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fullscreen GIF with Auto Dismiss</title>
+    <style>
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        color: #333;
+        overflow: hidden;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .quiz-header {
+        text-align: center;
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .quiz-header img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Progress Bar */
+      .progress-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 8px;
+        background-color: #ffffff;
+        z-index: 10;
+        animation: progress 5s linear forwards; /* 5 second countdown */
+        border-radius: 0 4px 4px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      @keyframes progress {
+        0% {
+          width: 0%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      /* Fade out animation */
+      @keyframes fadeOut {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      /* Auto-dismiss class */
+      .auto-dismiss {
+        animation: fadeOut 1s forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="gifContainer" onclick="redirectUser()">
+      <div class="progress-bar"></div>
+      <div class="quiz-header">
+        <img
+          src="https://i.pinimg.com/originals/76/53/16/765316684f81c8ae099d7e8fed6ee5e0.gif"
+          alt="Match Time Loot"
+        />
+      </div>
+    </div>
+
+    <script>
+      function redirectUser() {
+        // Redirect immediately when clicked
+        window.location.href = "https://clevertap.com/"; // Replace with your URL
+      }
+
+      function autoDismiss() {
+        const container = document.getElementById("gifContainer");
+        container.classList.add("auto-dismiss");
+
+        // After fade out animation completes, dismiss the popup
+        setTimeout(function () {
+          window.location.href = "wzrk://exit"; // CleverTap dismiss command
+        }, 500); // Wait for fade out animation to complete
+      }
+
+      // Initialize auto-dismiss functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const progressBar = document.querySelector(".progress-bar");
+
+        // When progress bar animation ends, start auto-dismiss
+        progressBar.addEventListener("animationend", function () {
+          autoDismiss();
+        });
+      });
+    </script>
+  </body>
+</html>
