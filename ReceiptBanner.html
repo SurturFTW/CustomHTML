@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Standard CleverTap Banner</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* CleverTap Web Popup Styles */
+      .ct-banner-container {
+        font-family: "Inter", sans-serif;
+        background: #fff2f2;
+        border-left: 10px solid #9e1c1c;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        width: 100%;
+        max-width: 900px;
+        position: relative;
+        margin: 0 auto;
+      }
+
+      /* Logo */
+      .ct-logo {
+        width: 40px;
+        height: 40px;
+        margin-right: 16px;
+        flex-shrink: 0;
+      }
+
+      .ct-logo img {
+        height: 40px;
+        width: auto;
+        display: block;
+      }
+
+      /* Text Content */
+      .ct-text {
+        flex: 1;
+        line-height: 1.4;
+        margin-right: 12px;
+      }
+
+      .ct-headline {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f1f1f;
+        margin: 0;
+      }
+
+      .ct-subtext {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        margin-top: 4px;
+      }
+
+      .ct-highlight {
+        color: #9e1c1c;
+        font-weight: 700;
+      }
+
+      /* Timer */
+      .ct-timer {
+        display: flex;
+        gap: 8px;
+        margin-right: 16px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .ct-time-unit {
+        background: #fff;
+        border-radius: 6px;
+        padding: 6px 8px;
+        min-width: 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .ct-time-number {
+        font-size: 16px;
+        font-weight: 700;
+        color: #9e1c1c;
+        line-height: 1.1;
+      }
+
+      .ct-time-label {
+        font-size: 10px;
+        color: #555;
+        margin-top: 2px;
+      }
+
+      /* CTA Button */
+      .ct-cta {
+        background: #9e1c1c;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        white-space: nowrap;
+        flex-shrink: 0;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .ct-cta:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(158, 28, 28, 0.35);
+      }
+
+      /* Close Button */
+      .ct-close-btn {
+        position: absolute;
+        right: 12px;
+        top: 6px;
+        font-size: 18px;
+        cursor: pointer;
+        color: #9e1c1c;
+        background: none;
+        border: none;
+      }
+
+      @media (max-width: 768px) {
+        .ct-banner-container {
+          flex-wrap: wrap;
+          gap: 10px;
+          padding: 14px 16px;
+          margin: 10px;
+          max-width: calc(100% - 20px);
+        }
+
+        .ct-logo {
+          width: 40px;
+          height: 40px;
+          margin-right: 12px;
+        }
+
+        .ct-text {
+          flex: 1;
+          margin-right: 0;
+        }
+
+        .ct-headline {
+          font-size: 16px;
+        }
+
+        .ct-subtext {
+          font-size: 13px;
+        }
+
+        .ct-timer {
+          margin: 8px 0;
+          gap: 6px;
+          order: 3;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .ct-time-unit {
+          padding: 4px 6px;
+          min-width: 40px;
+        }
+
+        .ct-time-number {
+          font-size: 14px;
+        }
+
+        .ct-time-label {
+          font-size: 9px;
+        }
+
+        .ct-cta {
+          width: 100%;
+          text-align: center;
+          padding: 12px 18px;
+          font-size: 15px;
+          order: 4;
+        }
+
+        .ct-close-btn {
+          right: 8px;
+          top: 4px;
+          font-size: 20px;
+        }
+      }
+
+      /* For very small screens */
+      @media (max-width: 480px) {
+        .ct-banner-container {
+          padding: 12px 14px;
+          gap: 8px;
+        }
+
+        .ct-headline {
+          font-size: 15px;
+        }
+
+        .ct-subtext {
+          font-size: 12px;
+        }
+
+        .ct-timer {
+          gap: 4px;
+        }
+
+        .ct-time-unit {
+          padding: 3px 5px;
+          min-width: 35px;
+        }
+
+        .ct-time-number {
+          font-size: 13px;
+        }
+
+        .ct-time-label {
+          font-size: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Single CleverTap Banner -->
+    <div class="ct-banner-container" id="ctPromoBanner">
+      <button class="ct-close-btn" onclick="ctPromoBanner.remove()">×</button>
+
+      <!-- Logo -->
+      <div class="ct-logo">
+        <img
+          src="https://d17wxfn72dhxb.cloudfront.net/1712316416/assets/c10c9f0e7ca54cfcb5a5db6bd3a40861.png"
+          alt="Business Standard"
+          loading="lazy"
+        />
+      </div>
+
+      <!-- Text -->
+      <div class="ct-text">
+        <div class="ct-headline">Limited-period offer</div>
+        <div class="ct-subtext">
+          Subscribe to Business Standard digital at
+          <span class="ct-highlight">Rs. 0<sup>*</sup></span>
+        </div>
+      </div>
+
+      <!-- Timer -->
+      <div class="ct-timer">
+        <div class="ct-time-unit">
+          <span class="ct-time-number" id="days">00</span>
+          <span class="ct-time-label">Days</span>
+        </div>
+        <div class="ct-time-unit">
+          <span class="ct-time-number" id="hours">00</span>
+          <span class="ct-time-label">Hours</span>
+        </div>
+        <div class="ct-time-unit">
+          <span class="ct-time-number" id="minutes">00</span>
+          <span class="ct-time-label">Minutes</span>
+        </div>
+        <div class="ct-time-unit">
+          <span class="ct-time-number" id="seconds">00</span>
+          <span class="ct-time-label">Seconds</span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <a
+        href="https://www.business-standard.com/subscription-cart/product-offer"
+        target="_blank"
+        class="ct-cta"
+      >
+        Subscribe now
+      </a>
+    </div>
+
+    <script>
+      const targetDate = new Date(2026, 1, 3, 23, 59, 59);
+
+      function updateCountdown() {
+        const now = Date.now();
+        const diff = targetDate - now;
+        if (diff <= 0) ctPromoBanner.style.display = "none";
+
+        document.getElementById("days").textContent = String(
+          Math.floor(diff / 86400000),
+        ).padStart(2, "0");
+        document.getElementById("hours").textContent = String(
+          Math.floor((diff / 3600000) % 24),
+        ).padStart(2, "0");
+        document.getElementById("minutes").textContent = String(
+          Math.floor((diff / 60000) % 60),
+        ).padStart(2, "0");
+        document.getElementById("seconds").textContent = String(
+          Math.floor((diff / 1000) % 60),
+        ).padStart(2, "0");
+      }
+
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+    </script>
+  </body>
+</html>
