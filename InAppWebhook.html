@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- -------------------- Configurable Settings -------------------- -->
+    <script>
+      const CONFIG = {
+        // ❌ Whether to show the X button to close/dismiss the card (true = show, false = hide)
+        includeDismissButton: true,
+
+        // 🌈 Background color/gradient of the entire card
+        background:
+          "linear-gradient(180deg, #FF3672 0%, #8332F9 46.63%, #6708BC 84.62%, #4E15DD 100%)",
+
+        // 🎉 Whether to enable the confetti effect once the wheel stops
+        enableConfettiOnWin: true,
+
+        // 🕑 Spin duration in seconds
+        spinDurationSeconds: 5,
+
+        // 🔄 Spin button settings
+        spinButton: {
+          enabled: true,
+          text: "Spin Now",
+          background: "#ffffff",
+          color: "#1d1d1d",
+        },
+
+        // 🛍️ Claim button settings (shown after the spin, optional)
+        claimButton: {
+          enabled: true,
+          text: "Collect Now",
+          background: "#F4357D",
+          color: "#ffffff",
+          url: "wzkr://thisleadstonowhere",
+        },
+
+        // 🗣️ Main headline settings
+        mainTitle: {
+          text: "🎉 Spin the Wheel <br>& Win Big!",
+          fontSize: "24px",
+          color: "#ffffff",
+        },
+
+        // 💬 Subtitle/description settings
+        subtitle: {
+          text: "Your chance to score discounts, free gifts, and exclusive perks is just a spin away.",
+          fontSize: "14px",
+          color: "#e8f5ff",
+        },
+
+        // 📋 Copy instruction text settings
+        copyInstruction: {
+          color: "#606060",
+          copiedColor: "#F4357D",
+        },
+
+        // 🎯 Center circle settings
+        centerCircle: {
+          color: "#914DFF",
+          borderColor: "#2B2B2B33",
+          borderWidth: 2,
+          radius: 15,
+        },
+
+        // 🎁 List of possible rewards that can appear on the wheel
+        //   • title  – label shown at the top of the segment
+        //   • subtitle – description shown beneath the main reward (optional)
+        //   • text   – label shown in the wheel sector
+        //   • value  – coupon / code / identifier (copied on click)
+        //   • probability – chance of getting this reward (0.2 = 20%)
+        //   • colour – segment background colour
+        rewards: [
+          {
+            title: "Congrats! You just won a 50 Points!",
+            text: "50 Points",
+            value: "50",
+            subtitle:
+              "Use 50 Points at checkout and get 50 Off. Valid through April 30.",
+            probability: 0.15,
+            colour: "#ffffff",
+          },
+          {
+            title: "Congrats! You just won a 20 Points!",
+            text: "2000 Points",
+            value: "2000",
+            subtitle: "Use 200 Points at checkout and get 200 Off.",
+            probability: 0.15,
+            colour: "#fc2b46",
+          },
+          {
+            title: "Congrats! You just won a $5 Credit!",
+            text: "$5 Credit",
+            value: "150",
+            subtitle:
+              "Congratulations! $5 store credit will be applied to your account.",
+            probability: 0.15,
+            colour: "#ffffff",
+          },
+          {
+            title: "Congrats! You just won a Mystery Gift!",
+            text: "Mystery Gift",
+            value: "80",
+            subtitle: "A surprise gift will be sent with your next purchase!",
+            probability: 0.15,
+            colour: "#fc2b46",
+          },
+          {
+            title: "Congrats! You just won a Exclusive Code!",
+            text: "Exclusive Code",
+            value: "500",
+            subtitle: "Use EXCLUSIVE at checkout for a special offer.",
+            probability: 0.05,
+            colour: "#ffffff",
+          },
+          {
+            title: "Congrats! You just won a Jackpot!",
+            text: "Jackpot $100",
+            value: "10000",
+            subtitle: "You just won $100. We'll email you the details!",
+            probability: 0.05,
+            colour: "#fc2b46",
+          },
+        ],
+      };
+    </script>
+    <!-- -------------------- End of Configurable Settings -------------------- -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spin the Wheel – Win Big!</title>
+
+    <style>
+      :root {
+        --spin-duration: 1;
+
+        --shimmer-hue-1: 337deg;
+        --shimmer-hue-2: 337deg;
+      }
+
+      @property --mask {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 33deg;
+      }
+
+      @keyframes spin {
+        0% {
+          --mask: 0deg;
+        }
+
+        100% {
+          --mask: 360deg;
+        }
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      }
+
+      .modal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        max-height: 580px;
+        max-width: 320px;
+        padding: 0 5%;
+        justify-content: space-evenly;
+        width: 100%;
+        color: #ffffff;
+        text-align: center;
+        background: linear-gradient(180deg, #ff4ecd 0%, #8e2de2 100%);
+        border-radius: 36px;
+        position: relative;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .modal.reward {
+        background: #50346acc;
+        max-height: 455px;
+      }
+
+      .reward-title {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .title,
+      .reward-title {
+        margin-top: 30px;
+      }
+
+      /* Close button */
+      .close-btn {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        appearance: none;
+        border: 0;
+        background: none;
+        color: #ffffff;
+        font-size: 32px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      /* Headings */
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.45;
+        color: #e8f5ff;
+      }
+
+      /* Wheel container */
+      .wheel-container {
+        position: relative;
+        width: clamp(200px, min(260px, 45vh, 80vw), 260px);
+        height: clamp(200px, min(260px, 45vh, 80vw), 260px);
+        max-width: 260px;
+        max-height: 260px;
+        aspect-ratio: 1;
+        margin: 10px auto 0;
+      }
+
+      canvas#wheelCanvas {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 8px solid #1e3dd84d;
+        transform: rotate(0deg);
+        transition: transform calc(var(--spin-duration) * 1s)
+          cubic-bezier(0.01, 0.05, 0.05, 1);
+        box-sizing: border-box;
+      }
+
+      /* Pointer arrow */
+      .pointer {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-100%);
+        width: 24px;
+        height: 18px;
+        z-index: 2;
+      }
+
+      .pointer::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(0deg, #c68d07 0%, #ffd724 100%);
+        border: 2px solid #2b2b2b0d;
+        clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+        filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.2));
+      }
+
+      /* Reward display */
+      .reward-wrapper {
+        display: none;
+        width: 100%;
+        position: relative;
+        border-radius: 18px;
+        overflow: visible;
+      }
+
+      .reward-wrapper.visible {
+        display: block;
+      }
+
+      .reward-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 16px 0;
+        background: #ffffff;
+        color: #1d1d1d;
+        border-radius: 18px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
+      }
+
+      .reward-main {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .reward-subtext {
+        padding: 0 20px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .copy-instruction {
+        font-family:
+          "Proxima Nova",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          "Open Sans",
+          "Helvetica Neue",
+          sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 100%;
+        letter-spacing: 0%;
+        text-align: center;
+      }
+
+      .copy-btn {
+        display: inline;
+        appearance: none;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 24px;
+        line-height: 1;
+        color: #1d1d1d;
+        transition: transform 0.1s ease-in-out;
+      }
+
+      .copy-btn:active {
+        transform: scale(0.9);
+      }
+
+      /* Spin / Claim button */
+      .action-btn {
+        width: fit-content;
+        padding: 12.5px 40px;
+        border: none;
+        border-radius: 14px;
+        background: #ffffff;
+        color: #1d1d1d;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .action-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+
+      /* Pulsating animation for reward ticket */
+      @keyframes pulsate {
+        0% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(1.05);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .pulsate-animation {
+        animation: pulsate 1.5s 3;
+        /* Run 3 times */
+      }
+
+      /* Shimmer effect for reward box */
+      .shimmer {
+        position: absolute;
+        inset: -40px;
+        border-radius: inherit;
+        mix-blend-mode: plus-lighter;
+        pointer-events: none;
+        mask-image: conic-gradient(
+          from var(--mask, 0deg),
+          transparent 0%,
+          transparent 10%,
+          black 36%,
+          black 45%,
+          transparent 50%,
+          transparent 60%,
+          black 85%,
+          black 95%,
+          transparent 100%
+        );
+        mask-size: cover;
+        animation: spin 3s linear infinite both -0.5s;
+        z-index: 10;
+      }
+
+      .shimmer::before,
+      .shimmer::after {
+        content: "";
+        border-radius: inherit;
+        position: absolute;
+        inset: 40px;
+        opacity: 1;
+      }
+
+      .shimmer::before {
+        box-shadow:
+          0 0 2px 1px hsl(var(--shimmer-hue-1) 90% 58%),
+          0 0 9px 6px hsl(var(--shimmer-hue-2) 70% 60%);
+        z-index: -1;
+      }
+
+      /* Make the shimmer more visible */
+      .reward-wrapper.visible .shimmer {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Special class for when both effects should be active */
+      .reward-wrapper.shimmer-active .shimmer {
+        animation: spin 2s linear infinite;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="modal" id="spinModal">
+      <button class="close-btn" aria-label="Close">×</button>
+
+      <h1 class="title" id="mainTitle"></h1>
+      <p id="subtitle"></p>
+
+      <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas
+          id="wheelCanvas"
+          role="button"
+          tabindex="0"
+          aria-label="Spin the Wheel"
+        ></canvas>
+      </div>
+
+      <button class="action-btn" id="actionButton">Spin Now</button>
+    </div>
+
+    <!-- -------------------- Reward Modal -------------------- -->
+    <div class="modal reward" id="rewardModal" style="display: none">
+      <button class="close-btn" aria-label="Close">×</button>
+
+      <h1 class="reward-title" id="rewardTitle"></h1>
+      <div id="rewardSubtext" class="reward-subtext"></div>
+
+      <div class="reward-wrapper" id="rewardWrapper">
+        <span class="shimmer"></span>
+        <div class="reward-box ticket" id="rewardBox">
+          <div class="reward-main">
+            <span id="rewardText"></span>
+            <button id="copyBtn" class="copy-btn" title="Copy to clipboard">
+              <svg
+                width="20"
+                height="21"
+                viewBox="0 0 20 21"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M13 13.8444V17.8444C13 18.4444 12.6 18.8444 12 18.8444H3C2.4 18.8444 2 18.4444 2 17.8444V8.84442C2 8.24442 2.4 7.84442 3 7.84442H7V3.84442C7 3.24442 7.4 2.84442 8 2.84442H17C17.6 2.84442 18 3.24442 18 3.84442V12.8444C18 13.4444 17.6 13.8444 17 13.8444H13ZM12 13.8444H8C7.4 13.8444 7 13.4444 7 12.8444V8.84442H3V17.8444H12V13.8444ZM17 3.84442H8V12.8444H17V3.84442Z"
+                  fill="#4A4C4C"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="copy-instruction">Click here to copy the code!</div>
+        </div>
+      </div>
+
+      <button class="action-btn" id="claimButton">Collect Now</button>
+    </div>
+
+    <script>
+      (function () {
+        const spinModal = document.getElementById("spinModal");
+        const rewardModal = document.getElementById("rewardModal");
+        const mainTitleEl = document.getElementById("mainTitle");
+        const subtitleEl = document.getElementById("subtitle");
+        const wheelCanvas = document.getElementById("wheelCanvas");
+        const wheelContainer = document.querySelector(".wheel-container");
+        const ctx = wheelCanvas.getContext("2d");
+        const spinButton = document.getElementById("actionButton");
+        const claimButton = document.getElementById("claimButton");
+        const rewardWrapper = document.getElementById("rewardWrapper");
+        const rewardBox = document.getElementById("rewardBox");
+        const rewardTextEl = document.getElementById("rewardText");
+        const rewardSubtextEl = document.getElementById("rewardSubtext");
+        const copyBtn = document.getElementById("copyBtn");
+        const closeButtons = document.querySelectorAll(".close-btn");
+        const rewardTitleEl = document.getElementById("rewardTitle");
+        const copyInstructionEl = document.querySelector(".copy-instruction");
+        let isSpinning = false;
+        let currentRotation = 0;
+        const CLOSE_URL = "wzkr://thisleadstonowhere";
+
+        // -------------------- Apply Config --------------------
+
+        // Modal
+        if (CONFIG.background) spinModal.style.background = CONFIG.background;
+
+        // Dismiss button visibility
+        if (!CONFIG.includeDismissButton && closeButtons.length > 0) {
+          closeButtons.forEach((btn) => {
+            btn.style.display = "none";
+          });
+        } else {
+          closeButtons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              window.location.href = CLOSE_URL;
+            });
+          });
+        }
+
+        // Spin duration
+        const spinDuration = CONFIG.spinDurationSeconds || 1;
+        document.documentElement.style.setProperty(
+          "--spin-duration",
+          spinDuration,
+        );
+
+        // Main Title & Subtitle
+        mainTitleEl.innerHTML = CONFIG.mainTitle.text;
+        mainTitleEl.style.fontSize = CONFIG.mainTitle.fontSize;
+        mainTitleEl.style.color = CONFIG.mainTitle.color;
+
+        subtitleEl.textContent = CONFIG.subtitle.text;
+        subtitleEl.style.fontSize = CONFIG.subtitle.fontSize;
+        subtitleEl.style.color = CONFIG.subtitle.color;
+
+        // Copy instruction color
+        if (copyInstructionEl && CONFIG.copyInstruction.color) {
+          copyInstructionEl.style.color = CONFIG.copyInstruction.color;
+        }
+
+        // Action button initial (Spin)
+        spinButton.textContent = CONFIG.spinButton.text;
+        spinButton.style.background = CONFIG.spinButton.background;
+        spinButton.style.color = CONFIG.spinButton.color;
+        if (!CONFIG.spinButton.enabled) spinButton.style.display = "none";
+
+        // Rewards
+        const rewards = CONFIG.rewards;
+
+        // -------------------- Canvas Setup & Sizing --------------------
+
+        let resizeObserver;
+        let resizeTimeout;
+
+        // Set up responsive canvas with proper DPI handling
+        function setupCanvas() {
+          const containerRect = wheelContainer.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+
+          // Get the CSS border width to account for it in sizing
+          const computedStyle = window.getComputedStyle(wheelCanvas);
+          const borderWidth = parseInt(computedStyle.borderWidth) || 0;
+
+          // Calculate available size within the container, accounting for borders
+          const availableWidth = containerRect.width - borderWidth * 2;
+          const availableHeight = containerRect.height - borderWidth * 2;
+          let size = Math.min(availableWidth, availableHeight);
+
+          // Fallback sizing if container dimensions aren't available yet
+          if (size <= 0 || !isFinite(size)) {
+            const viewportSize = Math.min(
+              window.innerWidth,
+              window.innerHeight,
+            );
+            const maxSize = Math.min(260, viewportSize * 0.8);
+            size = Math.max(200, maxSize - borderWidth * 2);
+          }
+
+          // Ensure minimum size
+          size = Math.max(size, 150);
+
+          // Set CSS size (what the user sees)
+          wheelCanvas.style.width = size + "px";
+          wheelCanvas.style.height = size + "px";
+
+          // Set actual canvas resolution for crisp rendering on high-DPI displays
+          wheelCanvas.width = size * dpr;
+          wheelCanvas.height = size * dpr;
+
+          // Scale the context to match device pixel ratio
+          ctx.scale(dpr, dpr);
+        }
+
+        // Throttled resize handler for better performance
+        function handleResize() {
+          if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
+          }
+
+          resizeTimeout = setTimeout(() => {
+            setupCanvas();
+            drawWheel();
+          }, 16); // ~60fps throttling
+        }
+
+        // Initialize canvas sizing
+        function initializeCanvas() {
+          // Use ResizeObserver for more accurate container size detection
+          if (window.ResizeObserver) {
+            resizeObserver = new ResizeObserver(handleResize);
+            resizeObserver.observe(wheelContainer);
+          } else {
+            // Fallback to window resize for older browsers
+            window.addEventListener("resize", handleResize);
+          }
+
+          // Initial setup
+          setupCanvas();
+          drawWheel();
+        }
+
+        // Cleanup function for event listeners
+        function cleanup() {
+          if (resizeObserver) {
+            resizeObserver.disconnect();
+          } else {
+            window.removeEventListener("resize", handleResize);
+          }
+
+          if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
+          }
+        }
+
+        // Initialize canvas when DOM is ready
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initializeCanvas);
+        } else {
+          // DOM is already loaded
+          setTimeout(initializeCanvas, 0);
+        }
+
+        function chooseReward() {
+          const total = rewards.reduce((acc, r) => acc + r.probability, 0);
+          let rand = Math.random() * total;
+          for (const reward of rewards) {
+            if (rand < reward.probability) return reward;
+            rand -= reward.probability;
+          }
+          return rewards[rewards.length - 1]; // fallback
+        }
+
+        // Draw wheel segments
+        function drawWheel(rotation = 0) {
+          // Get the CSS size (visual size) for calculations
+          const cssWidth =
+            parseInt(wheelCanvas.style.width) || wheelCanvas.width;
+          const cssHeight =
+            parseInt(wheelCanvas.style.height) || wheelCanvas.height;
+
+          const centreX = cssWidth / 2;
+          const centreY = cssHeight / 2;
+          const outerRadius = Math.min(cssWidth, cssHeight) / 2;
+          const segmentAngle = (Math.PI * 2) / rewards.length;
+
+          // Clear the entire canvas (accounting for DPI scaling)
+          ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+          ctx.save();
+          ctx.translate(centreX, centreY);
+          ctx.rotate(rotation);
+
+          rewards.forEach((reward, index) => {
+            // Segment wedge
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(
+              0,
+              0,
+              outerRadius,
+              index * segmentAngle,
+              (index + 1) * segmentAngle,
+            );
+            ctx.closePath();
+            ctx.fillStyle = reward.colour;
+            ctx.fill();
+
+            // Segment text
+            ctx.save();
+            ctx.fillStyle =
+              reward.colour.toLowerCase() === "#ffffff" ? "#1d1d1d" : "#ffffff";
+            ctx.rotate(index * segmentAngle + segmentAngle / 2);
+            ctx.textAlign = "right";
+
+            // Responsive font size based on CSS size
+            const fontSize = Math.max(13, cssWidth * 0.05);
+            ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`;
+
+            // Handle text wrapping for long text
+            const maxWidth = outerRadius * 0.6;
+            const words = reward.text.split(" ");
+            let line = "";
+            let lines = [];
+
+            // Split into multiple lines if needed
+            for (let i = 0; i < words.length; i++) {
+              const testLine = line + words[i] + " ";
+              const metrics = ctx.measureText(testLine);
+              const testWidth = metrics.width;
+
+              if (testWidth > maxWidth && i > 0) {
+                lines.push(line);
+                line = words[i] + " ";
+              } else {
+                line = testLine;
+              }
+            }
+            lines.push(line);
+
+            // Draw each line with offset
+            const lineHeight = fontSize * 1.1;
+            const totalHeight = (lines.length - 1) * lineHeight;
+            lines.forEach((line, lineIndex) => {
+              const yPos = 4 + lineIndex * lineHeight - totalHeight / 2;
+              ctx.fillText(line, outerRadius - outerRadius * 0.04, yPos);
+            });
+
+            ctx.restore();
+          });
+
+          // Draw centre circle/knob
+          const centerRadius =
+            (CONFIG.centerCircle.radius / 260) * outerRadius * 2;
+          ctx.beginPath();
+          ctx.arc(0, 0, centerRadius, 0, Math.PI * 2);
+          ctx.fillStyle = CONFIG.centerCircle.color;
+          ctx.fill();
+
+          // Draw center circle border if specified
+          if (CONFIG.centerCircle.borderWidth > 0) {
+            ctx.strokeStyle = CONFIG.centerCircle.borderColor;
+            ctx.lineWidth =
+              (CONFIG.centerCircle.borderWidth / 260) * outerRadius * 2;
+            ctx.stroke();
+          }
+
+          ctx.restore();
+        }
+
+        // Spin Logic
+        function spin() {
+          if (isSpinning) return;
+          isSpinning = true;
+          rewardWrapper.classList.remove("visible");
+
+          const selectedReward = chooseReward();
+          const selectedIndex = rewards.indexOf(selectedReward);
+          const anglePerSegmentDeg = 360 / rewards.length;
+          const spins = Math.floor(Math.random() * 3) + 4; // 4–6 full spins
+          // Offset by 270° because the pointer sits at the top of the wheel and points downward (i.e. 90° CW from the canvas angle 0°).
+          const pointerOffsetDeg = 270;
+          const randomSpaceWithinSegment = anglePerSegmentDeg * Math.random();
+          const finalDeg =
+            spins * 360 +
+            (360 -
+              selectedIndex * anglePerSegmentDeg -
+              randomSpaceWithinSegment +
+              pointerOffsetDeg);
+
+          currentRotation = finalDeg;
+          wheelCanvas.style.transform = `rotate(${currentRotation}deg)`;
+
+          const onTransitionEnd = () => {
+            wheelCanvas.removeEventListener("transitionend", onTransitionEnd);
+            isSpinning = false;
+            showReward(selectedReward);
+          };
+
+          wheelCanvas.addEventListener("transitionend", onTransitionEnd);
+        }
+
+        function showReward(reward) {
+          // Show reward after brief delay for dramatic pause
+          setTimeout(() => {
+            // Hide the wheel + pointer
+            if (wheelContainer) wheelContainer.style.display = "none";
+
+            rewardTitleEl.textContent = reward.title;
+            rewardTextEl.textContent = reward.value;
+            rewardSubtextEl.textContent = reward.subtitle;
+            rewardWrapper.classList.add("visible");
+            rewardWrapper.classList.add("shimmer-active");
+
+            // Add pulsating effect to the reward box
+            rewardBox.classList.add("pulsate-animation");
+
+            // Force shimmer animation restart
+            const shimmerElement = rewardWrapper.querySelector(".shimmer");
+            if (shimmerElement) {
+              shimmerElement.style.animation = "none";
+              shimmerElement.offsetHeight; // Trigger reflow
+              shimmerElement.style.animation = "spin 2s linear infinite";
+            }
+
+            // Hide spin modal & show reward modal
+            spinModal.style.display = "none";
+            rewardModal.style.display = "flex";
+
+            // Update claim button
+            if (CONFIG.claimButton.enabled) {
+              claimButton.textContent = CONFIG.claimButton.text;
+              claimButton.style.background = CONFIG.claimButton.background;
+              claimButton.style.color = CONFIG.claimButton.color;
+
+              claimButton.addEventListener(
+                "click",
+                async () => {
+                  const payload = {
+                    rewardTitle: reward.title,
+                    rewardText: reward.text,
+                    rewardValue: reward.value,
+                    timestamp: new Date().toISOString(),
+                    merchant_id: "90001340",
+                    merchant_code: "10090001340",
+                    offer_id: "90013451",
+                    device_id: "90001340100",
+                    transaction_type: "69",
+                    transaction_value: reward.value,
+                    credit_point: Math.floor(Number(reward.value || 0) / 20),
+                    campaign_id: "Turtle shop : PLUS point X2",
+                  };
+
+                  try {
+                    await fetch(
+                      "https://rabbitrewards.free.beeceptor.com/add",
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                        keepalive: true, // works like sendBeacon on page unload
+                      },
+                    );
+                  } catch (e) {
+                    console.error("Reward send failed", e);
+                  }
+
+                  window.location.href = CONFIG.claimButton.url;
+                },
+                { once: true },
+              );
+            } else {
+              claimButton.style.display = "none";
+            }
+
+            // Confetti
+            if (CONFIG.enableConfettiOnWin) {
+              fireConfetti();
+            }
+          }, 1000); // 1-second pause before reveal
+        }
+
+        // Copy functionality
+        function copyToClipboard() {
+          const text = rewardTextEl.textContent;
+          if (!text) return;
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(text)
+              .then(showCopySuccess)
+              .catch(() => fallbackCopy(text));
+          } else {
+            fallbackCopy(text);
+          }
+        }
+
+        // Clipboard copy handler for reward box
+        function copyRewardText(e) {
+          // If the click was on the copy button, don't execute this handler
+          if (
+            (e && e.target === copyBtn) ||
+            (e.target.closest && e.target.closest("#copyBtn"))
+          ) {
+            return;
+          }
+
+          copyToClipboard();
+        }
+
+        // Add click handler to copy button
+        copyBtn.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent the reward box click handler from firing
+          copyToClipboard();
+        });
+
+        // Add click handler to the entire reward box
+        rewardWrapper.addEventListener("click", copyRewardText);
+
+        function showCopySuccess() {
+          copyInstructionEl.textContent = "Code copied!";
+          copyInstructionEl.style.color = CONFIG.copyInstruction.copiedColor;
+        }
+
+        function fallbackCopy(text) {
+          const input = document.createElement("input");
+          input.setAttribute("readonly", "");
+          input.setAttribute("value", text);
+          input.style.position = "absolute";
+          input.style.left = "-9999px";
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          document.body.removeChild(input);
+          showCopySuccess();
+        }
+
+        // Confetti (same implementation as scratch_card, with minor tweaks)
+        function fireConfetti() {
+          const colors = [
+            "#FFC700",
+            "#FF0000",
+            "#2E3192",
+            "#41F4BC",
+            "#943DFF",
+            "#FF61E6",
+          ];
+          const particleCount = 120;
+          const gravity = 0.3;
+          const confettiCanvas = document.createElement("canvas");
+          confettiCanvas.style.position = "fixed";
+          confettiCanvas.style.top = "0";
+          confettiCanvas.style.left = "0";
+          confettiCanvas.style.width = "100%";
+          confettiCanvas.style.height = "100%";
+          confettiCanvas.style.pointerEvents = "none";
+          confettiCanvas.style.zIndex = "9999";
+          document.body.appendChild(confettiCanvas);
+
+          const confCtx = confettiCanvas.getContext("2d");
+          confettiCanvas.width = window.innerWidth;
+          confettiCanvas.height = window.innerHeight;
+          const particles = [];
+          const randomRange = (min, max) => Math.random() * (max - min) + min;
+
+          for (let i = 0; i < particleCount; i++) {
+            particles.push({
+              x: confettiCanvas.width / 2,
+              y: confettiCanvas.height * 0.6,
+              w: randomRange(6, 12),
+              h: randomRange(8, 16),
+              angle: randomRange(0, 360),
+              tiltAngleSpeed: randomRange(0.05, 0.12),
+              color: colors[Math.floor(Math.random() * colors.length)],
+              velocityX: randomRange(-9, 9),
+              velocityY: randomRange(-16, -8),
+              opacity: 1,
+              decay: randomRange(0.0075, 0.015),
+            });
+          }
+
+          const update = () => {
+            confCtx.clearRect(
+              0,
+              0,
+              confettiCanvas.width,
+              confettiCanvas.height,
+            );
+            particles.forEach((p, idx) => {
+              p.x += p.velocityX;
+              p.y += p.velocityY;
+              p.velocityY += gravity;
+              p.opacity -= p.decay;
+              p.angle += (p.tiltAngleSpeed * 180) / Math.PI;
+              if (p.opacity <= 0 || p.y > confettiCanvas.height + 20)
+                particles.splice(idx, 1);
+            });
+            draw();
+            if (particles.length) requestAnimationFrame(update);
+            else confettiCanvas.remove();
+          };
+
+          const draw = () => {
+            particles.forEach((p) => {
+              confCtx.save();
+              confCtx.globalAlpha = Math.max(p.opacity, 0);
+              confCtx.fillStyle = p.color;
+              confCtx.translate(p.x, p.y);
+              confCtx.rotate((p.angle * Math.PI) / 180);
+              confCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+              confCtx.restore();
+            });
+          };
+
+          update();
+        }
+
+        // Attach event listeners
+        spinButton.addEventListener("click", spin);
+        // Add click event on the wheel to also trigger spinning
+        wheelCanvas.addEventListener("click", spin);
+        wheelContainer.addEventListener("click", spin);
+
+        // Cleanup on page unload to prevent memory leaks
+        window.addEventListener("beforeunload", cleanup);
+      })();
+    </script>
+  </body>
+</html>

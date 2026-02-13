@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"
+    />
+    <title>Dil DHOKHA और Desire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        font-size: clamp(14px, 4vw, 16px);
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: #000;
+        color: #fff;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page-wrapper {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100dvh;
+        width: 100%;
+        max-width: 430px;
+        margin: 0 auto;
+        background: url("https://d22hds4uxdfbw7.cloudfront.net/1678446592/assets/67988e18ad794c0d85f49f8c8aaeb883.jpg")
+          center center no-repeat;
+        background-size: cover;
+        background-color: #1a0505;
+        padding: 0.75rem 1rem 1.25rem;
+        padding-top: env(safe-area-inset-top, 0);
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+      }
+
+      .bg-texture {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.08;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 200px 200px;
+      }
+
+      .bg-gradient {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background: radial-gradient(
+          ellipse 100% 80% at 50% 20%,
+          transparent 0%,
+          rgba(0, 0, 0, 0.25) 50%,
+          transparent 100%
+        );
+      }
+
+      .deco {
+        position: absolute;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .pistol {
+        top: 2rem;
+        right: 0;
+        width: 38vw;
+        max-width: 169px;
+        height: auto;
+        max-height: 150px;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+      }
+
+      .pistol img {
+        width: 100%;
+        height: auto;
+        max-height: 150px;
+        object-fit: contain;
+        object-position: right top;
+        filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.6));
+      }
+
+      .rose-bottom {
+        bottom: 28vh;
+        left: 0;
+        width: 35vw;
+        max-width: 170px;
+        height: auto;
+        max-height: 280px;
+        z-index: 5;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .rose-bottom img {
+        width: 100%;
+        height: auto;
+        max-height: 280px;
+        object-fit: contain;
+        object-position: left bottom;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+      }
+
+      .blood-splatter {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(80, 0, 0, 0.3);
+        pointer-events: none;
+        z-index: 2;
+        opacity: 0.2;
+      }
+
+      .blood-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        pointer-events: none;
+        height: 45%;
+        min-height: 180px;
+        mix-blend-mode: multiply;
+        opacity: 0.65;
+      }
+
+      .blood-overlay img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: bottom center;
+        display: block;
+      }
+
+      .blood-1 {
+        width: 40px;
+        height: 40px;
+        top: 45%;
+        left: 5%;
+        transform: rotate(-20deg) scale(0.8);
+      }
+
+      .blood-2 {
+        width: 25px;
+        height: 25px;
+        top: 55%;
+        right: 8%;
+        transform: rotate(15deg);
+      }
+
+      .blood-3 {
+        width: 30px;
+        height: 30px;
+        bottom: 25%;
+        right: 12%;
+        transform: rotate(-10deg);
+      }
+
+      .main-content {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 0;
+        padding-bottom: 2rem;
+        min-height: 100%;
+        min-height: 100dvh;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 0.2rem;
+      }
+
+      .title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        line-height: 0;
+      }
+
+      .title-img {
+        width: 100%;
+        max-width: min(320px, 92vw);
+        height: auto;
+        display: block;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+      }
+
+      .question-div {
+        margin-top: 4vh;
+        display: flex;
+        justify-content: center;
+      }
+
+      .question {
+        font-family: "Inter", sans-serif;
+        font-size: calc(2vw + 1vh);
+        font-weight: 400;
+        color: #fff;
+        text-align: center;
+        line-height: 1.45;
+        max-width: min(320px, 92vw);
+        /* margin-top: -0.9rem; */
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
+        /* transform: translate(-50px, 0); */
+      }
+
+      .experience-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: auto;
+        padding-bottom: 18vh;
+      }
+
+      .experience-box {
+        position: relative;
+        width: 100%;
+        max-width: min(320px, 92vw);
+      }
+
+      .experience-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0 1.25rem 0.15rem;
+        background: transparent;
+        border: none;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 0;
+      }
+
+      .label-line1 {
+        font-family: "Inter", sans-serif;
+        font-size: 0.68rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.95);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+      }
+
+      .label-line2 {
+        font-family: "Inter", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.98);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .buttons-frame {
+        position: relative;
+        width: 100%;
+        padding: clamp(0.75rem, 4vw, 1.25rem) clamp(0.75rem, 3vw, 1.1rem);
+        margin-top: 0;
+        border-radius: clamp(16px, 5vw, 24px);
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .btn {
+        position: relative;
+        display: block;
+        width: 100%;
+        padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem);
+        border: none;
+        border-radius: clamp(14px, 4vw, 20px);
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        font-family: "Inter", sans-serif;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #1a1a1a;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.5) 0%,
+          rgba(255, 255, 255, 0.2) 20%,
+          transparent 45%,
+          rgba(0, 0, 0, 0.25) 100%
+        );
+        pointer-events: none;
+      }
+
+      .btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 8%;
+        right: 8%;
+        height: 48%;
+        border-radius: 50%;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.85) 0%,
+          rgba(255, 255, 255, 0.4) 35%,
+          transparent 100%
+        );
+        pointer-events: none;
+      }
+
+      .btn:active,
+      .btn.btn-pressed {
+        transform: scale(0.98);
+      }
+
+      .btn-splatter {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        opacity: 0.4;
+      }
+
+      .btn-hadh .btn-splatter {
+        background:
+          radial-gradient(
+            ellipse 28% 32% at 88% 28%,
+            #3d0202 0%,
+            transparent 65%
+          ),
+          radial-gradient(
+            ellipse 18% 22% at 72% 58%,
+            #4a0404 0%,
+            transparent 68%
+          ),
+          radial-gradient(
+            ellipse 12% 18% at 15% 70%,
+            #3d0202 0%,
+            transparent 70%
+          );
+      }
+
+      .btn-thoda .btn-splatter {
+        background:
+          radial-gradient(
+            ellipse 24% 28% at 82% 35%,
+            #3d0202 0%,
+            transparent 65%
+          ),
+          radial-gradient(
+            ellipse 20% 24% at 18% 68%,
+            #4a0404 0%,
+            transparent 68%
+          ),
+          radial-gradient(
+            ellipse 14% 20% at 75% 75%,
+            #3d0202 0%,
+            transparent 70%
+          );
+      }
+
+      .btn-poora .btn-splatter {
+        background:
+          radial-gradient(
+            ellipse 38% 42% at 12% 32%,
+            #2d0101 0%,
+            transparent 62%
+          ),
+          radial-gradient(
+            ellipse 32% 38% at 90% 52%,
+            #3d0202 0%,
+            transparent 64%
+          ),
+          radial-gradient(
+            ellipse 22% 28% at 48% 72%,
+            #4a0404 0%,
+            transparent 68%
+          );
+      }
+
+      .btn-hadh {
+        background: linear-gradient(
+          180deg,
+          #fff0a0 0%,
+          #ffd700 30%,
+          #ffc107 60%,
+          #e69500 100%
+        );
+        box-shadow:
+          inset 0 4px 0 rgba(255, 255, 255, 0.7),
+          inset 0 -3px 0 rgba(0, 0, 0, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3),
+          0 6px 18px rgba(0, 0, 0, 0.45);
+      }
+
+      .btn-thoda {
+        background: linear-gradient(
+          180deg,
+          #ffb74d 0%,
+          #ff8c00 35%,
+          #ff7043 65%,
+          #e65100 100%
+        );
+        box-shadow:
+          inset 0 4px 0 rgba(255, 255, 255, 0.6),
+          inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.25),
+          0 6px 18px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-poora {
+        background: linear-gradient(
+          180deg,
+          #ff6b6b 0%,
+          #e53935 35%,
+          #c62828 70%,
+          #8b0000 100%
+        );
+        box-shadow:
+          inset 0 4px 0 rgba(255, 255, 255, 0.55),
+          inset 0 -3px 0 rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2),
+          0 6px 18px rgba(0, 0, 0, 0.55);
+      }
+
+      .btn .btn-text {
+        position: relative;
+        z-index: 1;
+      }
+
+      @media (hover: hover) {
+        .btn:hover {
+          transform: scale(1.02);
+          box-shadow:
+            inset 0 4px 0 rgba(255, 255, 255, 0.65),
+            inset 0 -3px 0 rgba(0, 0, 0, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            0 8px 22px rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      @media (max-width: 360px) {
+        html {
+          font-size: 14px;
+        }
+
+        .page-wrapper {
+          padding: 0.6rem 0.75rem 1rem;
+        }
+
+        .title-img {
+          max-width: 240px;
+        }
+
+        /* .question {
+font-size: 0.875rem;
+max-width: 95%;
+} */
+
+        .experience-box {
+          max-width: 100%;
+        }
+
+        .experience-label {
+          padding: 0 0.75rem 0.15rem;
+        }
+
+        .label-line1 {
+          font-size: 0.6rem;
+          letter-spacing: 0.12em;
+        }
+
+        .label-line2 {
+          font-size: 0.75rem;
+          letter-spacing: 0.15em;
+        }
+
+        .buttons-frame {
+          padding: 0.75rem;
+          border-radius: 18px;
+        }
+
+        .btn {
+          padding: 0.75rem 1rem;
+          font-size: 0.8rem;
+          border-radius: 14px;
+        }
+
+        .pistol {
+          width: 32vw;
+          top: 1.5rem;
+        }
+
+        /* .rose-bottom {
+width: 36vw;
+max-height: 220px;
+} */
+
+        .blood-overlay {
+          min-height: 140px;
+        }
+      }
+
+      @media (max-width: 380px) {
+        .title-img {
+          max-width: 260px;
+        }
+      }
+
+      @media (min-width: 375px) and (max-width: 430px) {
+        .page-wrapper {
+          padding: 0.85rem 1.1rem 1.25rem;
+        }
+
+        .title-img {
+          max-width: 300px;
+        }
+      }
+
+      @media (min-width: 431px) {
+        .page-wrapper {
+          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+          padding: 1rem 1.25rem 1.5rem;
+        }
+
+        .title-img {
+          max-width: 320px;
+        }
+      }
+
+      @media (min-width: 390px) {
+        .pistol {
+          max-width: 169px;
+        }
+
+        /* .rose-bottom {
+max-width: 170px;
+} */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page-wrapper">
+      <div class="bg-texture" aria-hidden="true"></div>
+      <div class="bg-gradient" aria-hidden="true"></div>
+
+      <div class="deco pistol" aria-hidden="true">
+        <img
+          src="https://d22hds4uxdfbw7.cloudfront.net/1678446592/assets/6f4dd63e0cb94ee9a6d5f12292824759.png"
+          alt=""
+        />
+      </div>
+
+      <div class="deco rose-bottom" aria-hidden="true">
+        <img
+          src="https://d22hds4uxdfbw7.cloudfront.net/1678446592/assets/06c0a35ff02946eba2197f60cd3ece82.png"
+          alt=""
+        />
+      </div>
+
+      <div class="blood-splatter blood-1" aria-hidden="true"></div>
+      <div class="blood-splatter blood-2" aria-hidden="true"></div>
+      <div class="blood-splatter blood-3" aria-hidden="true"></div>
+
+      <main class="main-content">
+        <header class="header">
+          <h1 class="title">
+            <img
+              src="https://d22hds4uxdfbw7.cloudfront.net/1678446592/assets/2699a8a66025437c9c5ab09be8e63caf.png"
+              alt="Dil DHOKHA aur Desire"
+              class="title-img"
+            />
+          </h1>
+          <div class="question-div">
+            <p class="question">
+              Aap Kitne Aage Jaane Ke<br />
+              Liye Tayaar Hai ?
+            </p>
+          </div>
+        </header>
+
+        <section class="experience-section">
+          <div class="experience-box">
+            <p class="experience-label">
+              <span class="label-line1">CHOOSE YOUR</span>
+              <span class="label-line2">EXPERIENCE LEVEL</span>
+            </p>
+            <div class="buttons-frame">
+              <a
+                href="https://www.shemaroome.com/bollywood-trailers/hadh?share_url=true"
+                class="btn btn-hadh"
+                data-level="hadh"
+              >
+                <span class="btn-text">HADH</span>
+                <span class="btn-splatter" aria-hidden="true"></span>
+              </a>
+              <a
+                href="https://www.shemaroome.com/bollywood-trailers/thoda-behadh?share_url=true"
+                class="btn btn-thoda"
+                data-level="thoda"
+              >
+                <span class="btn-text">THODA BEHADH</span>
+                <span class="btn-splatter" aria-hidden="true"></span>
+              </a>
+              <a
+                href="https://www.shemaroome.com/bollywood-trailers/poora-behadh?share_url=true"
+                class="btn btn-poora"
+                data-level="poora"
+              >
+                <span class="btn-text">POORA BEHADH</span>
+                <span class="btn-splatter" aria-hidden="true"></span>
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="blood-overlay" aria-hidden="true">
+        <img
+          src="https://d22hds4uxdfbw7.cloudfront.net/1678446592/assets/3c2cc275315d4830b7ffe6bd509e0f85.png"
+          alt=""
+        />
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+        var buttons = document.querySelectorAll(".btn[data-level]");
+
+        function handleClick(e) {
+          var btn = e.currentTarget;
+          var level = btn.getAttribute("data-level");
+          var href = btn.getAttribute("href");
+          btn.classList.add("btn-pressed");
+          setTimeout(function () {
+            btn.classList.remove("btn-pressed");
+          }, 150);
+          document.dispatchEvent(
+            new CustomEvent("experienceSelected", {
+              detail: { level: level, href: href },
+              bubbles: true,
+            }),
+          );
+          if (href && href !== "#" && href.indexOf("#") !== 0) {
+            window.location.href = href;
+          }
+        }
+        function init() {
+          if (buttons.length) {
+            for (var i = 0; i < buttons.length; i++) {
+              buttons[i].addEventListener("click", handleClick);
+            }
+          }
+        }
+        if (document.readyState === "loading")
+          document.addEventListener("DOMContentLoaded", init);
+        else init();
+      })();
+    </script>
+  </body>
+</html>

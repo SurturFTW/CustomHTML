@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lead Popup</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      /* OVERLAY */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* MODAL */
+      .modal {
+        background: #fff;
+        width: 90%;
+        max-width: 420px;
+        border-radius: 6px;
+        position: relative;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      /* CLOSE BUTTON */
+      .close-btn {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 32px;
+        height: 32px;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        border-radius: 50%;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 32px;
+        text-align: center;
+        cursor: pointer;
+        z-index: 20;
+      }
+
+      /* IMAGE STEP */
+      #imageStep img {
+        width: 100%;
+        height: auto;
+        display: block;
+        cursor: pointer;
+      }
+
+      /* FORM STEP */
+      .form-step {
+        display: none;
+        padding: 18px;
+        text-align: center;
+      }
+
+      .form-step h2 {
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+
+      .form-step p {
+        font-size: 14px;
+        margin-bottom: 14px;
+        color: #444;
+      }
+
+      /* INPUTS */
+      .input {
+        width: 100%;
+        height: 44px;
+        padding: 0 12px;
+        box-sizing: border-box;
+        background: #f2f3f7;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 44px;
+        outline: none;
+      }
+
+      /* PHONE */
+      .phone-wrapper {
+        display: flex;
+        align-items: center;
+        background: #f2f3f7;
+        border-radius: 4px;
+        height: 44px;
+        padding: 0 8px;
+        margin-top: 10px;
+      }
+
+      /* FLAG SELECT */
+      .flag-select {
+        border: none;
+        background: transparent;
+        font-size: 18px;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+      }
+
+      /* PHONE INPUT */
+      .phone-wrapper input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+        padding-left: 8px;
+      }
+
+      /* ERRORS */
+      .error {
+        color: #d93025;
+        font-size: 12px;
+        text-align: left;
+        margin-top: 4px;
+      }
+
+      /* BUTTON */
+      button[type="submit"] {
+        width: 100%;
+        height: 44px;
+        margin-top: 16px;
+        background: linear-gradient(90deg, #000, #2b1b16);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      ::placeholder {
+        color: #8a8a8a;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="overlay" id="popup">
+      <div class="modal">
+        <!-- CLOSE BUTTON -->
+        <button class="close-btn" onclick="closePopup()">×</button>
+
+        <!-- IMAGE STEP -->
+        <div id="imageStep">
+          <img
+            src="https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/74a4c5dfa8ba43c0997c9966c92f4d26.jpeg"
+            alt="Offer"
+            onclick="showForm()"
+          />
+        </div>
+
+        <!-- FORM STEP -->
+        <div id="formStep" class="form-step">
+          <h2>Don't miss this deal</h2>
+          <p>Enter your details to claim the ₹2,700 voucher benefit.</p>
+
+          <form id="leadForm" novalidate>
+            <input
+              id="name"
+              class="input"
+              type="text"
+              placeholder="Enter your name"
+            />
+            <div id="nameError" class="error"></div>
+
+            <input
+              id="email"
+              class="input"
+              type="email"
+              placeholder="Enter your email address"
+              style="margin-top: 10px"
+            />
+            <div id="emailError" class="error"></div>
+
+            <div class="phone-wrapper">
+              <select
+                id="country"
+                class="flag-select"
+                onchange="updatePhoneFormat()"
+              >
+                <option value="IN" selected>🇮🇳</option>
+                <option value="US">🇺🇸</option>
+                <option value="UK">🇬🇧</option>
+                <option value="AU">🇦🇺</option>
+                <option value="AE">🇦🇪</option>
+              </select>
+              <input
+                id="phone"
+                type="tel"
+                inputmode="numeric"
+                placeholder="8123456789"
+              />
+            </div>
+            <div id="phoneError" class="error"></div>
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showForm() {
+        document.getElementById("imageStep").style.display = "none";
+        document.getElementById("formStep").style.display = "block";
+      }
+
+      // Close function with CleverTap parent element removal
+      function closePopup() {
+        try {
+          // Try parent CleverTap approach first
+          if (window.parent !== window) {
+            var overlay =
+              window.parent.document.getElementById("intentOpacityDiv");
+            var wrapper =
+              window.parent.document.getElementById("intentPreview");
+            if (overlay) overlay.remove();
+            if (wrapper) wrapper.remove();
+          }
+        } catch (error) {
+          console.error("Error removing parent elements:", error);
+        }
+
+        // Local fallback
+        document.getElementById("popup").style.display = "none";
+
+        // try to close window
+        try {
+          window.close();
+        } catch (e) {
+          console.log("Cannot close window programmatically");
+        }
+      }
+
+      const phoneRules = {
+        IN: { regex: /^[6-9]\d{9}$/, placeholder: "8123456789" },
+        US: { regex: /^\d{10}$/, placeholder: "4155552671" },
+        UK: { regex: /^\d{10,11}$/, placeholder: "7123456789" },
+        AU: { regex: /^\d{9}$/, placeholder: "412345678" },
+        AE: { regex: /^\d{9}$/, placeholder: "501234567" },
+      };
+
+      function updatePhoneFormat() {
+        const c = document.getElementById("country").value;
+        const phone = document.getElementById("phone");
+        phone.value = "";
+        phone.placeholder = phoneRules[c].placeholder;
+      }
+
+      // Enhanced CleverTap event function
+      function pushToCleverTap(eventName, eventData) {
+        try {
+          // Try parent window CleverTap first
+          if (
+            window.parent &&
+            window.parent.clevertap &&
+            window.parent.clevertap.event &&
+            window.parent.clevertap.event.push
+          ) {
+            window.parent.clevertap.event.push(eventName, eventData);
+            console.log(
+              "CleverTap event pushed to parent:",
+              eventName,
+              eventData,
+            );
+            return;
+          }
+
+          // Try current window CleverTap
+          if (
+            typeof clevertap !== "undefined" &&
+            clevertap.event &&
+            clevertap.event.push
+          ) {
+            clevertap.event.push(eventName, eventData);
+            console.log("CleverTap event pushed:", eventName, eventData);
+            return;
+          }
+
+          console.warn(
+            "CleverTap not initialized. Event data:",
+            eventName,
+            eventData,
+          );
+        } catch (error) {
+          console.error("Error pushing to CleverTap:", error);
+        }
+      }
+
+      document
+        .getElementById("leadForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const phone = document.getElementById("phone").value.trim();
+          const country = document.getElementById("country").value;
+
+          let valid = true;
+          document.getElementById("nameError").textContent = "";
+          document.getElementById("emailError").textContent = "";
+          document.getElementById("phoneError").textContent = "";
+
+          if (!name) {
+            document.getElementById("nameError").textContent =
+              "Name is required";
+            valid = false;
+          }
+
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+            document.getElementById("emailError").textContent =
+              "Enter a valid email address";
+            valid = false;
+          }
+
+          if (!phoneRules[country].regex.test(phone)) {
+            document.getElementById("phoneError").textContent =
+              "Enter a valid mobile number";
+            valid = false;
+          }
+
+          if (valid) {
+            // Push Lead Submitted event to CleverTap
+            pushToCleverTap("Lead Submitted", {
+              "Lead name": name,
+              "Lead email": email,
+              "Lead phone": phone,
+              "Lead country": country,
+              "Offer Name": "Not a big deal",
+            });
+
+            alert("Form submitted successfully!");
+            closePopup();
+          }
+        });
+
+      // Allow Enter key to submit
+      document
+        .getElementById("leadForm")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            document
+              .getElementById("leadForm")
+              .dispatchEvent(new Event("submit"));
+          }
+        });
+    </script>
+  </body>
+</html>
