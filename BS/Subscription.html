@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -408,6 +408,7 @@
           console.error("CleverTap event push failed:", e);
         }
       }
+
       function closePopup() {
         try {
           // First try to close parent elements
@@ -422,6 +423,7 @@
         // Also hide the local overlay as fallback
         document.getElementById("overlay").style.display = "none";
       }
+
       // Allow Enter key to submit
       document
         .getElementById("emailInput")

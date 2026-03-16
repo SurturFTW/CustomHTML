@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>clever tap</title>
+    <script>
+      // Global variable for event name
+      var eventName = "Exit Survey";
+    </script>
+    <style>
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .cl-container {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        /* z-index: 2; */
+        /* border: 5px solid green; */
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+      }
+
+      .cl-subcontainer {
+        padding: 30px;
+      }
+
+      .form-header {
+        display: flex;
+        justify-content: space-between;
+        /*align-items: center;*/
+        padding-bottom: 10px;
+        padding-top: 10px;
+      }
+
+      .form-header h2 {
+        font-size: 18px;
+        margin: 0;
+      }
+
+      .close-button {
+        background: none;
+        border: 0px;
+        /*solid #9E1E26;*/
+        font-size: 24px;
+        cursor: pointer;
+        color: #9e1e26;
+        position: absolute;
+        right: 10px;
+        top: 30px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .radio-group {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .radio-group input {
+        margin-right: 14px;
+        /* vertical-align: middle; */
+      }
+
+      .radio-group label {
+        font-size: 16px;
+        /* Reduce the font size of the label */
+      }
+
+      /* Add the following CSS for red border */
+      .styled-radio {
+        appearance: none;
+        border: 1px solid #9e1e26;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .styled-radio:checked::before {
+        content: "";
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #9e1e26;
+      }
+
+      .submit-button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 100px;
+        background-color: #9e1e26;
+        /*#d3d3d3;*/
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 8px;
+        color: white;
+      }
+
+      .submit-button:hover {
+        background-color: #c0c0c0;
+      }
+
+      @keyframes slideInUp {
+        0% {
+          -webkit-transform: translate3d(0, 100%, 0);
+          transform: translate3d(0, 100%, 0);
+          visibility: visible;
+        }
+
+        to {
+          -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+        }
+      }
+
+      .animate__slideInUp {
+        -webkit-animation-name: slideInUp;
+        animation-name: slideInUp;
+      }
+
+      .animate__animated {
+        -webkit-animation-duration: 1s;
+        animation-duration: 1s;
+        -webkit-animation-duration: 1s;
+        animation-duration: 1s;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cl-container animate__animated animate__slideInUp">
+      <div>
+        <button
+          class="close-button"
+          onclick="window.location.href = 'wzrk://exit'"
+        >
+          ×
+        </button>
+      </div>
+      <div class="cl-subcontainer">
+        <div class="form-header">
+          <h2>Tell us why you are leaving?</h2>
+        </div>
+        <form id="exit-form">
+          <div class="radio-group">
+            <input
+              type="radio"
+              id="better-rate"
+              name="reason"
+              class="styled-radio"
+              checked
+            />
+            <label for="better-rate">Waiting for a better exchange rate</label>
+          </div>
+          <div class="radio-group">
+            <input
+              type="radio"
+              id="unable-to-proceed"
+              name="reason"
+              class="styled-radio"
+            />
+            <label for="unable-to-proceed">Unable to proceed - need help</label>
+          </div>
+          <div class="radio-group">
+            <input
+              type="radio"
+              id="issue-with-tcs"
+              name="reason"
+              class="styled-radio"
+            />
+            <label for="issue-with-tcs">Issue with TCS amount applied</label>
+          </div>
+          <div class="radio-group">
+            <input
+              type="radio"
+              id="just-exploring"
+              name="reason"
+              class="styled-radio"
+            />
+            <label for="just-exploring">Just exploring, I will come back</label>
+          </div>
+          <button type="submit" class="submit-button" id="submit_button">
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("exit-form")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            const selectedRadio = document.querySelector(
+              'input[name="reason"]:checked',
+            );
+            const selectedLabel = document.querySelector(
+              `label[for="${selectedRadio.id}"]`,
+            );
+            const selectedReason = selectedLabel.textContent;
+            var props = { Response: selectedReason };
+            var message = {
+              action: "recordEventWithProps",
+              event: eventName,
+              properties: props,
+            };
+            if (window.CleverTap) {
+              // Call Android interface
+              CleverTap.pushEvent(eventName, JSON.stringify(props));
+            } else if (
+              window.webkit &&
+              window.webkit.messageHandlers &&
+              window.webkit.messageHandlers.clevertap
+            ) {
+              window.webkit.messageHandlers.clevertap.postMessage(message);
+            } else {
+              clevertap.event.push(eventName, props);
+            }
+            window.location.href = "wzrk://exit";
+          });
+      });
+    </script>
+  </body>
+</html>

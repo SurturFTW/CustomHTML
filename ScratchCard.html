@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -346,7 +346,7 @@
         function (e) {
           e.preventDefault();
         },
-        { passive: false }
+        { passive: false },
       );
 
       // Fix close button functionality
@@ -360,10 +360,10 @@
 
       const scratchCardCover = document.querySelector(".scratch-card-cover");
       const scratchCardCanvasRender = document.querySelector(
-        ".scratch-card-canvas-render"
+        ".scratch-card-canvas-render",
       );
       const scratchCardCoverContainer = document.querySelector(
-        ".scratch-card-cover-container"
+        ".scratch-card-cover-container",
       );
       const scratchCardText = document.querySelector(".scratch-card-text");
       const scratchCardImage = document.querySelector(".scratch-card-image");
@@ -372,8 +372,7 @@
       const couponCodeDiv = document.getElementById("couponCode");
 
       scratchCardImage.addEventListener("click", function () {
-        window.location.href =
-          "https://www.mcaffeine.com/products/complete-coffee-skin-care?srsltid=AfmBOoqJGIjJrY9JdIoYGlbx8A_4ZXVM1TcOk8bV8ILSCMlt7k0zvutx";
+        window.location.href = "Add your Deep Link here.";
       });
 
       const canvas = document.querySelector(".scratch-card-canvas");
@@ -463,7 +462,7 @@
               checkBlackFillPercentage();
             }, 500);
           },
-          { once: true }
+          { once: true },
         );
       });
 
@@ -507,7 +506,7 @@
             () => {
               scratchCardCoverContainer.classList.add("hidden");
             },
-            { once: true }
+            { once: true },
           );
         }
       };

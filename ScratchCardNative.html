@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- -------------------- Configurable Settings -------------------- -->
@@ -26,7 +26,7 @@
           text: "Claim Now",
           background: "#ffffff",
           color: "#B01116",
-          url: "https://www.business-standard.com/subscription-cart/payment?promotionoffer=MTY3JlNBVkU1MDA=&utm_source=CT&utm_medium=webpopup",
+          url: "https://www.clevertap.com",
         },
 
         mainTitle: {
@@ -85,7 +85,9 @@
         text-align: center;
         position: relative;
         color: #ffffff;
-        transition: opacity 0.45s ease, transform 0.45s ease;
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
       }
 
       .bs-logo {
@@ -230,13 +232,19 @@
 
       @keyframes redGoldGlow {
         0% {
-          box-shadow: 0 0 4px #b01116, 0 0 10px #ffd700;
+          box-shadow:
+            0 0 4px #b01116,
+            0 0 10px #ffd700;
         }
         50% {
-          box-shadow: 0 0 14px #b01116, 0 0 26px #ffd700;
+          box-shadow:
+            0 0 14px #b01116,
+            0 0 26px #ffd700;
         }
         100% {
-          box-shadow: 0 0 4px #b01116, 0 0 10px #ffd700;
+          box-shadow:
+            0 0 4px #b01116,
+            0 0 10px #ffd700;
         }
       }
 
@@ -322,7 +330,8 @@
       }
 
       .shimmer::before {
-        box-shadow: 0 0 2px 1px hsl(var(--shimmer-hue-1) 60% 95%),
+        box-shadow:
+          0 0 2px 1px hsl(var(--shimmer-hue-1) 60% 95%),
           0 0 5px 3px hsl(var(--shimmer-hue-1) 60% 80%),
           0 0 9px 6px hsl(var(--shimmer-hue-2) 70% 60%),
           0 0 14px 7px hsl(var(--shimmer-hue-2) 50% 40%);
@@ -442,7 +451,7 @@
             0,
             0,
             canvas.width,
-            canvas.height
+            canvas.height,
           ).data;
 
           let cleared = 0;
@@ -478,7 +487,7 @@
             window.open(
               CONFIG.claimButton.url,
               "_blank",
-              "noopener,noreferrer"
+              "noopener,noreferrer",
             );
 
             /* ⭐⭐⭐ SPARKLE BURST EXIT - starts here ⭐⭐⭐ */
@@ -615,7 +624,7 @@
                 { transform: "translateY(0)", opacity: 1 },
                 { transform: "translateY(-600px)", opacity: 0.2 },
               ],
-              { duration: 900, easing: "ease-out" }
+              { duration: 900, easing: "ease-out" },
             );
 
             setTimeout(() => rocket.remove(), 1000);

@@ -7,9 +7,8 @@
 
     <style>
       body {
-        margin: 0 !important;
-        font-family: Georgia, serif !important;
-        text-align: left !important; /* Force left alignment */
+        margin: 0;
+        font-family: Georgia, serif;
       }
 
       /* OVERLAY */
@@ -20,10 +19,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding-left: 20px;
         z-index: 9999;
       }
 
-      /* SMALLER POPUP */
+      /* POPUP CONTAINER */
       .popup-container {
         background: #fff;
         width: 92%;
@@ -33,7 +33,6 @@
         padding: 15px;
         border-radius: 6px;
         position: relative;
-        text-align: left !important;
       }
 
       /* HEADER */
@@ -43,9 +42,10 @@
         margin-bottom: 12px;
         border-bottom: 1.5px solid #b01116;
         padding-bottom: 5px;
+        text-align: left;
       }
 
-      /* CLOSE */
+      /* CLOSE BUTTON */
       .close-popup {
         position: absolute;
         right: 12px;
@@ -77,7 +77,6 @@
           border-left 0.25s ease;
         cursor: pointer;
         background: #fff;
-        text-align: left !important;
       }
 
       .popup-card:hover {
@@ -86,7 +85,7 @@
         border-left: 3px solid #b01116;
       }
 
-      /* SMALL IMAGE */
+      /* IMAGE */
       .popup-card img {
         width: 65px;
         height: 55px;
@@ -98,23 +97,24 @@
       .popup-content {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
+        text-align: left;
       }
 
-      /* SMALL TITLE */
+      /* TITLE */
       .popup-content h3 {
         font-size: 12.5px;
         margin: 0 0 4px 0;
         line-height: 1.3;
         font-weight: 600;
-        text-align: left !important;
+        text-align: left;
       }
 
       /* META */
       .meta {
         font-size: 10.5px;
         color: #777;
-        text-align: left !important;
+        text-align: left;
       }
 
       .meta .premium {
@@ -142,62 +142,24 @@
   </head>
 
   <body>
-    <div class="popup-overlay" id="marketsPopup">
+    <div class="popup-overlay" id="popup-overlay">
       <div class="popup-container">
-        <span class="close-popup" onclick="closePopup()">×</span>
+        <span class="close-popup" onclick="closePopup()">x</span>
         <div class="popup-header">Article you might like</div>
 
         <div class="popup-grid">
           <a
-            href="https://www.business-standard.com/industry/news/us-bangladesh-trade-deal-india-textile-cotton-exports-impact-126021001506_1.html"
+            href="https://www.business-standard.com/markets/news/equity-sip-inflows-see-rare-dip-as-volatility-tests-investor-patience-126022401204_1.html"
             class="popup-card"
             target="_blank"
           >
             <img
-              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/10/full/1770746919-6775.jpg?im=FitAndFill=(826,465)"
+              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/25/full/1772038799-1566.jpg?im=FitAndFill=(826,465)"
             />
             <div class="popup-content">
               <h3>
-                US-Bangladesh pact to put India's textile, cotton exports in a
-                spot
-              </h3>
-              <div class="meta">
-                5 min read | <span class="premium">Premium</span>
-              </div>
-            </div>
-          </a>
-
-          <a
-            href="https://www.business-standard.com/companies/people/ai-delivering-real-world-scientific-outcomes-deepmind-v-p-pushmeet-kohli-126021001665_1.html"
-            class="popup-card"
-            target="_blank"
-          >
-            <img
-              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/10/full/1770741937-2029.jpg?im=FitAndFill=(826,465)"
-            />
-            <div class="popup-content">
-              <h3>
-                AI delivering real-world scientific outcomes: Google DeepMind
-                exec
-              </h3>
-              <div class="meta">
-                7 min read | <span class="premium">Premium</span>
-              </div>
-            </div>
-          </a>
-
-          <a
-            href="https://www.business-standard.com/technology/tech-news/it-ministry-shortens-takedown-timelines-intermediaries-ai-content-rules-126021001625_1.html"
-            class="popup-card"
-            target="_blank"
-          >
-            <img
-              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/10/full/1770748001-7117.jpg?im=FitAndFill=(826,465)"
-            />
-            <div class="popup-content">
-              <h3>
-                Govt toughens rules on AI content, mandates 3-hour takedown
-                timeline
+                Equity SIP inflows see rare dip as volatility tests investor
+                patience
               </h3>
               <div class="meta">
                 3 min read | <span class="premium">Premium</span>
@@ -206,17 +168,55 @@
           </a>
 
           <a
-            href="https://www.business-standard.com/economy/news/datanomics-500-billion-imports-in-five-years-need-3-75x-increase-126021001318_1.html"
+            href="https://www.business-standard.com/markets/news/gold-loans-pip-personal-loans-in-retail-segment-in-q3fy26-shows-data-126022500983_1.html"
             class="popup-card"
             target="_blank"
           >
             <img
-              src="https://bsmedia.business-standard.com/_media/bs/img/article/2025-11/17/full/1763400871-8563.jpg?im=FitAndFill=(826,465)"
+              src="https://bsmedia.business-standard.com/_media/bs/img/article/2021-08/15/full/1629048437-9468.jpg?im=FitAndFill=(826,465)"
             />
             <div class="popup-content">
               <h3>
-                Datanomics: $500 billion imports in five years need 3.75x
-                increase
+                Gold loans pip personal loans in retail segment in Q3FY26, shows
+                data
+              </h3>
+              <div class="meta">
+                1 min read | <span class="premium">Premium</span>
+              </div>
+            </div>
+          </a>
+
+          <a
+            href="https://www.business-standard.com/companies/news/ai-companies-want-to-justify-billions-spent-on-infra-ltm-growth-chief-126022500911_1.html"
+            class="popup-card"
+            target="_blank"
+          >
+            <img
+              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/25/full/1772042615-9344.jpg?im=FitAndFill=(826,465)"
+            />
+            <div class="popup-content">
+              <h3>
+                Billion-dollar AI bets shape IT narrative, says LTM executive
+                Krishnan Iyer
+              </h3>
+              <div class="meta">
+                3 min read | <span class="premium">Premium</span>
+              </div>
+            </div>
+          </a>
+
+          <a
+            href="https://www.business-standard.com/economy/news/datanomics-industry-share-rises-services-falls-in-fy05-vs-fy12-gdp-series-126022500711_1.html"
+            class="popup-card"
+            target="_blank"
+          >
+            <img
+              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/18/full/1771438299-5931.jpg?im=FitAndFill=(826,465)"
+            />
+            <div class="popup-content">
+              <h3>
+                Datanomics: Industry share rises, services falls in FY05 vs FY12
+                GDP series
               </h3>
               <div class="meta">
                 2 min read | <span class="premium">Premium</span>
@@ -225,38 +225,39 @@
           </a>
 
           <a
-            href="https://www.business-standard.com/finance/news/commercial-banks-reap-windfall-from-surplus-liquidity-arbitrage-126021001624_1.html"
+            href="https://www.business-standard.com/companies/people/as-ai-grows-legacy-will-compress-mckinsey-company-s-noshir-kaka-126022501273_1.html"
             class="popup-card"
             target="_blank"
           >
             <img
-              src="https://bsmedia.business-standard.com/_media/bs/img/article/2025-12/16/full/1765906741-3834.jpg?im=FitAndFill=(826,465)"
+              src="https://bsmedia.business-standard.com/_media/bs/img/article/2026-02/25/full/1772041944-3315.jpg?im=FitAndFill=(826,465)"
             />
             <div class="popup-content">
               <h3>
-                Commercial banks reap windfall from surplus liquidity arbitrage
+                As AI grows, legacy will compress: McKinsey & Company's Noshir
+                Kaka
               </h3>
               <div class="meta">
-                4 min read | <span class="premium">Premium</span>
+                5 min read | <span class="premium">Premium</span>
               </div>
             </div>
           </a>
 
           <a
-            href="https://www.business-standard.com/markets/news/valuation-dixon-technologies-factors-multiple-headwinds-126021001501_1.html"
+            href="https://www.business-standard.com/industry/news/brazil-emerges-as-key-growth-market-for-indian-msme-pharma-exporters-126022500764_1.html"
             class="popup-card"
             target="_blank"
           >
             <img
-              src="https://bsmedia.business-standard.com/_media/bs/img/article/2025-07/21/full/1753117923-4204.jpg?im=FitAndFill=(826,465)"
+              src="https://bsmedia.business-standard.com/_media/bs/img/article/2025-03/30/full/1743353399-997.jpg?im=FitAndFill=(826,465)"
             />
             <div class="popup-content">
               <h3>
-                Dixon Technologies valuation reflects headwinds amid demand
-                slowdown
+                Indian MSME drugmakers likely to focus on Brazil as next growth
+                market
               </h3>
               <div class="meta">
-                3 min read | <span class="premium">Premium</span>
+                2 min read | <span class="premium">Premium</span>
               </div>
             </div>
           </a>
@@ -265,6 +266,7 @@
     </div>
 
     <script>
+      /* CLOSE POPUP & RESTORE SCROLL */
       function closePopup() {
         try {
           // First try to close parent elements
@@ -277,7 +279,7 @@
           console.error("Error removing parent elements:", error);
         }
         // Also hide the local overlay as fallback
-        document.getElementById("marketsPopup").style.display = "none";
+        document.getElementById("popup-overlay").style.display = "none";
       }
     </script>
   </body>

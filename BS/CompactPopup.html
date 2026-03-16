@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compact Markets Popup</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Georgia, serif;
+      }
+
+      /* OVERLAY */
+      .popup-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      /* POPUP CONTAINER */
+      .popup-container {
+        background: #fff;
+        width: 92%;
+        max-width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 15px;
+        border-radius: 6px;
+        position: relative;
+      }
+
+      .close-btn-header {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+        padding: 0;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .close-btn-header:hover {
+        color: #b01116;
+      }
+
+      /* HEADER */
+      .popup-header {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        border-bottom: 1.5px solid #b01116;
+        padding-bottom: 13px;
+        text-align: center;
+      }
+
+      /* CLOSE BUTTON */
+      .close-popup {
+        position: relative;
+        font-size: 18px;
+        cursor: pointer;
+        font-size: 13px;
+        background: #ccc;
+        padding: 10px 27px;
+        border-radius: 5px;
+        border: 1px solid #000;
+        font-family: arial;
+        width: 59px;
+        display: block;
+        text-align: center;
+      }
+
+      .topics-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        text-align: left;
+      }
+
+      .topic-item {
+        width: 50%;
+        margin: 7px 0;
+      }
+
+      .topic-item label {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+      }
+
+      .button-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        margin: 20px auto 10px;
+      }
+
+      .btn-apply {
+        font-size: 13px;
+        background: #b22222;
+        padding: 10px 27px;
+        border-radius: 5px;
+        border: 1px solid #000;
+        font-family: arial;
+        color: #fff;
+        cursor: pointer;
+        width: auto;
+        display: inline-block;
+      }
+
+      .crass {
+        cursor: pointer;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        position: absolute;
+        top: 20px;
+        font-size: 27px;
+        color: #151515;
+        right: 5px;
+      }
+
+      /* SUCCESS POPUP */
+
+      .thankyou-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      }
+
+      .thankyou-box {
+        background: #fff;
+        padding: 35px 40px;
+        border-radius: 10px;
+        text-align: center;
+        font-family: Arial;
+        position: relative;
+      }
+
+      /* WHITE CIRCLE */
+
+      .tick-circle {
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        background: #fff;
+        border: 4px solid #b01116;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        position: relative;
+      }
+
+      /* PLAYFUL THICK RED TICK */
+
+      .tick {
+        color: #b01116;
+        font-size: 42px;
+        font-weight: 900;
+        font-family: "Trebuchet MS", "Comic Sans MS", cursive;
+      }
+
+      /* TEXT */
+
+      .thankyou-box h2 {
+        color: #b01116;
+        font-size: 22px;
+        margin: 5px 0 6px;
+      }
+
+      .thankyou-box p {
+        font-size: 14px;
+        color: #555;
+        margin: 0;
+      }
+
+      .close-thankyou {
+        position: absolute;
+        right: 10px;
+        top: 6px;
+        cursor: pointer;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="popup-overlay" id="popup-overlay">
+      <div class="popup-container">
+        <button
+          class="close-btn-header"
+          onclick="closePopup()"
+          aria-label="Close"
+        >
+          ✕
+        </button>
+        <div class="popup-header">
+          Select topics of interest and get personalised alerts
+        </div>
+
+        <form class="topics-grid">
+          <div class="topic-item">
+            <input type="checkbox" id="investing" />
+            <label for="investing">Markets and Investing</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="ai-tech" />
+            <label for="ai-tech">AI and Consumer Tech</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="economy" />
+            <label for="economy">Economy</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="sports" />
+            <label for="sports">Sports</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="personal-finance" />
+            <label for="personal-finance">Personal Finance</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="luxury" />
+            <label for="luxury">Luxury</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="opinion" />
+            <label for="opinion">Opinion</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="health" />
+            <label for="health">Health</label>
+          </div>
+
+          <div class="topic-item">
+            <input type="checkbox" id="selectAll" />
+            <label for="selectAll">Select All</label>
+          </div>
+
+          <div class="button-row">
+            <span class="close-popup" onclick="closePopup()">Cancel</span>
+            <button class="btn btn-apply">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      /* SELECT ALL */
+
+      const selectAll = document.getElementById("selectAll");
+      const checkboxes = document.querySelectorAll(
+        '.topics-grid input[type="checkbox"]:not(#selectAll)',
+      );
+
+      selectAll.addEventListener("change", function () {
+        checkboxes.forEach(function (box) {
+          box.checked = selectAll.checked;
+        });
+      });
+    </script>
+
+    <script>
+      /* CLOSE POPUP */
+
+      function closePopup() {
+        try {
+          // First try to close parent elements
+          var overlay =
+            window.parent.document.getElementById("intentOpacityDiv");
+          var wrapper = window.parent.document.getElementById("intentPreview");
+          if (overlay) overlay.remove();
+          if (wrapper) wrapper.remove();
+        } catch (error) {
+          console.error("Error removing parent elements:", error);
+        }
+        // Also hide the local overlay as fallback
+        document.getElementById("popup-overlay").style.display = "none";
+      }
+    </script>
+
+    <script>
+      /* SUBMIT */
+      document
+        .querySelector(".btn-apply")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+
+          // Collect selected topics
+          const selectedTopics = [];
+          checkboxes.forEach(function (box) {
+            if (box.checked) {
+              selectedTopics.push(box.id);
+            }
+          });
+
+          // Push event to CleverTap
+          pushInterestEvent(selectedTopics);
+
+          document.getElementById("popup-overlay").style.display = "none";
+
+          var div = document.createElement("div");
+
+          div.className = "thankyou-overlay";
+
+          div.innerHTML = `
+<div class="thankyou-box">
+
+<span class="close-thankyou" onclick="closePopup()">✖</span>
+
+<div class="tick-circle">
+<span class="tick">✓</span>
+</div>
+
+<h2>Thank you</h2>
+
+<p>Your preference has been saved</p>
+
+</div>
+`;
+
+          document.body.appendChild(div);
+
+          /* CONFETTI BURST */
+
+          const tick = document.querySelector(".tick-circle");
+
+          for (let i = 0; i < 30; i++) {
+            let conf = document.createElement("div");
+
+            conf.style.position = "absolute";
+            conf.style.width = "8px";
+            conf.style.height = "8px";
+            conf.style.borderRadius = "2px";
+            conf.style.background = `hsl(${Math.random() * 360},80%,60%)`;
+
+            let angle = Math.random() * 360;
+            let distance = 60 + Math.random() * 40;
+
+            conf.style.left = "50%";
+            conf.style.top = "50%";
+            conf.style.transform = "translate(-50%,-50%)";
+
+            conf.animate(
+              [
+                { transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
+                {
+                  transform: `translate(${Math.cos(angle) * distance}px,${Math.sin(angle) * distance}px) scale(0.3)`,
+                  opacity: 0,
+                },
+              ],
+              {
+                duration: 900,
+                easing: "ease-out",
+              },
+            );
+
+            tick.appendChild(conf);
+
+            setTimeout(() => conf.remove(), 900);
+          }
+
+          /* AUTO CLOSE AFTER 5 SECONDS */
+
+          setTimeout(() => {
+            if (document.querySelector(".thankyou-overlay")) {
+              document.querySelector(".thankyou-overlay").remove();
+            }
+          }, 5000);
+        });
+
+      /* CLEVERTAP EVENT */
+      function pushInterestEvent(topics) {
+        try {
+          if (
+            !window.parent.clevertap ||
+            !window.parent.clevertap.event ||
+            !window.parent.clevertap.event.push
+          ) {
+            console.warn("CleverTap is not available.");
+            return;
+          }
+
+          const props = {
+            "Topic Count": topics.length,
+            Channel: "Web pop-up",
+          };
+
+          // Add each interest as a separate property
+          topics.forEach((topic, index) => {
+            props[`interest-${index + 1}`] = topic;
+          });
+
+          window.parent.clevertap.event.push("Interest Submitted", props);
+        } catch (e) {
+          console.error("CleverTap event push failed:", e);
+        }
+      }
+    </script>
+  </body>
+</html>
