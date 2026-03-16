@@ -328,20 +328,20 @@
           div.className = "thankyou-overlay";
 
           div.innerHTML = `
-<div class="thankyou-box">
+            <div class="thankyou-box">
 
-<span class="close-thankyou" onclick="closePopup()">✖</span>
+            <span class="close-thankyou" onclick="closePopup()">✖</span>
 
-<div class="tick-circle">
-<span class="tick">✓</span>
-</div>
+            <div class="tick-circle">
+            <span class="tick">✓</span>
+            </div>
 
-<h2>Thank you</h2>
+            <h2>Thank you</h2>
 
-<p>Your preference has been saved</p>
+            <p>Your preference has been saved</p>
 
-</div>
-`;
+            </div>
+            `;
 
           document.body.appendChild(div);
 
@@ -387,9 +387,7 @@
           /* AUTO CLOSE AFTER 5 SECONDS */
 
           setTimeout(() => {
-            if (document.querySelector(".thankyou-overlay")) {
-              document.querySelector(".thankyou-overlay").remove();
-            }
+            closePopup();
           }, 5000);
         });
 
@@ -407,12 +405,11 @@
 
           const props = {
             "Topic Count": topics.length,
-            Channel: "Web pop-up",
           };
 
-          // Add each interest as a separate property
-          topics.forEach((topic, index) => {
-            props[`interest-${index + 1}`] = topic;
+          // Add each interest as {id}: true
+          topics.forEach((topic) => {
+            props[`${topic}`] = true;
           });
 
           window.parent.clevertap.event.push("Interest Submitted", props);
