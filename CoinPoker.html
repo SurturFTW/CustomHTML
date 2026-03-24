@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>CoinPoker – Source Survey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0d0e12;
+        --surface: #1e1e1e;
+        --surface2: #2a2a2a;
+        --border: #2e2e2e;
+        --red: #c0180c;
+        --red-hover: #a01409;
+        --text: #f6f6f6;
+        --muted: #7c7c7c;
+        --dimtext: #dadada;
+        --success: #2e7d52;
+        --radius: 8px;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        font-family: "Roboto", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .overlay {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.75);
+        padding: 16px;
+      }
+
+      .card {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        width: 100%;
+        max-width: 380px;
+        overflow: hidden;
+        animation: rise 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 20px 14px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .logo {
+        height: 20px;
+        width: auto;
+        max-width: 120px;
+        display: block;
+        object-fit: contain;
+        object-position: left center;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 18px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 2px 5px;
+        transition: color 0.15s;
+      }
+      .close-btn:hover {
+        color: var(--text);
+      }
+
+      .question {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.4;
+        padding-right: 24px;
+      }
+
+      .sub-question {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .options {
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-height: 65vh;
+        overflow-y: auto;
+      }
+      .options::-webkit-scrollbar {
+        width: 3px;
+      }
+      .options::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .options::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      .option {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        transition: border-color 0.15s;
+      }
+      .option.selected {
+        border-color: var(--red);
+      }
+      .option.has-sub.open {
+        border-color: #444;
+      }
+      .option.has-sub.open.selected {
+        border-color: var(--red);
+      }
+
+      .option-btn {
+        width: 100%;
+        background: var(--surface);
+        border: none;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.15s;
+      }
+      .option-btn:hover {
+        background: var(--surface2);
+      }
+      .option.selected > .option-btn {
+        background: rgba(192, 24, 12, 0.08);
+      }
+
+      .option-icon {
+        font-size: 15px;
+        flex-shrink: 0;
+        width: 20px;
+        text-align: center;
+      }
+
+      .option-label {
+        flex: 1;
+        font-size: 13.5px;
+        font-weight: 400;
+        color: var(--dimtext);
+      }
+      .option.selected > .option-btn .option-label {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .radio {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid var(--muted);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.15s;
+      }
+      .option.selected > .option-btn .radio {
+        border-color: var(--red);
+      }
+      .radio::after {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--red);
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .option.selected > .option-btn .radio::after {
+        opacity: 1;
+      }
+
+      .chevron {
+        color: var(--muted);
+        font-size: 10px;
+        transition: transform 0.2s;
+        flex-shrink: 0;
+      }
+      .option.open .chevron {
+        transform: rotate(180deg);
+      }
+
+      .sub-options {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.28s ease;
+        background: #111215;
+        border-top: 1px solid transparent;
+      }
+      .option.open .sub-options {
+        max-height: 260px;
+        border-top-color: var(--border);
+      }
+
+      .sub-opt {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px 8px 44px;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.12s;
+      }
+      .sub-opt:last-child {
+        border-bottom: none;
+      }
+      .sub-opt:hover {
+        background: var(--surface2);
+      }
+      .sub-opt.selected {
+        background: rgba(192, 24, 12, 0.07);
+      }
+
+      .sub-radio {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid var(--muted);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.15s;
+      }
+      .sub-opt.selected .sub-radio {
+        border-color: var(--red);
+      }
+      .sub-radio::after {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--red);
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .sub-opt.selected .sub-radio::after {
+        opacity: 1;
+      }
+
+      .sub-label {
+        font-size: 12.5px;
+        color: var(--muted);
+        font-weight: 400;
+        transition: color 0.15s;
+      }
+      .sub-opt.selected .sub-label {
+        color: var(--dimtext);
+      }
+
+      .other-wrap {
+        display: none;
+        padding: 8px 14px;
+        background: #111215;
+        border-top: 1px solid var(--border);
+      }
+      .option.selected.is-other .other-wrap {
+        display: block;
+      }
+
+      .other-input {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 8px 10px;
+        color: var(--text);
+        font-size: 13px;
+        font-family: "Roboto", sans-serif;
+        outline: none;
+        resize: none;
+        transition: border-color 0.15s;
+      }
+      .other-input:focus {
+        border-color: var(--red);
+      }
+      .other-input::placeholder {
+        color: var(--muted);
+      }
+
+      .footer {
+        padding: 10px 16px 16px;
+        border-top: 1px solid var(--border);
+        background: var(--bg);
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--red);
+        border: none;
+        border-radius: var(--radius);
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        transition:
+          background 0.15s,
+          opacity 0.15s;
+        opacity: 0.35;
+        pointer-events: none;
+      }
+      .submit-btn.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .submit-btn.active:hover {
+        background: var(--red-hover);
+      }
+
+      .thankyou {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 44px 28px;
+        background: var(--bg);
+        animation: rise 0.3s ease both;
+      }
+
+      .check {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(46, 125, 82, 0.15);
+        border: 2px solid var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 18px;
+        color: #4caf80;
+      }
+
+      .thankyou h2 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+
+      .thankyou p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .cp-logo-footer {
+        margin-top: 24px;
+        height: 16px;
+        width: auto;
+        max-width: 100px;
+        object-fit: contain;
+        opacity: 0.4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay" onclick="dismiss()">
+      <div class="card" id="card" onclick="event.stopPropagation()">
+        <!-- SURVEY SCREEN -->
+        <div id="surveyScreen">
+          <div class="header">
+            <img
+              class="logo"
+              src="https://dokfr0rl8fda7.cloudfront.net/generic/coinpoker_newsletter_2026/CP_emailer_logo.png"
+              alt="CoinPoker"
+            />
+            <!-- FIX 1: stopPropagation prevents overlay onclick from racing, then dismiss() -->
+            <button
+              class="close-btn"
+              onclick="
+                event.stopPropagation();
+                dismiss();
+              "
+            >
+              ✕
+            </button>
+            <div class="question">
+              Where did you first hear about CoinPoker?
+            </div>
+            <div class="sub-question">
+              Takes just a second — your answer helps our team a lot.
+            </div>
+          </div>
+
+          <div class="options" id="optionsList">
+            <!-- 1. Referral -->
+            <div
+              class="option"
+              id="opt-referral"
+              onclick="selectSimple('referral', 'opt-referral')"
+            >
+              <div class="option-btn">
+                <span class="option-icon">🤝</span>
+                <span class="option-label">Referral / Word of Mouth</span>
+                <div class="radio"></div>
+              </div>
+            </div>
+
+            <!-- 2. Social Media (accordion) -->
+            <div class="option has-sub" id="opt-social">
+              <div class="option-btn" onclick="toggleAccordion('opt-social')">
+                <span class="option-icon">📱</span>
+                <span class="option-label">Social Media</span>
+                <span class="chevron">▼</span>
+              </div>
+              <div class="sub-options">
+                <div
+                  class="sub-opt"
+                  id="sub-tw"
+                  onclick="
+                    selectSub(
+                      'social_official_twitter',
+                      'opt-social',
+                      'sub-tw',
+                      event,
+                    )
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Twitter / X (Official)</span>
+                </div>
+                <div
+                  class="sub-opt"
+                  id="sub-fb"
+                  onclick="
+                    selectSub(
+                      'social_official_facebook',
+                      'opt-social',
+                      'sub-fb',
+                      event,
+                    )
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Facebook (Official)</span>
+                </div>
+                <div
+                  class="sub-opt"
+                  id="sub-ig"
+                  onclick="
+                    selectSub(
+                      'social_official_instagram',
+                      'opt-social',
+                      'sub-ig',
+                      event,
+                    )
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Instagram (Official)</span>
+                </div>
+                <div
+                  class="sub-opt"
+                  id="sub-tg"
+                  onclick="
+                    selectSub(
+                      'social_official_telegram',
+                      'opt-social',
+                      'sub-tg',
+                      event,
+                    )
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Telegram (Official)</span>
+                </div>
+                <div
+                  class="sub-opt"
+                  id="sub-ext"
+                  onclick="
+                    selectSub(
+                      'social_external_account',
+                      'opt-social',
+                      'sub-ext',
+                      event,
+                    )
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">External / Fan Account</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Google Search -->
+            <div
+              class="option"
+              id="opt-google"
+              onclick="selectSimple('google_search', 'opt-google')"
+            >
+              <div class="option-btn">
+                <span class="option-icon">🔍</span>
+                <span class="option-label">Google Search</span>
+                <div class="radio"></div>
+              </div>
+            </div>
+
+            <!-- 4. Influencer -->
+            <div
+              class="option"
+              id="opt-infl"
+              onclick="selectSimple('influencer_content_creator', 'opt-infl')"
+            >
+              <div class="option-btn">
+                <span class="option-icon">🎥</span>
+                <span class="option-label">Influencer / Content Creator</span>
+                <div class="radio"></div>
+              </div>
+            </div>
+
+            <!-- 5. Online Advertisement (accordion) -->
+            <div class="option has-sub" id="opt-ads">
+              <div class="option-btn" onclick="toggleAccordion('opt-ads')">
+                <span class="option-icon">📣</span>
+                <span class="option-label">Online Advertisement</span>
+                <span class="chevron">▼</span>
+              </div>
+              <div class="sub-options">
+                <div
+                  class="sub-opt"
+                  id="sub-adFB"
+                  onclick="
+                    selectSub(
+                      'ad_facebook_instagram',
+                      'opt-ads',
+                      'sub-adFB',
+                      event,
+                    )
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Facebook / Instagram Ad</span>
+                </div>
+                <div
+                  class="sub-opt"
+                  id="sub-adG"
+                  onclick="selectSub('ad_google', 'opt-ads', 'sub-adG', event)"
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Google Ad</span>
+                </div>
+                <div
+                  class="sub-opt"
+                  id="sub-adBan"
+                  onclick="
+                    selectSub('ad_banner', 'opt-ads', 'sub-adBan', event)
+                  "
+                >
+                  <div class="sub-radio"></div>
+                  <span class="sub-label">Banner / Display Ad</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6. Other (free text) -->
+            <div
+              class="option is-other"
+              id="opt-other"
+              onclick="selectOther('opt-other')"
+            >
+              <div class="option-btn">
+                <span class="option-icon">💬</span>
+                <span class="option-label">Other</span>
+                <div class="radio"></div>
+              </div>
+              <div class="other-wrap">
+                <textarea
+                  class="other-input"
+                  id="otherText"
+                  rows="2"
+                  placeholder="Please describe how you found us…"
+                  oninput="onOtherType()"
+                  onclick="event.stopPropagation()"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <!-- /options -->
+
+          <div class="footer">
+            <button class="submit-btn" id="submitBtn" onclick="submit()">
+              Submit
+            </button>
+          </div>
+        </div>
+        <!-- /surveyScreen -->
+
+        <!-- THANK YOU SCREEN -->
+        <div
+          class="thankyou"
+          id="thankYouScreen"
+          onclick="dismiss()"
+          style="cursor: pointer"
+        >
+          <div class="check">✓</div>
+          <h2>Thank you!</h2>
+          <p>Your response has been saved.<br />Good luck at the tables 🃏</p>
+          <img
+            class="cp-logo-footer"
+            src="https://dokfr0rl8fda7.cloudfront.net/generic/coinpoker_newsletter_2026/CP_emailer_logo.png"
+            alt="CoinPoker"
+          />
+        </div>
+      </div>
+      <!-- /card -->
+    </div>
+    <!-- /overlay -->
+
+    <script>
+      var selectedValue = null;
+      var selectedOptId = null;
+
+      function clearAll() {
+        document.querySelectorAll(".option").forEach(function (el) {
+          el.classList.remove("selected");
+        });
+        document.querySelectorAll(".sub-opt").forEach(function (el) {
+          el.classList.remove("selected");
+        });
+        selectedValue = null;
+        selectedOptId = null;
+        updateBtn();
+      }
+
+      function updateBtn() {
+        var btn = document.getElementById("submitBtn");
+        var isOther = selectedOptId === "opt-other";
+        var otherOk =
+          !isOther ||
+          document.getElementById("otherText").value.trim().length > 0;
+        btn.classList.toggle("active", !!(selectedValue && otherOk));
+      }
+
+      function selectSimple(value, optId) {
+        clearAll();
+        selectedValue = value;
+        selectedOptId = optId;
+        document.getElementById(optId).classList.add("selected");
+        updateBtn();
+      }
+
+      function toggleAccordion(optId) {
+        var el = document.getElementById(optId);
+        var isOpen = el.classList.contains("open");
+        document.querySelectorAll(".option.has-sub.open").forEach(function (o) {
+          if (o.id !== optId) o.classList.remove("open");
+        });
+        el.classList.toggle("open", !isOpen);
+      }
+
+      function selectSub(value, parentId, subId, e) {
+        if (e) e.stopPropagation();
+        document.querySelectorAll(".option").forEach(function (el) {
+          el.classList.remove("selected");
+        });
+        document.querySelectorAll(".sub-opt").forEach(function (el) {
+          el.classList.remove("selected");
+        });
+        var parent = document.getElementById(parentId);
+        parent.classList.add("selected", "open");
+        document.getElementById(subId).classList.add("selected");
+        selectedValue = value;
+        selectedOptId = parentId;
+        updateBtn();
+      }
+
+      function selectOther(optId) {
+        clearAll();
+        selectedValue = "other";
+        selectedOptId = optId;
+        document.getElementById(optId).classList.add("selected");
+        setTimeout(function () {
+          document.getElementById("otherText").focus();
+        }, 50);
+        updateBtn();
+      }
+
+      function onOtherType() {
+        var txt = document.getElementById("otherText").value.trim();
+        selectedValue = txt.length > 0 ? "other__" + txt : "other";
+        updateBtn();
+      }
+
+      /* ── FIX 2: walk up the parent chain (up to 5 levels) to find CleverTap ── */
+      function getCT() {
+        var win = window;
+        for (var i = 0; i < 5; i++) {
+          if (win.clevertap && typeof win.clevertap.event === "object")
+            return win.clevertap;
+          try {
+            if (win.parent && win.parent !== win) {
+              win = win.parent;
+              continue;
+            }
+          } catch (e) {
+            break;
+          }
+          break;
+        }
+        return null;
+      }
+
+      /* ── FIX 3: clean source value + reliable profile & event push ── */
+      function submit() {
+        if (!document.getElementById("submitBtn").classList.contains("active"))
+          return;
+
+        var otherText =
+          selectedOptId === "opt-other"
+            ? document.getElementById("otherText").value.trim()
+            : "";
+
+        /* Strip the "other__" prefix that was only used for submit-button gating */
+        var sourceValue =
+          selectedOptId === "opt-other" ? "other" : selectedValue;
+
+        /* CleverTap profile property */
+        var profileProps = { self_reported_UA_source: sourceValue };
+        if (otherText)
+          profileProps["self_reported_UA_source_other"] = otherText;
+
+        /* CleverTap event */
+        var eventProps = { user_source: sourceValue };
+        if (otherText) eventProps["other_detail"] = otherText;
+
+        try {
+          var ct = getCT();
+          if (ct) {
+            ct.profile.push({ Site: profileProps });
+            ct.event.push("source_captured", eventProps);
+            console.log(
+              "[CoinPoker Survey] profile →",
+              JSON.stringify(profileProps),
+            );
+            console.log(
+              "[CoinPoker Survey] event  →",
+              JSON.stringify(eventProps),
+            );
+          } else {
+            console.warn(
+              "[CoinPoker Survey] CleverTap not found. Payload:",
+              profileProps,
+              eventProps,
+            );
+          }
+        } catch (err) {
+          console.error("[CoinPoker Survey] CleverTap error:", err);
+        }
+
+        /* Show thank-you screen */
+        document.getElementById("surveyScreen").style.display = "none";
+        var ty = document.getElementById("thankYouScreen");
+        ty.style.display = "flex";
+      }
+
+      /* ── FIX 1 (full): dismiss fades + removes overlay and CT wrapper elements ── */
+      function dismiss() {
+        /* Best-effort dismissal event */
+        try {
+          var ct = getCT();
+          if (ct) ct.event.push("source_survey_dismissed");
+        } catch (e) {}
+
+        var ov = document.getElementById("overlay");
+        if (!ov) return;
+
+        ov.style.transition = "opacity 0.2s";
+        ov.style.opacity = "0";
+
+        setTimeout(function () {
+          /* Remove our overlay from the DOM */
+          if (ov.parentNode) ov.parentNode.removeChild(ov);
+
+          /* Remove CleverTap's host-page wrapper elements (both same-doc and parent-doc) */
+          [
+            "intentOpacityDiv",
+            "intentPreview",
+            "wzrk-inapp-notification",
+          ].forEach(function (id) {
+            [
+              document,
+              (function () {
+                try {
+                  return window.parent.document;
+                } catch (e) {
+                  return null;
+                }
+              })(),
+            ].forEach(function (doc) {
+              if (!doc) return;
+              var el = doc.getElementById(id);
+              if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+          });
+        }, 220);
+      }
+    </script>
+  </body>
+</html>
