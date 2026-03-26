@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Stories Carousel</title>
+
+    <script>
+      const appConfig = {
+        autoAdvance: true,
+        imageViewDuration: 10000,
+        cardWidth: "260px",
+        cardHeight: "260px",
+      };
+
+      let stories = [
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2024-03/22/full/1711089108-3549.jpg",
+          link: "https://www.business-standard.com/sports/business/rcb-rr-ipl-shift-asset-class-billion-dollar-deals-126032500693_1.html",
+          caption:
+            "RCB, RR deals signal IPL's shift from a cricket league to an asset class",
+          buttonText: "Read More",
+        },
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2026-03/24/full/1774341020-9667.jpg",
+          link: "https://www.business-standard.com/sports/business/ipl-2026-team-valuation-rcb-rajasthan-royals-billion-dollar-sale-126032500664_1.html",
+          caption:
+            "Why IPL teams are worth billions: Decoding RCB and RR's valuation playbook",
+          buttonText: "Know More",
+        },
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2025-05/13/full/1747127987-4558.jpg",
+          link: "https://www.business-standard.com/sports/business/ipl-vs-nfl-nba-and-epl-how-india-s-t20-powerhouse-stacks-up-globally-126032500699_1.html",
+          caption:
+            "IPL vs NFL, NBA and EPL: How India's T20 powerhouse stacks up globally",
+          buttonText: "Learn More",
+        },
+        {
+          src: "https://bsmedia.business-standard.com/_media/bs/img/article/2025-06/04/full/1749013043-1085.jpg",
+          link: "https://www.business-standard.com/sports/business/rcb-rr-billion-dollar-deals-ipl-valuations-returns-analysis-126032500659_1.html",
+          caption:
+            "Billion-dollar IPL deals: Do team valuations add up or signal influence?",
+          buttonText: "Read More",
+        },
+      ];
+
+      const displayStories = stories;
+    </script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: transparent !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 280px;
+        padding: 10px;
+      }
+
+      /* main widget - NO FIXED POSITIONING for CleverTap */
+      .stories-wrapper {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: right;
+      }
+
+      .stories-card {
+        width: 260px;
+        height: 260px;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .story-item {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: 0.4s;
+      }
+      .story-item.active {
+        opacity: 1;
+      }
+
+      .story-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* gradient overlay */
+      .story-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.98) 0%,
+          rgba(0, 0, 0, 0.9) 20%,
+          rgba(0, 0, 0, 0.65) 45%,
+          rgba(0, 0, 0, 0.3) 70%,
+          rgba(0, 0, 0, 0) 100%
+        );
+
+        max-height: 60%;
+        overflow-y: auto;
+      }
+
+      .story-overlay::-webkit-scrollbar {
+        display: none;
+      }
+
+      .story-caption {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.5;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      }
+
+      .action-button {
+        background: #c4122f;
+        color: #fff;
+        padding: 8px 14px;
+        border-radius: 18px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+
+      .action-button:hover {
+        background: #a01026;
+      }
+
+      /* header */
+      .stories-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 8px;
+        display: flex;
+        justify-content: space-between;
+        z-index: 20;
+        background: linear-gradient(rgba(0, 0, 0, 0.6), transparent);
+      }
+
+      .story-indicators {
+        display: flex;
+        gap: 3px;
+        flex: 1;
+      }
+
+      .story-indicator {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.3);
+        flex: 1;
+        overflow: hidden;
+        border-radius: 2px;
+      }
+
+      .story-indicator-progress {
+        height: 100%;
+        width: 0%;
+        background: #fff;
+        transition: width linear;
+      }
+
+      .icon-button {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+
+      .icon-button:hover {
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 480px) {
+        .stories-card {
+          width: 240px;
+          height: 240px;
+        }
+
+        .story-caption {
+          font-size: 12px;
+        }
+
+        .action-button {
+          font-size: 11px;
+          padding: 7px 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="stories-wrapper" class="stories-wrapper">
+      <div class="stories-card" id="card">
+        <div class="stories-header">
+          <div class="story-indicators" id="indicators"></div>
+          <!-- Close Button with CleverTap event -->
+          <button id="close" class="icon-button">✕</button>
+        </div>
+
+        <div id="container"></div>
+      </div>
+    </div>
+
+    <script>
+      const container = document.getElementById("container");
+      const indicators = document.getElementById("indicators");
+      const card = document.getElementById("card");
+      const wrapper = document.querySelector(".stories-wrapper");
+
+      let index = 0,
+        timer;
+
+      function closePopup() {
+        try {
+          // First try to close parent elements
+          var overlay =
+            window.parent.document.getElementById("intentOpacityDiv");
+          var wrapper = window.parent.document.getElementById("intentPreview");
+          if (overlay) overlay.remove();
+          if (wrapper) wrapper.remove();
+        } catch (error) {
+          console.error("Error removing parent elements:", error);
+        }
+        // Also hide the local overlay as fallback
+        document.getElementById("card").style.display = "none";
+      }
+
+      /* create stories */
+      displayStories.forEach((s, i) => {
+        let item = document.createElement("div");
+        item.className = "story-item" + (i === 0 ? " active" : "");
+
+        let img = document.createElement("img");
+        img.src = s.src;
+
+        let overlay = document.createElement("div");
+        overlay.className = "story-overlay";
+
+        let cap = document.createElement("div");
+        cap.className = "story-caption";
+        cap.innerText = s.caption;
+
+        // CTA Button with CleverTap tracking
+        let btn = document.createElement("a");
+        btn.className = "action-button";
+        btn.href = s.link;
+        btn.target = "_blank";
+        btn.innerText = s.buttonText;
+
+        overlay.append(cap, btn);
+        item.append(img, overlay);
+        container.append(item);
+
+        let ind = document.createElement("div");
+        ind.className = "story-indicator";
+
+        let prog = document.createElement("div");
+        prog.className = "story-indicator-progress";
+
+        ind.append(prog);
+        indicators.append(ind);
+      });
+
+      function update() {
+        clearTimeout(timer);
+
+        let items = document.querySelectorAll(".story-item");
+        let bars = document.querySelectorAll(".story-indicator-progress");
+
+        items.forEach((el, i) => {
+          el.classList.toggle("active", i === index);
+          bars[i].style.transition = "none";
+          bars[i].style.width = "0%";
+        });
+
+        setTimeout(() => {
+          bars[index].style.transition = "width 10s linear";
+          bars[index].style.width = "100%";
+        }, 50);
+
+        timer = setTimeout(next, 10000);
+      }
+
+      function next() {
+        index = (index + 1) % displayStories.length;
+        update();
+      }
+
+      /* tap next */
+      card.addEventListener("click", function (e) {
+        // Don't advance if clicking on the CTA button or close button
+        if (
+          !e.target.classList.contains("action-button") &&
+          !e.target.classList.contains("icon-button") &&
+          e.target.id !== "close"
+        ) {
+          next();
+        }
+      });
+
+      /* close button with CleverTap event */
+      document.getElementById("close").onclick = function (e) {
+        e.stopPropagation();
+
+        // Close the CleverTap popup
+        closePopup();
+      };
+
+      /* init */
+      update();
+    </script>
+  </body>
+</html>
