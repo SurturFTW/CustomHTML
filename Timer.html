@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GIF Offer Popup with Countdown</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* ===== TIMER: CENTERED ===== */
+      .timer-wrap {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 700px;
+        display: flex;
+        justify-content: center;
+        pointer-events: none; /* allow clicks to pass */
+        z-index: 2;
+      }
+
+      .timer {
+        display: grid;
+        grid-auto-flow: column;
+        align-items: end;
+        gap: 10px;
+      }
+
+      .unit {
+        text-align: center;
+        min-width: 60px;
+      }
+
+      /* ===== INCREASED SIZE (20% bigger) ===== */
+      .digits {
+        font-size: 38px; /* was 32px */
+        font-weight: 800;
+        color: #fff;
+        padding: 10px 14px; /* was 8px 12px */
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .label {
+        margin-top: 4px;
+        font-size: 19px; /* was 16px */
+        font-weight: 700;
+        color: #ffcc00;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Full-screen invisible CTA link */
+      .full-link {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: block;
+        background: transparent;
+        text-indent: -9999px;
+        cursor: pointer;
+      }
+
+      /* Small screen adjustments */
+      @media (max-width: 420px) {
+        .digits {
+          font-size: 34px;
+          padding: 7px 12px;
+        }
+        .label {
+          font-size: 17px;
+        }
+        .unit {
+          min-width: 50px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- GIF Banner -->
+      <img
+        src="https://cdn.credilio.in/banner/timer---last-few-hours---fullinter---re---sbmrupay---22122025--(1)-xp9rn.jpg"
+      />
+
+      <!-- TIMER OVERLAY -->
+      <div class="timer-wrap">
+        <div id="timer" class="timer" aria-live="polite">
+          <div class="unit">
+            <div class="digits" id="hh">00</div>
+            <div class="label">Hours</div>
+          </div>
+          <div class="unit">
+            <div class="digits" id="mm">00</div>
+            <div class="label">Mins</div>
+          </div>
+          <div class="unit">
+            <div class="digits" id="ss">00</div>
+            <div class="label">Secs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLICK ANYWHERE → PDF -->
+      <a
+        class="full-link"
+        name="wzrk_c2a"
+        href="https://d8sm5h456wfdd.cloudfront.net/1709270144/assets/1dc751db190746ac8e442909c8ed3577.pdf"
+        aria-label="Open offer PDF"
+        >Open offer PDF</a
+      >
+    </div>
+
+    <script>
+      function toEpochTZ(y, m, d, hh, mm, ss, tzOffsetMin) {
+        const offH = Math.trunc(tzOffsetMin / 60);
+        const offM = tzOffsetMin % 60;
+        return Date.UTC(y, m - 1, d, hh - offH, mm - offM, ss);
+      }
+
+      // Calculate end time
+      let END_TIME = toEpochTZ(2026, 03, 27, 17, 47, 0, 330); // 27 Mar 2026, 16:44:00 IST
+      const el = {
+        h: document.getElementById("hh"),
+        m: document.getElementById("mm"),
+        s: document.getElementById("ss"),
+      };
+      const pad = (n) => String(n).padStart(2, "0");
+      let tmr = null;
+      const RESTART_DELAY_MS = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
+      function tick() {
+        const now = Date.now();
+        let diff = Math.max(0, Math.floor((END_TIME - now) / 1000));
+
+        // Hours, minutes, seconds only
+        const h = Math.floor(diff / 3600);
+        diff %= 3600;
+        const m = Math.floor(diff / 60);
+        const s = diff % 60;
+
+        el.h.textContent = pad(h);
+        el.m.textContent = pad(m);
+        el.s.textContent = pad(s);
+
+        if (END_TIME <= now) {
+          // Timer expired, restart after delay
+          END_TIME = now + RESTART_DELAY_MS;
+        }
+      }
+      tick();
+      tmr = setInterval(tick, 1000);
+    </script>
+  </body>
+</html>

@@ -425,7 +425,6 @@
               src="https://dokfr0rl8fda7.cloudfront.net/generic/coinpoker_newsletter_2026/CP_emailer_logo.png"
               alt="CoinPoker"
             />
-            <!-- FIX 1: stopPropagation prevents overlay onclick from racing, then dismiss() -->
             <button
               class="close-btn"
               onclick="
@@ -668,6 +667,8 @@
     <!-- /overlay -->
 
     <script>
+      const eventName = "source_captured";
+
       var selectedValue = null;
       var selectedOptId = null;
 
@@ -742,26 +743,6 @@
         updateBtn();
       }
 
-      /* ── FIX 2: walk up the parent chain (up to 5 levels) to find CleverTap ── */
-      function getCT() {
-        var win = window;
-        for (var i = 0; i < 5; i++) {
-          if (win.clevertap && typeof win.clevertap.event === "object")
-            return win.clevertap;
-          try {
-            if (win.parent && win.parent !== win) {
-              win = win.parent;
-              continue;
-            }
-          } catch (e) {
-            break;
-          }
-          break;
-        }
-        return null;
-      }
-
-      /* ── FIX 3: clean source value + reliable profile & event push ── */
       function submit() {
         if (!document.getElementById("submitBtn").classList.contains("active"))
           return;
@@ -771,89 +752,99 @@
             ? document.getElementById("otherText").value.trim()
             : "";
 
-        /* Strip the "other__" prefix that was only used for submit-button gating */
+        // Strip the "other__" prefix that was only used for submit-button gating
         var sourceValue =
           selectedOptId === "opt-other" ? "other" : selectedValue;
 
-        /* CleverTap profile property */
+        // CleverTap profile properties
         var profileProps = { self_reported_UA_source: sourceValue };
         if (otherText)
           profileProps["self_reported_UA_source_other"] = otherText;
 
-        /* CleverTap event */
+        // CleverTap event properties
         var eventProps = { user_source: sourceValue };
         if (otherText) eventProps["other_detail"] = otherText;
 
-        try {
-          var ct = getCT();
-          if (ct) {
-            ct.profile.push({ Site: profileProps });
-            ct.event.push("source_captured", eventProps);
-            console.log(
-              "[CoinPoker Survey] profile →",
-              JSON.stringify(profileProps),
-            );
-            console.log(
-              "[CoinPoker Survey] event  →",
-              JSON.stringify(eventProps),
-            );
-          } else {
-            console.warn(
-              "[CoinPoker Survey] CleverTap not found. Payload:",
-              profileProps,
-              eventProps,
-            );
-          }
-        } catch (err) {
-          console.error("[CoinPoker Survey] CleverTap error:", err);
+        console.log("Selected Source:", sourceValue);
+        if (otherText) console.log("Other Detail:", otherText);
+
+        // Push to CleverTap (web)
+        if (window.CleverTap) {
+          CleverTap.pushEvent(eventName, JSON.stringify(eventProps));
+          CleverTap.pushProfile(JSON.stringify(profileProps));
         }
 
-        /* Show thank-you screen */
+        if (window.CleverTap) {
+          CleverTap.dismissInAppNotification();
+        }
+
+        // Push to CleverTap (iOS native) - Profile
+        var profileMessage = {
+          action: "profilePush",
+          properties: profileProps,
+        };
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.clevertap
+        ) {
+          window.webkit.messageHandlers.clevertap.postMessage(profileMessage);
+        }
+
+        // Push to CleverTap (iOS native) - Event
+        var eventMessage = {
+          action: "recordEventWithProps",
+          event: eventName,
+          properties: eventProps,
+        };
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.clevertap
+        ) {
+          window.webkit.messageHandlers.clevertap.postMessage(eventMessage);
+        }
+
+        // Close the in-app message (iOS native)
+        var closeMsg = { action: "close" };
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.clevertap
+        ) {
+          window.webkit.messageHandlers.clevertap.postMessage(closeMsg);
+        }
+
+        // Show thank-you screen
         document.getElementById("surveyScreen").style.display = "none";
         var ty = document.getElementById("thankYouScreen");
         ty.style.display = "flex";
+
+        // Close popup
+        closePopupFn();
       }
 
-      /* ── FIX 1 (full): dismiss fades + removes overlay and CT wrapper elements ── */
       function dismiss() {
-        /* Best-effort dismissal event */
-        try {
-          var ct = getCT();
-          if (ct) ct.event.push("source_survey_dismissed");
-        } catch (e) {}
+        // Dismiss CleverTap notification (web)
+        if (window.CleverTap) {
+          CleverTap.dismissInAppNotification();
+        }
 
-        var ov = document.getElementById("overlay");
-        if (!ov) return;
+        // Close iOS native in-app
+        if (
+          window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.clevertap
+        ) {
+          var closeMsg = { action: "close" };
+          window.webkit.messageHandlers.clevertap.postMessage(closeMsg);
+        }
 
-        ov.style.transition = "opacity 0.2s";
-        ov.style.opacity = "0";
+        closePopupFn();
+      }
 
-        setTimeout(function () {
-          /* Remove our overlay from the DOM */
-          if (ov.parentNode) ov.parentNode.removeChild(ov);
-
-          /* Remove CleverTap's host-page wrapper elements (both same-doc and parent-doc) */
-          [
-            "intentOpacityDiv",
-            "intentPreview",
-            "wzrk-inapp-notification",
-          ].forEach(function (id) {
-            [
-              document,
-              (function () {
-                try {
-                  return window.parent.document;
-                } catch (e) {
-                  return null;
-                }
-              })(),
-            ].forEach(function (doc) {
-              if (!doc) return;
-              var el = doc.getElementById(id);
-              if (el && el.parentNode) el.parentNode.removeChild(el);
-            });
-          });
-        }, 220);
+      function closePopupFn() {
+        document.location.href = "wzrk://thisleadstonowhere";
       }
     </script>
   </body>
