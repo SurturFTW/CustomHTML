@@ -820,8 +820,10 @@
         var ty = document.getElementById("thankYouScreen");
         ty.style.display = "flex";
 
-        // Close popup
-        closePopupFn();
+        // Close popup after a delay to let user see thank you screen
+        setTimeout(function () {
+          closePopupFn();
+        }, 2000);
       }
 
       function dismiss() {

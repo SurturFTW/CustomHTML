@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+            }
+
+            body {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                background: #f5f5f5;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 16px;
+                overflow-y: auto;
+            }
+
+            /* CARD */
+            .modal {
+                width: 100%;
+                max-width: 390px;
+                background: #fff;
+                border-radius: 22px;
+                overflow: hidden;
+                box-shadow:
+                    0 32px 80px rgba(0, 0, 0, 0.15),
+                    0 0 0 1px rgba(0, 0, 0, 0.05);
+                animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+                max-height: calc(100vh - 32px);
+                overflow-y: auto;
+            }
+
+            @keyframes rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.97);
+                }
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+
+            /* HEADER */
+            .head {
+                background: linear-gradient(
+                    160deg,
+                    #6e0000 0%,
+                    #8b0000 50%,
+                    #a80000 100%
+                );
+                padding: 20px 20px 18px;
+                position: relative;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+
+            .brand-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .brand-logo img {
+                padding: 3px;
+                background: #fff;
+                border-radius: 7px;
+                display: block;
+                width: 52px;
+            }
+
+            .brand-name {
+                font-size: 15px;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: -0.2px;
+                line-height: 1.3;
+                text-align: left;
+            }
+
+            /* BODY */
+            .body {
+                padding: 0 16px 16px;
+            }
+
+            /* TOGGLE */
+            .toggle-wrap {
+                padding: 14px 0 10px;
+            }
+
+            .toggle-label {
+                font-size: 10px;
+                font-weight: 700;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+
+            .toggle-row {
+                display: flex;
+                background: #f4f4f4;
+                border-radius: 13px;
+                padding: 4px;
+                gap: 3px;
+                position: relative;
+            }
+
+            .toggle-slider {
+                position: absolute;
+                top: 4px;
+                bottom: 4px;
+                border-radius: 10px;
+                background: #8b0000;
+                transition:
+                    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1;
+                box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+            }
+
+            .toggle-btn {
+                flex: 1;
+                padding: 9px 2px;
+                border: none;
+                background: transparent;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 12px;
+                font-weight: 600;
+                color: #888;
+                cursor: pointer;
+                border-radius: 9px;
+                z-index: 2;
+                position: relative;
+                transition: color 0.25s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                margin-top: 4px;
+            }
+
+            .toggle-btn.active {
+                color: #fff;
+            }
+
+            .toggle-btn .save-tag {
+                font-size: 7.5px;
+                font-weight: 700;
+                background: rgba(201, 166, 70, 0.2);
+                color: #b5892e;
+                border: 1px solid rgba(201, 166, 70, 0.4);
+                border-radius: 4px;
+                padding: 1px 5px;
+                position: absolute;
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
+            }
+
+            .toggle-btn.active .save-tag {
+                background: #f5c842;
+                color: #5a3d00;
+                border-color: rgba(255, 210, 100, 0.5);
+            }
+
+            /* PRICE */
+            .price-section {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                padding: 12px 0 11px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            .price-amount {
+                font-size: 26px;
+                font-weight: 800;
+                color: #111;
+                line-height: 1;
+            }
+
+            .price-original {
+                font-size: 16px;
+                color: #999;
+                text-decoration: line-through;
+                font-weight: 600;
+            }
+
+            .price-unit {
+                font-size: 13px;
+                color: #888;
+                font-weight: 500;
+                margin-top: 2px;
+            }
+
+            .price-total {
+                display: inline-flex;
+                align-items: center;
+                background: #fff8f0;
+                border: 1px solid #f5dba8;
+                border-radius: 8px;
+                padding: 5px 11px;
+                font-size: 11px;
+                font-weight: 700;
+                color: #7a5500;
+            }
+
+            /* PROMO CODE BANNER */
+            .promo-banner {
+                display: none;
+                align-items: center;
+                justify-content: space-between;
+                margin: 9px 0 2px;
+                padding: 10px 12px;
+                border-radius: 11px;
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+                border: 1.5px dashed #c0392b;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .promo-banner.visible {
+                display: flex;
+                animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+
+            .promo-eyebrow {
+                font-size: 10px;
+                font-weight: 700;
+                color: #c0392b;
+                text-transform: uppercase;
+                letter-spacing: 0.7px;
+            }
+
+            .promo-special {
+                font-size: 14px;
+                font-weight: 900;
+                color: #8b0000;
+            }
+
+            /* FEATURES */
+            .feat-section {
+                padding: 11px 0 7px;
+            }
+
+            .feat-heading {
+                font-size: 10px;
+                font-weight: 700;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 8px;
+                text-align: left;
+            }
+
+            .feat-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+            }
+
+            .feat {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                background: #fafafa;
+                border: 1px solid #f0f0f0;
+                border-radius: 9px;
+                padding: 7px 9px;
+                font-size: 11px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .feat-check {
+                margin-left: auto;
+                color: #8b0000;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            /* BONUS BOX */
+            .bonus {
+                margin: 7px 0;
+                border-radius: 13px;
+                border: 1.5px solid #e8d9a0;
+                background: linear-gradient(135deg, #fffdf0 0%, #fff8dc 100%);
+                padding: 11px;
+                position: relative;
+                overflow: hidden;
+                transition: opacity 0.3s;
+            }
+
+            .bonus.locked {
+                filter: grayscale(40%);
+            }
+
+            .bonus-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 3px;
+            }
+
+            .bonus-title {
+                font-size: 11px;
+                font-weight: 700;
+                color: #5a3d00;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .bonus-only {
+                font-size: 8px;
+                background: rgba(139, 0, 0, 0.1);
+                color: #8b0000;
+                border-radius: 4px;
+                padding: 2px 6px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+            }
+
+            .bonus-sub {
+                font-size: 10px;
+                color: #9a7b30;
+                margin-bottom: 8px;
+                font-weight: 500;
+            }
+
+            .bonus-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+            }
+
+            .bonus-item {
+                background: rgba(255, 255, 255, 0.8);
+                border: 1px solid rgba(201, 166, 70, 0.25);
+                border-radius: 7px;
+                padding: 6px 7px;
+                font-size: 10px;
+                font-weight: 600;
+                color: #5a3d00;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            /* CTA */
+            .btn {
+                width: 100%;
+                margin-top: 11px;
+                padding: 13px;
+                border: none;
+                border-radius: 13px;
+                background: linear-gradient(135deg, #8b0000 0%, #6e0000 100%);
+                color: #fff;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                letter-spacing: 0.3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition:
+                    transform 0.15s,
+                    box-shadow 0.15s;
+                box-shadow: 0 4px 14px rgba(139, 0, 0, 0.35);
+            }
+
+            .btn::after {
+                content: "→";
+            }
+
+            .btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 22px rgba(139, 0, 0, 0.45);
+            }
+
+            .btn:active {
+                transform: scale(0.98);
+            }
+
+            /* FOOT */
+            .foot {
+                text-align: center;
+                font-size: 9px;
+                color: #bbb;
+                padding: 9px 0 3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            }
+
+            .foot::before,
+            .foot::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: #f0f0f0;
+            }
+
+            /* RESPONSIVE */
+            @media (max-width: 420px) {
+                body {
+                    padding: 10px;
+                }
+                .modal {
+                    border-radius: 18px;
+                }
+                .head {
+                    padding: 16px 14px 14px;
+                }
+                .body {
+                    padding: 0 12px 14px;
+                }
+                .brand-name {
+                    font-size: 13px;
+                }
+                .brand-logo img {
+                    width: 44px !important;
+                }
+                .price-amount {
+                    font-size: 27px;
+                }
+                .toggle-btn {
+                    font-size: 11px;
+                }
+            }
+            @media (max-width: 340px) {
+                .feat-grid,
+                .bonus-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="modal">
+            <div class="head">
+                <div class="brand-row">
+                    <div class="brand-logo">
+                        <img
+                            src="https://bsmedia.business-standard.com/_media/bs/img/author/thumb/business-standard-editorial-comment-1094.png"
+                            width="52"
+                            alt="Business Standard Logo"
+                        />
+                    </div>
+                    <div class="brand-name">
+                        One subscription.<br />Two world-class reads.
+                    </div>
+                </div>
+            </div>
+
+            <div class="body">
+                <div class="toggle-wrap">
+                    <div class="toggle-label">Select your plan</div>
+                    <div class="toggle-row" id="toggleRow">
+                        <div class="toggle-slider" id="slider"></div>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <div class="price-left">
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                margin-bottom: 4px;
+                            "
+                        >
+                            <div
+                                class="price-original"
+                                id="priceOriginal"
+                            ></div>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: baseline;
+                                    gap: 4px;
+                                "
+                            >
+                                <div
+                                    class="price-amount"
+                                    id="priceDisplay"
+                                ></div>
+                                <div class="price-unit" id="priceSub"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-total" id="priceTotal"></div>
+                </div>
+
+                <!-- PROMO BANNER -->
+                <div class="promo-banner" id="promoBanner">
+                    <div class="promo-left">
+                        <div class="promo-eyebrow">Special Offer For You</div>
+                    </div>
+                    <div class="promo-right">
+                        <div class="promo-special" id="promoSpecial">
+                            <span id="promoSave"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FEATURES -->
+                <div class="feat-section">
+                    <div class="feat-heading">Everything included</div>
+                    <div class="feat-grid" id="featList"></div>
+                </div>
+
+                <!-- BONUS BOX -->
+                <div class="bonus" id="bonusBox">
+                    <div class="bonus-header">
+                        <div class="bonus-title">
+                            🎁 Pay ₹2700 &amp; Get ₹2700 Back
+                        </div>
+                        <div class="bonus-only">1 Year only</div>
+                    </div>
+                    <div class="bonus-sub">
+                        Exclusive cashback &amp; rewards on annual plan
+                    </div>
+                    <div class="bonus-grid">
+                        <div class="bonus-item">💰 ₹500 Cashback</div>
+                        <div class="bonus-item">🎬 ₹750 Movies</div>
+                        <div class="bonus-item">🍕 ₹750 Pizza</div>
+                        <div class="bonus-item">🚗 ₹750 Uber</div>
+                    </div>
+                </div>
+
+                <button class="btn" id="ctaBtn" onclick="upgradeTap()">
+                    Subscribe Now
+                </button>
+                <div class="foot">Secure · Cancel Anytime · No Hidden Fees</div>
+            </div>
+        </div>
+
+        <script>
+            const CONFIG = {
+                tiers: [
+                    {
+                        id: "vip",
+                        label: "3 Months",
+                        price: "₹900",
+                        originalPrice: "₹1200",
+                        total: "₹300/month",
+                        promoSave: "₹300 OFF",
+                        link: "https://www.business-standard.com/subscription-cart/payment",
+                    },
+                    {
+                        id: "premium",
+                        label: "1 Year",
+                        price: "₹2700",
+                        originalPrice: null,
+                        total: "₹225/month",
+                        promoSave: null,
+                        link: "https://www.business-standard.com/subscription-cart/product-offer",
+                    },
+                    {
+                        id: "ultra",
+                        label: "2 Years",
+                        price: "₹3900",
+                        originalPrice: "₹6400",
+                        total: "₹162/month",
+                        promoSave: "₹500 OFF",
+                        link: "https://www.business-standard.com/subscription-cart/payment",
+                    },
+                ],
+            };
+
+            let selected = "premium";
+
+            const FEATURES = [
+                { name: "📰 E-Paper Access" },
+                { name: "📊 Investor Insights" },
+                { name: "🌐 NYT Full Access" },
+                { name: "📱 Mobile App" },
+                { name: "🔕 Ad-free Reading" },
+                { name: "🔔 Breaking Alerts" },
+            ];
+
+            function init() {
+                buildFeatures();
+                buildToggle();
+                selectPlan("premium");
+            }
+
+            function buildToggle() {
+                const row = document.getElementById("toggleRow");
+                CONFIG.tiers.forEach((t) => {
+                    const b = document.createElement("button");
+                    b.className = "toggle-btn";
+                    b.dataset.id = t.id;
+                    b.appendChild(document.createTextNode(t.label));
+                    if (t.id === "premium") {
+                        const tag = document.createElement("div");
+                        tag.className = "save-tag";
+                        tag.textContent = "Best Value";
+                        b.appendChild(tag);
+                    }
+                    if (t.id === "ultra") {
+                        const tag = document.createElement("div");
+                        tag.className = "save-tag";
+                        tag.textContent = "Save 46%";
+                        b.appendChild(tag);
+                    }
+                    b.onclick = () => selectPlan(t.id);
+                    row.appendChild(b);
+                });
+            }
+
+            function buildFeatures() {
+                const list = document.getElementById("featList");
+                FEATURES.forEach((f) => {
+                    const el = document.createElement("div");
+                    el.className = "feat";
+                    el.innerHTML = `<span>${f.name}</span><span class="feat-check">✓</span>`;
+                    list.appendChild(el);
+                });
+            }
+
+            function selectPlan(id) {
+                selected = id;
+                const t = CONFIG.tiers.find((x) => x.id === id);
+                const idx = CONFIG.tiers.findIndex((x) => x.id === id);
+
+                const priceOriginalEl =
+                    document.getElementById("priceOriginal");
+                if (t.originalPrice) {
+                    priceOriginalEl.textContent = t.originalPrice;
+                    priceOriginalEl.style.display = "inline";
+                } else {
+                    priceOriginalEl.style.display = "none";
+                }
+                document.getElementById("priceDisplay").textContent = t.price;
+                document.getElementById("priceTotal").textContent = t.total;
+
+                const width = 100 / CONFIG.tiers.length;
+                const slider = document.getElementById("slider");
+                slider.style.left = idx * width + "%";
+                slider.style.width = width + "%";
+                document
+                    .querySelectorAll(".toggle-btn")
+                    .forEach((b, i) => b.classList.toggle("active", i === idx));
+
+                const banner = document.getElementById("promoBanner");
+                if (t.promoSave) {
+                    document.getElementById("promoSave").textContent =
+                        t.promoSave;
+                    banner.classList.add("visible");
+                } else {
+                    banner.classList.remove("visible");
+                }
+
+                document
+                    .getElementById("bonusBox")
+                    .classList.toggle("locked", id !== "premium");
+
+                // Reorder bonus box and features for premium plan
+                const bonusBox = document.getElementById("bonusBox");
+                const featSection = document.querySelector(".feat-section");
+                const body = document.querySelector(".body");
+
+                if (id === "premium") {
+                    // Move bonus box before features
+                    if (
+                        bonusBox &&
+                        featSection &&
+                        bonusBox.nextElementSibling !== featSection
+                    ) {
+                        featSection.parentNode.insertBefore(
+                            bonusBox,
+                            featSection,
+                        );
+                    }
+                } else {
+                    // Move bonus box after features (default position)
+                    if (
+                        bonusBox &&
+                        featSection &&
+                        bonusBox.previousElementSibling !== featSection
+                    ) {
+                        featSection.parentNode.insertBefore(
+                            bonusBox,
+                            featSection.nextElementSibling,
+                        );
+                    }
+                }
+
+                const btn = document.getElementById("ctaBtn");
+                const label =
+                    id === "premium"
+                        ? "Subscribe & Get ₹2700 Back "
+                        : "Subscribe Now ";
+                btn.childNodes[0].nodeValue = label;
+            }
+
+            function upgradeTap() {
+                const t = CONFIG.tiers.find((x) => x.id === selected);
+                window.open(t.link + "&source=web", "_blank");
+            }
+
+            init();
+        </script>
+    </body>
+</html>

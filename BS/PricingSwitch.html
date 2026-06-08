@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+            }
+
+            body {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                background: transparent;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 16px;
+                overflow-y: auto;
+            }
+
+            /* CLOSE BUTTON */
+            .close-btn {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.18);
+                border: 1px solid rgba(255, 255, 255, 0.28);
+                color: #fff;
+                font-size: 17px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                backdrop-filter: blur(4px);
+                transition:
+                    background 0.2s,
+                    transform 0.15s;
+                z-index: 5;
+                line-height: 1;
+            }
+            .close-btn:hover {
+                background: rgba(255, 255, 255, 0.32);
+                transform: scale(1.05);
+            }
+
+            /* CARD */
+            .modal {
+                width: 100%;
+                max-width: 390px;
+                background: #fff;
+                border-radius: 22px;
+                overflow: hidden;
+                box-shadow:
+                    0 32px 80px rgba(0, 0, 0, 0.65),
+                    0 0 0 1px rgba(255, 255, 255, 0.06);
+                animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+                max-height: calc(100vh - 32px);
+                overflow-y: auto;
+            }
+
+            @keyframes rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.97);
+                }
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+
+            /* HEADER */
+            .head {
+                background: linear-gradient(
+                    160deg,
+                    #6e0000 0%,
+                    #8b0000 50%,
+                    #a80000 100%
+                );
+                padding: 20px 20px 18px;
+                position: relative;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+            .head::before {
+                content: "";
+                position: absolute;
+                top: -40px;
+                right: -40px;
+                width: 160px;
+                height: 160px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.04);
+                pointer-events: none;
+            }
+            .head::after {
+                content: "";
+                position: absolute;
+                bottom: -60px;
+                left: -20px;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.03);
+                pointer-events: none;
+            }
+            .brand-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                position: relative;
+                z-index: 1;
+            }
+            .brand-logo img {
+                padding: 3px;
+                background: #fff;
+                border-radius: 7px;
+                display: block;
+            }
+            .brand-name {
+                font-size: 15px;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: -0.2px;
+                line-height: 1.3;
+                text-align: left;
+            }
+
+            /* BODY */
+            .body {
+                padding: 0 16px 16px;
+            }
+
+            /* TOGGLE */
+            .toggle-wrap {
+                padding: 14px 0 10px;
+            }
+            .toggle-label {
+                font-size: 10px;
+                font-weight: 700;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+            .toggle-row {
+                display: flex;
+                background: #f4f4f4;
+                border-radius: 13px;
+                padding: 4px;
+                gap: 3px;
+                position: relative;
+            }
+            .toggle-slider {
+                position: absolute;
+                top: 4px;
+                bottom: 4px;
+                border-radius: 10px;
+                background: #8b0000;
+                transition:
+                    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1;
+                box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+            }
+            .toggle-btn {
+                flex: 1;
+                padding: 9px 2px;
+                border: none;
+                background: transparent;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 12px;
+                font-weight: 600;
+                color: #888;
+                cursor: pointer;
+                border-radius: 9px;
+                z-index: 2;
+                position: relative;
+                transition: color 0.25s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                margin-top: 4px;
+            }
+            .toggle-btn.active {
+                color: #fff;
+            }
+            .toggle-btn .save-tag {
+                font-size: 7.5px;
+                font-weight: 700;
+                background: rgba(201, 166, 70, 0.2);
+                color: #b5892e;
+                border: 1px solid rgba(201, 166, 70, 0.4);
+                border-radius: 4px;
+                padding: 1px 5px;
+                position: absolute;
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
+            }
+            .toggle-btn.active .save-tag {
+                background: #f5c842;
+                color: #5a3d00;
+                border-color: rgba(255, 210, 100, 0.5);
+            }
+
+            /* PRICE */
+            .price-section {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                padding: 12px 0 11px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .price-amount {
+                font-size: 26px;
+                font-weight: 800;
+                color: #111;
+                line-height: 1;
+            }
+            .price-original {
+                font-size: 16px;
+                color: #999;
+                text-decoration: line-through;
+                font-weight: 600;
+            }
+            .price-unit {
+                font-size: 13px;
+                color: #888;
+                font-weight: 500;
+                margin-top: 2px;
+            }
+            .price-total {
+                display: inline-flex;
+                align-items: center;
+                background: #fff8f0;
+                border: 1px solid #f5dba8;
+                border-radius: 8px;
+                padding: 5px 11px;
+                font-size: 11px;
+                font-weight: 700;
+                color: #7a5500;
+            }
+
+            /* PROMO CODE BANNER */
+            .promo-banner {
+                display: none;
+                align-items: center;
+                justify-content: space-between;
+                margin: 9px 0 2px;
+                padding: 10px 12px;
+                border-radius: 11px;
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+                border: 1.5px dashed #c0392b;
+                position: relative;
+                overflow: hidden;
+            }
+            .promo-banner.visible {
+                display: flex;
+                animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+            }
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+            .promo-eyebrow {
+                font-size: 10px;
+                font-weight: 700;
+                color: #c0392b;
+                text-transform: uppercase;
+                letter-spacing: 0.7px;
+                margin-bottom: 3px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .promo-eyebrow svg {
+                width: 12px;
+                height: 12px;
+                stroke: #c0392b;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                flex-shrink: 0;
+            }
+            .promo-special {
+                font-size: 9px;
+                font-weight: 700;
+                color: #8b0000;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                background: rgba(139, 0, 0, 0.08);
+                border-radius: 6px;
+                padding: 4px 8px;
+                line-height: 1.4;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .promo-special span {
+                display: block;
+                font-size: 14px;
+                font-weight: 900;
+                color: #8b0000;
+            }
+
+            /* FEATURES */
+            .feat-section {
+                padding: 11px 0 7px;
+            }
+            .feat-heading {
+                font-size: 10px;
+                font-weight: 700;
+                color: #999;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 8px;
+                text-align: left;
+            }
+            .feat-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+            }
+            .feat {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                background: #fafafa;
+                border: 1px solid #f0f0f0;
+                border-radius: 9px;
+                padding: 7px 9px;
+                font-size: 11px;
+                font-weight: 600;
+                color: #333;
+                transition:
+                    border-color 0.2s,
+                    background 0.2s;
+            }
+            .feat:hover {
+                border-color: rgba(139, 0, 0, 0.15);
+                background: #fff8f8;
+            }
+            .feat-icon {
+                width: 22px;
+                height: 22px;
+                border-radius: 5px;
+                background: #fff0f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .feat-icon svg {
+                width: 13px;
+                height: 13px;
+                stroke: #8b0000;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .feat-check {
+                margin-left: auto;
+                color: #8b0000;
+                font-size: 10px;
+                font-weight: 700;
+            }
+
+            /* BONUS BOX */
+            .bonus {
+                margin: 7px 0;
+                border-radius: 13px;
+                border: 1.5px solid #e8d9a0;
+                background: linear-gradient(135deg, #fffdf0 0%, #fff8dc 100%);
+                padding: 11px;
+                position: relative;
+                overflow: hidden;
+                transition: opacity 0.3s;
+            }
+            .bonus::before {
+                content: "★";
+                position: absolute;
+                right: -10px;
+                top: -15px;
+                font-size: 65px;
+                color: rgba(201, 166, 70, 0.08);
+                pointer-events: none;
+            }
+            .bonus.locked {
+                filter: grayscale(40%);
+            }
+            .bonus-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 3px;
+            }
+            .bonus-title {
+                font-size: 11px;
+                font-weight: 700;
+                color: #5a3d00;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .bonus-title svg {
+                width: 14px;
+                height: 14px;
+                stroke: #b8860b;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                flex-shrink: 0;
+            }
+            .bonus-only {
+                font-size: 8px;
+                background: rgba(139, 0, 0, 0.1);
+                color: #8b0000;
+                border-radius: 4px;
+                padding: 2px 6px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+            }
+            .bonus-sub {
+                font-size: 10px;
+                color: #9a7b30;
+                margin-bottom: 8px;
+                font-weight: 500;
+            }
+            .bonus-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+            }
+            .bonus-item {
+                background: rgba(255, 255, 255, 0.8);
+                border: 1px solid rgba(201, 166, 70, 0.25);
+                border-radius: 7px;
+                padding: 6px 7px;
+                font-size: 10px;
+                font-weight: 600;
+                color: #5a3d00;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .bonus-item svg {
+                width: 13px;
+                height: 13px;
+                stroke: #b8860b;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                flex-shrink: 0;
+            }
+            .bonus-lock {
+                position: absolute;
+                inset: 0;
+                border-radius: 13px;
+                background: rgba(255, 255, 255, 0.5);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(1px);
+            }
+            .bonus-lock svg {
+                width: 22px;
+                height: 22px;
+                stroke: #888;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .bonus.locked .bonus-lock {
+                display: flex;
+            }
+
+            /* CTA */
+            .btn {
+                width: 100%;
+                margin-top: 11px;
+                padding: 13px;
+                border: none;
+                border-radius: 13px;
+                background: linear-gradient(135deg, #8b0000 0%, #6e0000 100%);
+                color: #fff;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                letter-spacing: 0.3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition:
+                    transform 0.15s,
+                    box-shadow 0.15s;
+                box-shadow: 0 4px 14px rgba(139, 0, 0, 0.35);
+            }
+            .btn::after {
+                content: "→";
+            }
+            .btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 22px rgba(139, 0, 0, 0.45);
+            }
+            .btn:active {
+                transform: scale(0.98);
+            }
+
+            /* FOOT */
+            .foot {
+                text-align: center;
+                font-size: 9px;
+                color: #bbb;
+                padding: 9px 0 3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            }
+            .foot::before,
+            .foot::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: #f0f0f0;
+            }
+
+            /* RESPONSIVE */
+            @media (max-width: 420px) {
+                body {
+                    padding: 10px;
+                }
+                .modal {
+                    border-radius: 18px;
+                }
+                .head {
+                    padding: 16px 14px 14px;
+                }
+                .body {
+                    padding: 0 12px 14px;
+                }
+                .brand-name {
+                    font-size: 13px;
+                }
+                .brand-logo img {
+                    width: 44px !important;
+                }
+                .price-amount {
+                    font-size: 27px;
+                }
+                .toggle-btn {
+                    font-size: 11px;
+                }
+            }
+            @media (max-width: 340px) {
+                .feat-grid,
+                .bonus-grid {
+                    grid-template-columns: 1fr;
+                }
+                .promo-banner {
+                    flex-direction: column;
+                    gap: 7px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="modal">
+            <div class="head">
+                <div class="close-btn" onclick="closeModal()">x</div>
+                <div class="brand-row">
+                    <div class="brand-logo">
+                        <img
+                            src="https://bsmedia.business-standard.com/_media/bs/img/author/thumb/business-standard-editorial-comment-1094.png"
+                            width="52"
+                            alt="Business Standard Logo"
+                        />
+                    </div>
+                    <div class="brand-name">
+                        One subscription.<br />Two world-class reads.
+                    </div>
+                </div>
+            </div>
+
+            <div class="body">
+                <div class="toggle-wrap">
+                    <div class="toggle-label">
+                        Deal of the Month on Premium Plans
+                    </div>
+                    <div class="toggle-row" id="toggleRow">
+                        <div class="toggle-slider" id="slider"></div>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <div class="price-left">
+                        <div
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                margin-bottom: 4px;
+                            "
+                        >
+                            <div
+                                class="price-original"
+                                id="priceOriginal"
+                            ></div>
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: baseline;
+                                    gap: 4px;
+                                "
+                            >
+                                <div
+                                    class="price-amount"
+                                    id="priceDisplay"
+                                ></div>
+                                <div class="price-unit" id="priceSub"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-total" id="priceTotal"></div>
+                </div>
+
+                <!-- PROMO BANNER -->
+                <div class="promo-banner" id="promoBanner">
+                    <div class="promo-left">
+                        <div class="promo-eyebrow">
+                            <!-- Ticket icon -->
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"
+                                />
+                                <path d="M13 5v2M13 17v2M13 11v2" />
+                            </svg>
+                            Special Offer For You
+                        </div>
+                    </div>
+                    <div class="promo-right">
+                        <div class="promo-special" id="promoSpecial">
+                            <span id="promoSave"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FEATURES -->
+                <div class="feat-section">
+                    <div class="feat-heading">Here's what's included</div>
+                    <div class="feat-grid" id="featList"></div>
+                </div>
+
+                <!-- BONUS BOX -->
+                <div class="bonus" id="bonusBox">
+                    <div class="bonus-header">
+                        <div class="bonus-title">
+                            <!-- Gift icon -->
+                            <svg viewBox="0 0 24 24">
+                                <polyline points="20 12 20 22 4 22 4 12" />
+                                <rect x="2" y="7" width="20" height="5" />
+                                <line x1="12" y1="22" x2="12" y2="7" />
+                                <path
+                                    d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"
+                                />
+                                <path
+                                    d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"
+                                />
+                            </svg>
+                            Pay ₹2700 & Get ₹2700 Back *
+                        </div>
+                        <div class="bonus-only">1 Year only</div>
+                    </div>
+                    <div class="bonus-grid">
+                        <div class="bonus-item">
+                            <!-- Banknote icon -->
+                            <svg viewBox="0 0 24 24">
+                                <rect
+                                    x="2"
+                                    y="6"
+                                    width="20"
+                                    height="12"
+                                    rx="2"
+                                />
+                                <circle cx="12" cy="12" r="2" />
+                                <path d="M6 12h.01M18 12h.01" />
+                            </svg>
+                            ₹500 Cashback
+                        </div>
+                        <div class="bonus-item">
+                            <!-- Film / Clapperboard icon -->
+                            <svg viewBox="0 0 24 24">
+                                <rect
+                                    x="2"
+                                    y="2"
+                                    width="20"
+                                    height="20"
+                                    rx="2.18"
+                                />
+                                <line x1="7" y1="2" x2="7" y2="22" />
+                                <line x1="17" y1="2" x2="17" y2="22" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <line x1="2" y1="7" x2="7" y2="7" />
+                                <line x1="2" y1="17" x2="7" y2="17" />
+                                <line x1="17" y1="17" x2="22" y2="17" />
+                                <line x1="17" y1="7" x2="22" y2="7" />
+                            </svg>
+                            ₹750 Movies
+                        </div>
+                        <div class="bonus-item">
+                            <!-- Utensils icon -->
+                            <svg viewBox="0 0 24 24">
+                                <line x1="3" y1="2" x2="3" y2="22" />
+                                <path
+                                    d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"
+                                />
+                                <path d="M3 11h4" />
+                                <line x1="3" y1="6" x2="7" y2="6" />
+                            </svg>
+                            ₹750 Pizza
+                        </div>
+                        <div class="bonus-item">
+                            <!-- Car icon -->
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9a2 2 0 0 1-2 2h-2"
+                                />
+                                <circle cx="7" cy="17" r="2" />
+                                <circle cx="17" cy="17" r="2" />
+                            </svg>
+                            ₹750 Uber
+                        </div>
+                    </div>
+                    <div class="bonus-lock">
+                        <!-- Lock icon -->
+                        <svg viewBox="0 0 24 24">
+                            <rect
+                                x="3"
+                                y="11"
+                                width="18"
+                                height="11"
+                                rx="2"
+                                ry="2"
+                            />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                </div>
+
+                <button class="btn" id="ctaBtn" onclick="upgradeTap()">
+                    Subscribe Now
+                </button>
+                <div class="foot">Renews automatically, cancel anytime</div>
+            </div>
+        </div>
+
+        <script>
+            /* ── inline SVG strings for each feature ── */
+            const ICON = {
+                newspaper: `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2V9a1 1 0 0 1 1-1h2"/>
+<line x1="16" y1="8" x2="10" y2="8"/><line x1="16" y1="12" x2="10" y2="12"/>
+<line x1="16" y1="16" x2="10" y2="16"/>
+</svg>`,
+                chart: `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<line x1="18" y1="20" x2="18" y2="10"/>
+<line x1="12" y1="20" x2="12" y2="4"/>
+<line x1="6" y1="20" x2="6" y2="14"/>
+<line x1="2" y1="20" x2="22" y2="20"/>
+</svg>`,
+                globe: `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"/>
+<line x1="2" y1="12" x2="22" y2="12"/>
+<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+</svg>`,
+                smartphone: `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+<line x1="12" y1="18" x2="12.01" y2="18"/>
+</svg>`,
+                shieldOff: `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"/>
+<path d="M4.73 4.73 4 5v7a11.64 11.64 0 0 0 5.17 9.05L12 23l2.48-1.42"/>
+<line x1="1" y1="1" x2="23" y2="23"/>
+</svg>`,
+                bell: `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+</svg>`,
+            };
+
+            const CONFIG = {
+                tiers: [
+                    {
+                        id: "vip",
+                        label: "3 Months",
+                        price: "₹600",
+                        originalPrice: "₹900",
+                        total: "₹200/month",
+                        promoSave: "₹300 OFF",
+                        link: "https://www.business-standard.com/subscription-cart/payment?promotionoffer=MTY2JlNBVkUzMDA=&utm_source=CT&utm_medium=webpopup",
+                    },
+                    {
+                        id: "premium",
+                        label: "1 Year",
+                        price: "₹0*",
+                        originalPrice: "₹2700",
+                        total: "₹225/month",
+                        promoSave: null,
+                        link: "https://www.business-standard.com/subscription-cart/product-offer",
+                    },
+                    {
+                        id: "ultra",
+                        label: "2 Years",
+                        price: "₹3400",
+                        originalPrice: "₹3900",
+                        total: "₹141/month",
+                        promoSave: "₹500 OFF",
+                        link: "https://www.business-standard.com/subscription-cart/payment?promotionoffer=MTY5JlNBVkU1MDA=&utm_source=CT&utm_medium=webpopup",
+                    },
+                ],
+            };
+
+            let selected = "premium";
+
+            const FEATURES = [
+                { svg: ICON.newspaper, name: "E-Paper Access" },
+                { svg: ICON.chart, name: "Smart Investor" },
+                { svg: ICON.globe, name: "New York Times" },
+                { svg: ICON.smartphone, name: "30+ Premium Articles" },
+                { svg: ICON.shieldOff, name: "Ad-free Reading" },
+                { svg: ICON.bell, name: "Curated Newsletters" },
+            ];
+
+            function init() {
+                buildFeatures();
+                buildToggle();
+                selectPlan("premium");
+            }
+
+            function buildToggle() {
+                const row = document.getElementById("toggleRow");
+                CONFIG.tiers.forEach((t) => {
+                    const b = document.createElement("button");
+                    b.className = "toggle-btn";
+                    b.dataset.id = t.id;
+                    b.appendChild(document.createTextNode(t.label));
+                    if (t.id === "premium") {
+                        const tag = document.createElement("div");
+                        tag.className = "save-tag";
+                        tag.textContent = "Best Value";
+                        b.appendChild(tag);
+                    }
+                    if (t.id === "ultra") {
+                        const tag = document.createElement("div");
+                        tag.className = "save-tag";
+                        tag.textContent = "Save 46%";
+                        b.appendChild(tag);
+                    }
+                    b.onclick = () => selectPlan(t.id);
+                    row.appendChild(b);
+                });
+            }
+
+            function buildFeatures() {
+                const list = document.getElementById("featList");
+                FEATURES.forEach((f) => {
+                    const el = document.createElement("div");
+                    el.className = "feat";
+                    el.innerHTML = `
+<div class="feat-icon">${f.svg}</div>
+<span>${f.name}</span>
+<span class="feat-check">✓</span>`;
+                    list.appendChild(el);
+                });
+            }
+
+            function selectPlan(id) {
+                selected = id;
+                const t = CONFIG.tiers.find((x) => x.id === id);
+                const idx = CONFIG.tiers.findIndex((x) => x.id === id);
+
+                const priceOriginalEl =
+                    document.getElementById("priceOriginal");
+                if (t.originalPrice) {
+                    priceOriginalEl.textContent = t.originalPrice;
+                    priceOriginalEl.style.display = "inline";
+                } else {
+                    priceOriginalEl.style.display = "none";
+                }
+                document.getElementById("priceDisplay").textContent = t.price;
+                document.getElementById("priceTotal").textContent = t.total;
+
+                const width = 100 / CONFIG.tiers.length;
+                const slider = document.getElementById("slider");
+                slider.style.left = idx * width + "%";
+                slider.style.width = width + "%";
+                document
+                    .querySelectorAll(".toggle-btn")
+                    .forEach((b, i) => b.classList.toggle("active", i === idx));
+
+                const banner = document.getElementById("promoBanner");
+                if (t.promoSave) {
+                    document.getElementById("promoSave").textContent =
+                        t.promoSave;
+                    banner.classList.add("visible");
+                } else {
+                    banner.classList.remove("visible");
+                }
+
+                document
+                    .getElementById("bonusBox")
+                    .classList.toggle("locked", id !== "premium");
+
+                // Reorder bonus box and features for premium plan
+                const bonusBox = document.getElementById("bonusBox");
+                const featSection = document.querySelector(".feat-section");
+                const body = document.querySelector(".body");
+
+                if (id === "premium") {
+                    // Move bonus box before features
+                    if (
+                        bonusBox &&
+                        featSection &&
+                        bonusBox.nextElementSibling !== featSection
+                    ) {
+                        featSection.parentNode.insertBefore(
+                            bonusBox,
+                            featSection,
+                        );
+                    }
+                } else {
+                    // Move bonus box after features (default position)
+                    if (
+                        bonusBox &&
+                        featSection &&
+                        bonusBox.previousElementSibling !== featSection
+                    ) {
+                        featSection.parentNode.insertBefore(
+                            bonusBox,
+                            featSection.nextElementSibling,
+                        );
+                    }
+                }
+
+                const btn = document.getElementById("ctaBtn");
+                const label =
+                    id === "premium" ? "Subscribe Now " : "Subscribe Now ";
+                btn.childNodes[0].nodeValue = label;
+            }
+
+            function upgradeTap() {
+                const t = CONFIG.tiers.find((x) => x.id === selected).link;
+                setTimeout(() => {
+                    window.open(t, "_blank");
+                    closeModal();
+                }, 300);
+            }
+
+            function closeModal() {
+                try {
+                    const overlay =
+                        window.parent.document.getElementById(
+                            "intentOpacityDiv",
+                        );
+                    const wrapper =
+                        window.parent.document.getElementById("intentPreview");
+                    if (overlay) overlay.remove();
+                    if (wrapper) wrapper.remove();
+                } catch (e) {}
+                document.querySelector(".modal").style.display = "none";
+                document.body.style.display = "none";
+            }
+
+            init();
+        </script>
+    </body>
+</html>
