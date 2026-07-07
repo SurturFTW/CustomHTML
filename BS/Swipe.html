@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+        />
+        <title>Business Standard Popup</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                font-family: "Inter", sans-serif;
+                overflow: hidden;
+            }
+
+            body {
+                background: rgba(0, 0, 0, 0.62);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px;
+            }
+
+            /* POPUP */
+
+            .modal-container {
+                width: 100%;
+                max-width: 430px;
+                height: min(78vh, 360px);
+                background: #fff;
+                border-radius: 14px;
+                overflow: visible;
+                position: relative;
+                border: 1px solid #f3d7dc;
+                box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+                animation: show 0.3s ease;
+                transform-origin: center bottom;
+            }
+
+            @keyframes show {
+                from {
+                    opacity: 0;
+                    transform: translateY(14px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            /* FOLD CLOSE */
+
+            .fold-close {
+                animation: newspaperClose 1s forwards
+                    cubic-bezier(0.6, 0.05, 0.35, 1);
+            }
+
+            @keyframes newspaperClose {
+                0% {
+                    opacity: 1;
+                    transform: rotateX(0deg) scale(1);
+                }
+                35% {
+                    transform: rotateX(-20deg) scale(0.96);
+                }
+                100% {
+                    opacity: 0;
+                    transform: rotateX(-90deg) translateY(180px) scale(0.18);
+                }
+            }
+
+            .top-strip {
+                height: 4px;
+                background: linear-gradient(90deg, #c8102e, #a00e24, #c8102e);
+                border-radius: 14px 14px 0 0;
+            }
+
+            .modal {
+                width: 100%;
+                height: 100%;
+                padding: 14px;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                border-radius: 0 0 14px 14px;
+                background: #fff;
+            }
+
+            .dismiss-btn {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                width: 26px;
+                height: 26px;
+                border: none;
+                border-radius: 50%;
+                background: #f3f3f3;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 800;
+                z-index: 999;
+            }
+
+            /* SCREENS */
+
+            .screen {
+                display: none;
+                width: 100%;
+                height: 100%;
+            }
+
+            .screen.active {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                animation: fade 0.22s ease;
+            }
+
+            @keyframes fade {
+                from {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* COVER */
+
+            .logo {
+                font-size: 17px;
+                font-weight: 800;
+                margin-bottom: 8px;
+                color: #111;
+            }
+
+            .logo span {
+                color: #c8102e;
+            }
+
+            .logo-img {
+                max-width: 250px;
+                height: auto;
+                margin-bottom: 8px;
+            }
+            .logo-img_2 {
+                max-width: 150px;
+                height: auto;
+                margin-bottom: 8px;
+            }
+
+            .hero {
+                font-size: 34px;
+                margin-bottom: 8px;
+            }
+
+            .title {
+                font-size: 19px;
+                font-weight: 800;
+                line-height: 1.2;
+                margin-bottom: 6px;
+                color: #111;
+            }
+
+            .title span {
+                color: #c8102e;
+            }
+
+            .sub {
+                font-size: 11px;
+                line-height: 1.5;
+                color: #666;
+                max-width: 320px;
+                margin-bottom: 12px;
+            }
+
+            .badges {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 14px;
+            }
+
+            .badge {
+                padding: 6px 10px;
+                font-size: 10px;
+                font-weight: 800;
+                border-radius: 999px;
+            }
+
+            .red {
+                background: #fff1f3;
+                color: #c8102e;
+            }
+
+            .green {
+                background: #edfdf3;
+                color: #15803d;
+            }
+
+            .btn {
+                border: none;
+                background: #c8102e;
+                color: #fff;
+                padding: 10px 18px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 800;
+                cursor: pointer;
+            }
+
+            /* SWIPE */
+
+            .header {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            .brand-mini {
+                font-size: 13px;
+                font-weight: 800;
+            }
+
+            .brand-mini span {
+                color: #c8102e;
+            }
+
+            .counter {
+                font-size: 10px;
+                font-weight: 800;
+                color: #777;
+            }
+
+            .progress {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 18px;
+            }
+
+            .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 99px;
+                background: #e5e5e5;
+            }
+
+            .dot.current {
+                width: 20px;
+                background: #c8102e;
+            }
+
+            .dot.done {
+                background: #f4a6b3;
+            }
+
+            .stack {
+                position: relative;
+                width: min(100%, 290px);
+                height: 178px;
+                overflow: visible;
+            }
+
+            .card {
+                position: absolute;
+                inset: 0;
+                background: #fff;
+                border-radius: 14px;
+                border: 1px solid #ececec;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+                padding: 14px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                cursor: grab;
+                touch-action: none;
+                user-select: none;
+            }
+
+            /* CALENDAR LOWERED */
+
+            .day-badge {
+                position: absolute;
+                top: -12px;
+                left: 30%;
+                transform: translateX(-50%);
+                background: #fff;
+                border: 1px solid #d8d8d8;
+                border-radius: 8px;
+                padding: 4px 1px;
+                font-size: 11px;
+                font-weight: 700;
+                /* color:#444; */
+                /* box-shadow:0 3px 8px rgba(0,0,0,.05); */
+                z-index: 5;
+            }
+
+            .tag {
+                position: absolute;
+                top: 12px;
+                padding: 5px 9px;
+                font-size: 9px;
+                font-weight: 800;
+                border-radius: 8px;
+                opacity: 0;
+            }
+
+            .left {
+                left: 12px;
+                border: 2px solid #ef4444;
+                color: #ef4444;
+                transform: rotate(-10deg);
+            }
+
+            .right {
+                right: 12px;
+                border: 2px solid #16a34a;
+                color: #16a34a;
+                transform: rotate(10deg);
+            }
+
+            .icon {
+                font-size: 34px;
+                margin-bottom: 8px;
+            }
+
+            .card-title {
+                font-size: 16px;
+                font-weight: 800;
+                margin-bottom: 6px;
+                color: #111;
+            }
+
+            .card-sub {
+                font-size: 11px;
+                line-height: 1.45;
+                color: #666;
+                max-width: 240px;
+            }
+
+            .actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 14px;
+            }
+
+            .circle {
+                width: 40px;
+                height: 40px;
+                border: none;
+                border-radius: 50%;
+                font-size: 17px;
+                font-weight: 800;
+                cursor: pointer;
+            }
+
+            .no {
+                background: #fff1f2;
+                color: #ef4444;
+            }
+
+            .yes {
+                background: #ecfdf3;
+                color: #16a34a;
+            }
+
+            /* RESULT */
+
+            .spark {
+                font-size: 42px;
+                margin-bottom: 8px;
+            }
+
+            .result-title {
+                font-size: 19px;
+                font-weight: 800;
+                margin-bottom: 6px;
+            }
+
+            .result-sub {
+                font-size: 11px;
+                line-height: 1.5;
+                color: #666;
+                max-width: 300px;
+                margin-bottom: 10px;
+            }
+
+            .chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: center;
+                margin-bottom: 12px;
+                max-width: 320px;
+            }
+
+            .chip {
+                padding: 6px 8px;
+                font-size: 9px;
+                font-weight: 800;
+                border-radius: 999px;
+                background: #fff1f3;
+                border: 1px solid #f4c9d0;
+                color: #c8102e;
+            }
+
+            .email-wrap {
+                width: 100%;
+                max-width: 300px;
+                display: flex;
+                gap: 8px;
+            }
+
+            .email {
+                flex: 1;
+                height: 38px;
+                padding: 0 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 12px;
+                outline: none;
+            }
+
+            .submit {
+                height: 38px;
+                padding: 0 14px;
+                border: none;
+                border-radius: 8px;
+                background: #c8102e;
+                color: #fff;
+                font-size: 12px;
+                font-weight: 800;
+                cursor: pointer;
+            }
+
+            .warning,
+            .success {
+                margin-top: 8px;
+                font-size: 10px;
+                font-weight: 700;
+                display: none;
+            }
+
+            .warning {
+                color: #ef4444;
+            }
+
+            .success {
+                color: #15803d;
+            }
+
+            @media (max-width: 520px) {
+                .modal-container {
+                    max-width: 100%;
+                    height: 80vh;
+                }
+                .email-wrap {
+                    flex-direction: column;
+                }
+                .submit {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <canvas
+            id="confettiCanvas"
+            style="
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 999;
+            "
+        ></canvas>
+
+        <div class="modal-container" id="popup">
+            <div class="top-strip"></div>
+
+            <div class="modal">
+                <button class="dismiss-btn" onclick="dismiss()">✕</button>
+
+                <!-- COVER -->
+
+                <div class="screen active" id="cover">
+                    <img
+                        src="https://www.speakin.co/edit/wp-content/uploads/2019/05/business-standard-logo-2.png"
+                        alt="Business Standard"
+                        class="logo-img"
+                    />
+
+                    <div class="hero">📫</div>
+
+                    <div class="title">
+                        Tailor 2 Your <span>Daily Intel</span>
+                    </div>
+
+                    <div class="sub">
+                        Swipe right to subscribe or left to skip and personalise
+                        your newsletters in seconds.
+                    </div>
+
+                    <div class="badges">
+                        <div class="badge red">⬅ Skip</div>
+                        <div class="badge green">Subscribe ➜</div>
+                    </div>
+
+                    <button class="btn" onclick="startSwipe()">LET'S GO</button>
+                </div>
+
+                <!-- SWIPE -->
+
+                <div class="screen" id="swipe">
+                    <div class="header">
+                        <img
+                            src="https://www.speakin.co/edit/wp-content/uploads/2019/05/business-standard-logo-2.png"
+                            alt="Business Standard"
+                            class="logo-img_2"
+                        />
+                        <div class="counter" id="counter">1 / 6</div>
+                    </div>
+
+                    <div class="progress" id="progress"></div>
+
+                    <div class="stack" id="stack"></div>
+
+                    <div class="actions">
+                        <button class="circle no" onclick="buttonSwipe('left')">
+                            ✕
+                        </button>
+                        <button
+                            class="circle yes"
+                            onclick="buttonSwipe('right')"
+                        >
+                            ♥
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RESULT -->
+
+                <div class="screen" id="result">
+                    <div class="spark">✨</div>
+
+                    <div class="result-title">Stay Updated!</div>
+
+                    <div class="result-sub">
+                        Enter your email ID to receive your selected newsletter
+                        updates.
+                    </div>
+
+                    <div class="chips" id="chips"></div>
+
+                    <div class="email-wrap">
+                        <input
+                            type="email"
+                            id="email"
+                            class="email"
+                            placeholder="Enter Email ID"
+                        />
+                        <button class="submit" onclick="submitEmail()">
+                            Submit
+                        </button>
+                    </div>
+
+                    <div class="warning" id="warning">
+                        ⚠ Please fill your Email ID correctly
+                    </div>
+                    <div class="success" id="success">
+                        ✓ Thank you! Updates coming soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+        <script>
+            const cards = [
+                {
+                    day: "🗓 Monday to Friday",
+                    emoji: "🚀",
+                    title: "The Smart Investor",
+                    sub: "Stay ahead of the market with insights on buzzing stocks and actionable information to guide your investment decisions.",
+                },
+                {
+                    day: "🗓 Thursday",
+                    emoji: "💎",
+                    title: "Personal Finance",
+                    sub: "Get a guide on managing financial resources better through informed earning, investing and spending.",
+                },
+                {
+                    day: "🗓 Tuesday",
+                    emoji: "🏛️",
+                    title: "Policy & Politics",
+                    sub: "Our weekly insights on headline-grabbing political moves and matters of policy.",
+                },
+                {
+                    day: "🗓 Wednesday-Fortnightly",
+                    emoji: "🔌",
+                    title: "Technology",
+                    sub: "Subscribe to this weekly newsletter for insights into the latest cutting-edge technologies",
+                },
+                {
+                    day: "🗓 Monday",
+                    emoji: "⚖️",
+                    title: "The Strategic View",
+                    sub: "Your weekly guide to the latest news in defence and geopolitics. Plus, insights.",
+                },
+                {
+                    day: "🗓",
+                    emoji: "🥂",
+                    title: "Indulgence Luxury Ledger",
+                    sub: "Our quarterly luxury and lifestyle newsletter showcasing the finest of premium living, culture and design.",
+                },
+            ];
+
+            let i = 0;
+            let liked = [];
+            let startX = 0;
+            let moveX = 0;
+            let dragging = false;
+            let activeCard = null;
+            const threshold = 70;
+
+            function show(id) {
+                document
+                    .querySelectorAll(".screen")
+                    .forEach((s) => s.classList.remove("active"));
+                document.getElementById(id).classList.add("active");
+            }
+
+            function startSwipe() {
+                show("swipe");
+                dots();
+                render();
+            }
+
+            function dots() {
+                const p = document.getElementById("progress");
+                p.innerHTML = "";
+                cards.forEach((_, n) => {
+                    const d = document.createElement("div");
+                    d.className = "dot" + (n === 0 ? " current" : "");
+                    p.appendChild(d);
+                });
+            }
+
+            function updateDots() {
+                document.querySelectorAll(".dot").forEach((d, n) => {
+                    d.className = "dot";
+                    if (n < i) d.classList.add("done");
+                    if (n === i) d.classList.add("current");
+                });
+            }
+
+            function render() {
+                const stack = document.getElementById("stack");
+                stack.innerHTML = "";
+
+                for (let n = Math.min(i + 1, cards.length - 1); n >= i; n--) {
+                    const c = cards[n];
+                    const el = document.createElement("div");
+                    el.className = "card";
+
+                    if (n > i) {
+                        el.style.transform = "scale(.96) translateY(8px)";
+                    }
+
+                    el.innerHTML = `
+<div class="day-badge">${c.day}</div>
+<div class="tag left">SKIP</div>
+<div class="tag right">SUBSCRIBE</div>
+<div class="icon">${c.emoji}</div>
+<div class="card-title">${c.title}</div>
+<div class="card-sub">${c.sub}</div>
+`;
+
+                    stack.appendChild(el);
+
+                    if (n === i) {
+                        activeCard = el;
+                        drag(el);
+                    }
+                }
+
+                document.getElementById("counter").innerText =
+                    `${i + 1} / ${cards.length}`;
+            }
+
+            function drag(card) {
+                card.onpointerdown = (e) => {
+                    dragging = true;
+                    startX = e.clientX;
+                    moveX = 0;
+                    card.style.transition = "none";
+                };
+
+                window.onpointermove = (e) => {
+                    if (!dragging) return;
+
+                    moveX = e.clientX - startX;
+                    card.style.transform = `translateX(${moveX}px) rotate(${moveX / 18}deg)`;
+
+                    card.querySelector(".right").style.opacity = Math.max(
+                        0,
+                        moveX / 55,
+                    );
+                    card.querySelector(".left").style.opacity = Math.max(
+                        0,
+                        -moveX / 55,
+                    );
+                };
+
+                window.onpointerup = () => {
+                    if (!dragging) return;
+                    dragging = false;
+
+                    if (Math.abs(moveX) > threshold) {
+                        fly(moveX > 0 ? "right" : "left");
+                    } else {
+                        card.style.transition = ".25s ease";
+                        card.style.transform = "translateX(0) rotate(0)";
+                        card.querySelector(".right").style.opacity = 0;
+                        card.querySelector(".left").style.opacity = 0;
+                    }
+                };
+            }
+
+            function buttonSwipe(dir) {
+                if (activeCard) fly(dir);
+            }
+
+            function fly(dir) {
+                activeCard.style.transition = ".38s ease";
+
+                activeCard.style.transform =
+                    dir === "right"
+                        ? "translateX(900px) rotate(30deg)"
+                        : "translateX(-900px) rotate(-30deg)";
+
+                activeCard.style.opacity = "0";
+
+                if (dir === "right") {
+                    liked.push(cards[i].title);
+                }
+
+                setTimeout(() => {
+                    i++;
+                    if (i >= cards.length) {
+                        finish();
+                    } else {
+                        updateDots();
+                        render();
+                    }
+                }, 220);
+            }
+
+            function finish() {
+                show("result");
+
+                const chips = document.getElementById("chips");
+                chips.innerHTML = "";
+
+                if (liked.length === 0) {
+                    chips.innerHTML =
+                        '<div class="chip">No newsletter selected</div>';
+                } else {
+                    liked.forEach((x) => {
+                        chips.innerHTML += `<div class="chip">✓ ${x}</div>`;
+                    });
+                }
+
+                confettiBlast();
+            }
+
+            function submitEmail() {
+                const email = document.getElementById("email").value.trim();
+                const warning = document.getElementById("warning");
+                const success = document.getElementById("success");
+
+                warning.style.display = "none";
+                success.style.display = "none";
+
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (email === "" || !regex.test(email)) {
+                    warning.style.display = "block";
+                    return;
+                }
+
+                success.style.display = "block";
+                confettiBlast();
+
+                recordEvent("Newsletter Subscription", {
+                    "Newsletter name": "Business Standard Popup",
+                    "Newsletter email ID": email,
+                    Channel: "Web pop-up",
+                });
+
+                setTimeout(() => {
+                    dismiss();
+                }, 1200);
+            }
+
+            // Record events to CleverTap
+            function recordEvent(eventName, props) {
+                // const message = {
+                // action: "recordEventWithProps",
+                // event: eventName,
+                // properties: props,
+                // };
+
+                // Fallback for environments where CleverTap is not available
+                console.log("Event recorded:", eventName, props);
+                window.parent.clevertap.event.push(eventName, props);
+            }
+
+            function confettiBlast() {
+                const blast = confetti.create(
+                    document.getElementById("confettiCanvas"),
+                    { resize: true },
+                );
+
+                blast({
+                    particleCount: 130,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ["#C8102E", "#111111", "#ffffff"],
+                });
+            }
+
+            function dismiss() {
+                console.log("Close button clicked"); // Debug log
+                // web or other environments
+                console.log("Closing via web/fallback method");
+                try {
+                    var overlay =
+                        window.parent.document.getElementById(
+                            "intentOpacityDiv",
+                        );
+                    var wrapper =
+                        window.parent.document.getElementById("intentPreview");
+                    if (overlay) overlay.remove();
+                    if (wrapper) wrapper.remove();
+                } catch (error) {
+                    console.error("Error removing parent elements:", error);
+                }
+
+                document.getElementById("overlay").style.display = "none";
+            }
+        </script>
+    </body>
+</html>
