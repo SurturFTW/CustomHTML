@@ -1,0 +1,183 @@
+<style>
+    /* General Reset */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Sticky Bottom Banner */
+    .sticky-banner {
+        position: relative;
+        width: 100%;
+        z-index: 9999;
+        min-height: 68px;
+        padding: 10px 50px 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        background-color: #a71919;
+        background-image: linear-gradient(180deg, #b01a1a 0%, #961515 100%);
+        border-top: 2px solid #7d0c0c;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Banner content layout */
+    .banner-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    /* Text section */
+    .text-section {
+        flex-shrink: 0;
+        text-align: left;
+    }
+
+    .headline {
+        display: block;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+    }
+
+    .subtext {
+        display: block;
+        margin-top: 2px;
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.95;
+    }
+
+    /* CTA button */
+    .cta-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        padding: 0 20px;
+        margin-top: 0;
+        color: #8f1313;
+        font-size: 14px;
+        font-weight: 900;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        white-space: nowrap;
+        background-color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 4px 0 #cfcfcf;
+        transition:
+            transform 0.1s,
+            box-shadow 0.1s;
+    }
+
+    .cta-btn:hover {
+        background-color: #f9f9f9;
+    }
+
+    .cta-btn:active {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 #cfcfcf;
+    }
+
+    /* Close button */
+    .close-btn {
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        padding: 5px;
+        color: #ffffff;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        background: none;
+        border: none;
+        opacity: 0.8;
+        transform: translateY(-50%);
+    }
+
+    .close-btn:hover {
+        opacity: 1;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 950px) {
+        .sticky-banner {
+            height: auto;
+            min-height: auto;
+            padding: 28px 16px 14px;
+            flex-direction: column;
+        }
+
+        .banner-content {
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .text-section {
+            width: 100%;
+            text-align: center;
+        }
+
+        .headline {
+            font-size: 19px;
+        }
+
+        .subtext {
+            font-size: 13px;
+        }
+
+        .cta-btn {
+            width: 100%;
+            height: 40px;
+            margin-top: 0;
+        }
+
+        .close-btn {
+            top: 8px;
+            right: 10px;
+            font-size: 22px;
+            transform: none;
+        }
+    }
+</style>
+
+<!-- START: Sticky Banner Code -->
+
+<div class="sticky-banner" id="bsStickyBanner">
+    <div class="banner-content">
+        <div class="text-section">
+            <span class="headline">Continue reading premium articles</span>
+            <span class="subtext">
+                Get 3 months BS digital subscription at just ₹600. Use code
+                <b>SAVE300</b>
+            </span>
+        </div>
+        <a
+            href="https://www.business-standard.com/subscription-cart/payment?promotionoffer=MTY2JlNBVkUzMDA"
+            target="_blank"
+            class="cta-btn"
+        >
+            Subscribe Now
+        </a>
+    </div>
+
+    <button
+        class="close-btn"
+        aria-label="Close banner"
+        onclick="
+            document.getElementById('bsStickyBanner').style.display = 'none'
+        "
+    >
+        x
+    </button>
+</div>
