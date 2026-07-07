@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Business Standard — 10th Anniversary Offer</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                background: transparent;
+                font-family: "Inter", sans-serif;
+            }
+
+            .popup {
+                background: #fff;
+                border-radius: 16px;
+                width: 100%;
+                max-width: 420px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .popup-header {
+                background: #7a1010;
+                padding: 26px 26px 22px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .header-pattern {
+                position: absolute;
+                inset: 0;
+                background-image: repeating-linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.05) 0px,
+                    rgba(255, 255, 255, 0.05) 1px,
+                    transparent 1px,
+                    transparent 12px
+                );
+                pointer-events: none;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                font-size: 18px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+                transition: background 0.15s;
+                z-index: 2;
+            }
+            .close-btn:hover {
+                background: rgba(255, 255, 255, 0.22);
+            }
+
+            .logo-row {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 16px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .logo-box {
+                width: 46px;
+                height: 46px;
+                background: #fff;
+                border-radius: 8px;
+                border: 2px solid rgba(255, 255, 255, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .logo-info .pub-name {
+                font-size: 14px;
+                font-weight: 500;
+                color: #fff;
+                letter-spacing: 0.01em;
+                margin-top: 10px;
+            }
+
+            .popup-headline {
+                font-family: "Playfair Display", serif;
+                font-size: 20px;
+                font-weight: 600;
+                color: #fff;
+                line-height: 1.2;
+                margin-bottom: 8px;
+                position: relative;
+                z-index: 1;
+                margin-top: 30px;
+            }
+
+            .gold-bar {
+                height: 3px;
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+            .popup-body {
+                padding: 22px 26px;
+            }
+
+            .offer-box {
+                background: #595a5c;
+                border: 1.5px solid #595a5c;
+                border-radius: 12px;
+                padding: 16px 18px;
+                margin-bottom: 18px;
+            }
+
+            .offer-label {
+                font-size: 10px;
+                font-weight: 500;
+                color: #fff;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 10px;
+            }
+            .offer-label svg {
+                width: 13px;
+                height: 13px;
+            }
+
+            .price-row {
+                display: flex;
+                align-items: baseline;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .price-strike {
+                font-size: 15px;
+                color: #fff;
+                text-decoration: line-through;
+                opacity: 0.55;
+            }
+
+            .price-main {
+                font-family: "Playfair Display", serif;
+                font-size: 40px;
+                font-weight: 600;
+                color: #fff;
+                line-height: 1;
+            }
+
+            .price-period {
+                font-size: 13px;
+                color: #fff;
+            }
+
+            .validity-row {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                color: #fff;
+            }
+            .validity-row svg {
+                width: 14px;
+                height: 14px;
+                flex-shrink: 0;
+            }
+
+            .cd-label {
+                font-size: 11px;
+                font-weight: 500;
+                color: #888;
+                text-align: center;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+            }
+
+            .cd-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin-bottom: 18px;
+            }
+
+            .cd-block {
+                background: #7a1010;
+                border-radius: 8px;
+                padding: 10px 6px;
+                text-align: center;
+            }
+
+            .cd-num {
+                font-family: "Playfair Display", serif;
+                font-size: 24px;
+                font-weight: 600;
+                color: #fff;
+                line-height: 1;
+            }
+
+            .cd-unit {
+                font-size: 9px;
+                color: rgba(255, 255, 255, 0.65);
+                margin-top: 4px;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+            }
+
+            .expired-msg {
+                display: none;
+                background: #fcebeb;
+                color: #791f1f;
+                font-size: 13px;
+                font-weight: 500;
+                text-align: center;
+                border-radius: 8px;
+                padding: 10px;
+                margin-bottom: 14px;
+            }
+
+            .subscribe-btn {
+                display: block;
+                width: 100%;
+                padding: 15px;
+                background: #7a1010;
+                color: #ffffff;
+                border: none;
+                border-radius: 10px;
+                font-family: "Inter", sans-serif;
+                font-size: 15px;
+                font-weight: 500;
+                cursor: pointer;
+                text-align: center;
+                letter-spacing: 0.02em;
+                transition:
+                    background 0.15s,
+                    transform 0.1s;
+            }
+            .subscribe-btn:hover {
+                background: #501313;
+            }
+            .subscribe-btn:active {
+                transform: scale(0.98);
+            }
+            .subscribe-btn.disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                background: #7a1010;
+            }
+
+            .fontt1 {
+                font-size: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="popup" id="popup">
+            <div class="popup-header">
+                <div class="header-pattern"></div>
+                <button
+                    class="close-btn"
+                    id="closePopup"
+                    aria-label="Close popup"
+                    onclick="closePopup()"
+                >
+                    ✕
+                </button>
+
+                <div class="logo-row">
+                    <div class="logo-box">
+                        <div style="text-align: center">
+                            <img
+                                src="https://bsmedia.business-standard.com/_media/bs/img/author/thumb/business-standard-editorial-comment-1094.png"
+                                style="
+                                    width: 42px;
+                                    height: 42px;
+                                    object-fit: cover;
+                                    border-radius: 6px;
+                                "
+                                alt=""
+                            />
+                        </div>
+                    </div>
+                    <div class="logo-info">
+                        <div class="pub-name">
+                            <img
+                                src="https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/17367fbd5ddd479885b90144cc73354e.png"
+                                alt=""
+                                style="width: 150px"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="popup-headline" id="popup-title">
+                    <span class="fontt1">10</span> years of Business Standard
+                    Digital Subscription
+                </h2>
+            </div>
+
+            <div class="gold-bar"></div>
+
+            <div class="popup-body">
+                <div class="cd-label">Offer expires in</div>
+                <div class="cd-row">
+                    <div class="cd-block">
+                        <div class="cd-num" id="cd-d">--</div>
+                        <div class="cd-unit">Days</div>
+                    </div>
+                    <div class="cd-block">
+                        <div class="cd-num" id="cd-h">--</div>
+                        <div class="cd-unit">Hours</div>
+                    </div>
+                    <div class="cd-block">
+                        <div class="cd-num" id="cd-m">--</div>
+                        <div class="cd-unit">Mins</div>
+                    </div>
+                    <div class="cd-block">
+                        <div class="cd-num" id="cd-s">--</div>
+                        <div class="cd-unit">Secs</div>
+                    </div>
+                </div>
+                <div class="offer-box">
+                    <div class="offer-label">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"
+                            />
+                            <circle cx="7" cy="7" r="1" fill="currentColor" />
+                        </svg>
+                        10th anniversary special
+                    </div>
+
+                    <div class="price-row">
+                        <span class="price-strike">₹2,700</span>
+                        <span class="price-main">₹999</span>
+                        <span class="price-period">/ year</span>
+                    </div>
+                    <div class="validity-row">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            aria-hidden="true"
+                        >
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <path d="M16 2v4M8 2v4M3 10h18" />
+                        </svg>
+                        Offer valid till 24th June 2026
+                    </div>
+                </div>
+
+                <div class="expired-msg" id="expired-msg">
+                    ⚠ This offer has expired.
+                </div>
+
+                <button
+                    class="subscribe-btn"
+                    id="sub-btn"
+                    onclick="closePopupAfterClick()"
+                >
+                    Subscribe now
+                </button>
+            </div>
+        </div>
+
+        <script>
+            var end = new Date("2026-06-24T23:59:59");
+
+            function pad(n) {
+                return String(n).padStart(2, "0");
+            }
+
+            function tick() {
+                var now = new Date();
+                var diff = end - now;
+                if (diff <= 0) {
+                    ["cd-d", "cd-h", "cd-m", "cd-s"].forEach(function (id) {
+                        document.getElementById(id).textContent = "00";
+                    });
+                    document.getElementById("expired-msg").style.display =
+                        "block";
+                    var btn = document.getElementById("sub-btn");
+                    btn.classList.add("disabled");
+                    btn.setAttribute("disabled", true);
+                    btn.textContent = "Offer has ended";
+                    return;
+                }
+                var d = Math.floor(diff / 864e5);
+                var h = Math.floor((diff % 864e5) / 36e5);
+                var m = Math.floor((diff % 36e5) / 6e4);
+                var s = Math.floor((diff % 6e4) / 1e3);
+                document.getElementById("cd-d").textContent = pad(d);
+                document.getElementById("cd-h").textContent = pad(h);
+                document.getElementById("cd-m").textContent = pad(m);
+                document.getElementById("cd-s").textContent = pad(s);
+            }
+
+            tick();
+            setInterval(tick, 1000);
+
+            // CleverTap dismiss helper — works both inside iframe and direct embed
+            function closePopup() {
+                try {
+                    var overlay =
+                        window.parent.document.getElementById(
+                            "intentOpacityDiv",
+                        );
+                    var wrapper =
+                        window.parent.document.getElementById("intentPreview");
+                    if (overlay) overlay.remove();
+                    if (wrapper) wrapper.remove();
+                } catch (e) {}
+                document.querySelector(".popup").style.display = "none";
+            }
+            function closePopupAfterClick() {
+                window.open(
+                    "https://www.business-standard.com/special-subscription-offer",
+                    "_blank",
+                );
+                setTimeout(closePopup, 1500);
+            }
+        </script>
+    </body>
+</html>

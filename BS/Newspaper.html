@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                width: 100%;
+                background: transparent;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+            .np-shell {
+                display: flex;
+                justify-content: center;
+                background: transparent;
+                padding: 12px;
+            }
+            .np-page {
+                width: 100%;
+                max-width: 600px;
+                background: #f7f3eb;
+                border: 1px solid #aaa;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                position: relative;
+            }
+
+            /* ── CLOSE BUTTON (identical to receipt popup) ── */
+            .close-icon {
+                position: absolute;
+                top: 25px;
+                right: 10px;
+                width: 28px;
+                height: 28px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+                border-radius: 2px;
+                z-index: 50;
+            }
+            .close-icon:hover {
+                background: #f5f5f5;
+            }
+            .close-icon .close-text {
+                font-size: 24px;
+                font-weight: bold;
+                color: #000;
+                line-height: 1;
+            }
+
+            .np-flag {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 4px 14px;
+                border-bottom: 1px solid #aaa;
+            }
+            .np-flag-text {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 9px;
+                color: #555;
+                line-height: 1.5;
+            }
+            .np-masthead {
+                text-align: center;
+                padding: 10px 0px 0px;
+            }
+            /* Logo image replaces text masthead — no size changes elsewhere */
+            .np-masthead img {
+                max-width: 300px;
+                width: 75%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+            .np-r1 {
+                height: 1px;
+                background: #111;
+                margin: 4px 14px 2px;
+            }
+            .np-r2 {
+                height: 3px;
+                background: #8b0000;
+                margin: 0 14px 2px;
+            }
+            .np-r3 {
+                height: 1px;
+                background: #111;
+                margin: 0 14px 4px;
+            }
+            .np-kicker {
+                text-align: center;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 8px;
+                letter-spacing: 3px;
+                color: #8b0000;
+                text-transform: uppercase;
+                padding: 3px 14px 4px;
+                border-bottom: 1px solid #ccc;
+            }
+            .np-content {
+                padding: 14px 40px 14px;
+                text-align: center;
+            }
+            .np-headline {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 19px;
+                font-weight: 900;
+                color: #111;
+                line-height: 1.25;
+                margin-bottom: 8px;
+            }
+            .np-body-text {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 12px;
+                color: #444;
+                line-height: 1.55;
+                margin-bottom: 12px;
+            }
+            .np-price-area {
+                margin-bottom: 12px;
+            }
+            .np-price-row {
+                display: flex;
+                align-items: baseline;
+                justify-content: center;
+                gap: 10px;
+            }
+            .np-strike {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 22px;
+                font-weight: 700;
+                color: #bbb;
+                text-decoration: line-through;
+                text-decoration-color: #c0000c;
+                text-decoration-thickness: 2px;
+            }
+            .np-big-price {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 28px;
+                font-weight: 900;
+                color: #8b0000;
+                line-height: 1;
+                display: flex;
+                align-items: baseline;
+                gap: 4px;
+            }
+            .np-big-price .price-main {
+                font-size: 28px;
+            }
+            .np-big-price .price-suffix {
+                font-size: 16px;
+                font-weight: 600;
+                color: #8b0000;
+                line-height: 1;
+            }
+            .np-price-label {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 11px;
+                color: #888;
+                margin-top: 2px;
+            }
+            .np-timer-section {
+                margin: 8px 0 14px;
+            }
+            .np-timer-heading {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 10px;
+                letter-spacing: 3px;
+                color: #8b0000;
+                text-transform: uppercase;
+                margin-bottom: 12px;
+            }
+            .timer-row {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .fc-unit {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+            .fc-label {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 8px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: #888;
+            }
+
+            /* ── card — unchanged sizes ── */
+            .flip {
+                position: relative;
+                width: 68px;
+                height: 84px;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+                perspective: 600px;
+            }
+            .f-top {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 50%;
+                background: #8b0000;
+                overflow: hidden;
+            }
+            .f-bot {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 50%;
+                background: #1e1e1e;
+                overflow: hidden;
+            }
+            .f-num {
+                position: absolute;
+                left: 0;
+                right: 0;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-weight: 900;
+                font-size: 56px;
+                color: #fff;
+                text-align: center;
+                line-height: 1;
+                user-select: none;
+                letter-spacing: -1px;
+                white-space: nowrap;
+            }
+            .f-top .f-num {
+                top: 100%;
+                transform: translateY(-50%);
+            }
+            .f-bot .f-num {
+                top: 0;
+                transform: translateY(-50%);
+                color: #ccc;
+            }
+            .f-div {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: rgba(0, 0, 0, 0.5);
+                transform: translateY(-50%);
+                z-index: 20;
+                pointer-events: none;
+            }
+            .f-flap {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 50%;
+                overflow: hidden;
+                background: #8b0000;
+                transform-origin: bottom center;
+                transform: rotateX(0deg);
+                z-index: 10;
+                backface-visibility: hidden;
+            }
+            .f-flap .f-num {
+                color: #fff;
+                top: 100%;
+                transform: translateY(-50%);
+            }
+
+            .np-cta {
+                display: inline-block;
+                background: #8b0000;
+                color: #f7f3eb;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 14px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                padding: 8px 26px;
+                text-decoration: none;
+                font-weight: 600;
+                margin-top: 2px;
+            }
+            .np-footer {
+                border-top: 3px double #111;
+                margin: 4px 14px 0;
+                padding: 5px 0 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .np-footer-fine {
+                font-size: 9px;
+                color: #888;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-style: italic;
+            }
+            .np-footer-valid {
+                font-size: 9px;
+                color: #8b0000;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-weight: 600;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="np-shell">
+            <div class="np-page">
+                <!-- Close button — same as receipt popup -->
+                <button
+                    class="close-icon"
+                    onclick="closePopup()"
+                    aria-label="Close"
+                >
+                    <span class="close-text">x</span>
+                </button>
+
+                <div class="np-flag">
+                    <div class="np-flag-text">
+                        Vol. X · No. 10 · <span id="today-date"></span>
+                    </div>
+                    <div class="np-flag-text" style="text-align: right">
+                        Est. 2016 · bsdigital.com
+                    </div>
+                </div>
+
+                <!-- Logo image replaces text masthead -->
+                <div class="np-masthead">
+                    <img
+                        src="https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/fb0abe5121ea49fdbb47db7ac5c57bcc.png"
+                        alt="Business Standard · The New York Times"
+                    />
+                </div>
+
+                <div class="np-r1"></div>
+                <div class="np-r2"></div>
+                <div class="np-r3"></div>
+                <div class="np-kicker">Anniversary Special Edition</div>
+                <div class="np-content">
+                    <div class="np-headline">
+                        10 Years of BS digital subscription
+                    </div>
+                    <div class="np-body-text">
+                        Marking a decade of digital subscriptions with an offer
+                        as straightforward as our journalism.
+                    </div>
+                    <div class="np-price-area">
+                        <div class="np-price-row">
+                            <span class="np-strike">&#8377;2700</span>
+                            <span class="np-big-price">
+                                <span class="price-main">&#8377;999</span>
+                                <span class="price-suffix">/Year</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="np-timer-section">
+                        <div class="np-timer-heading">Offer Ends In</div>
+                        <div class="timer-row" id="timer-row"></div>
+                    </div>
+                    <a
+                        href="https://www.business-standard.com/special-subscription-offer"
+                        class="np-cta"
+                        target="_blank"
+                        onclick="closePopupAfterClick()"
+                        >Subscribe Now</a
+                    >
+                </div>
+                <div class="np-footer">
+                    <div class="np-footer-fine">
+                        Price includes GST · Cancel anytime
+                    </div>
+                    <div class="np-footer-valid">
+                        Offer valid 15<sup>th</sup> - 25<sup>th</sup> June 2026
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Close popup — same logic as receipt
+            function closePopup() {
+                try {
+                    var overlay =
+                        window.parent.document.getElementById(
+                            "intentOpacityDiv",
+                        );
+                    var wrapper =
+                        window.parent.document.getElementById("intentPreview");
+                    if (overlay) overlay.remove();
+                    if (wrapper) wrapper.remove();
+                } catch (e) {}
+                document.querySelector(".np-page").style.display = "none";
+            }
+
+            function closePopupAfterClick() {
+                setTimeout(closePopup, 1500);
+            }
+
+            (function () {
+                const D = [
+                    "Sunday",
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                ];
+                const M = [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December",
+                ];
+                const n = new Date();
+                document.getElementById("today-date").textContent =
+                    D[n.getDay()] +
+                    ", " +
+                    n.getDate() +
+                    " " +
+                    M[n.getMonth()] +
+                    " " +
+                    n.getFullYear();
+            })();
+
+            function pad(n) {
+                return String(n).padStart(2, "0");
+            }
+
+            function makeUnit(id, label) {
+                const u = document.createElement("div");
+                u.className = "fc-unit";
+                u.innerHTML = `
+    <div class="flip" id="${id}">
+      <div class="f-top"><div class="f-num" id="${id}-top">00</div></div>
+      <div class="f-bot"><div class="f-num" id="${id}-bot">00</div></div>
+      <div class="f-flap" id="${id}-flap"><div class="f-num" id="${id}-fn">00</div></div>
+      <div class="f-div"></div>
+    </div>
+    <div class="fc-label">${label}</div>`;
+                return u;
+            }
+
+            const labels = [
+                ["days", "Days"],
+                ["hrs", "Hours"],
+                ["mins", "Mins"],
+                ["secs", "Secs"],
+            ];
+            const row = document.getElementById("timer-row");
+            labels.forEach(([id, lbl]) => row.appendChild(makeUnit(id, lbl)));
+
+            const state = {};
+            labels.forEach(([id]) => {
+                state[id] = { val: null, busy: false };
+            });
+
+            function doFlip(id, next) {
+                const s = state[id];
+                if (next === s.val) return;
+                const prev = s.val;
+                s.val = next;
+                const topNum = document.getElementById(id + "-top");
+                const botNum = document.getElementById(id + "-bot");
+                const flap = document.getElementById(id + "-flap");
+                const flapNum = document.getElementById(id + "-fn");
+                if (prev === null) {
+                    topNum.textContent = next;
+                    botNum.textContent = next;
+                    flapNum.textContent = next;
+                    return;
+                }
+                if (s.busy) {
+                    topNum.textContent = next;
+                    botNum.textContent = next;
+                    flapNum.textContent = next;
+                    return;
+                }
+                s.busy = true;
+                botNum.textContent = next;
+                flapNum.textContent = prev;
+                flap.style.transition = "none";
+                flap.style.transform = "rotateX(0deg)";
+                flap.offsetHeight;
+                flap.style.transition =
+                    "transform 0.38s cubic-bezier(0.4,0,0.2,1)";
+                flap.style.transform = "rotateX(-90deg)";
+                setTimeout(() => {
+                    topNum.textContent = next;
+                    flapNum.textContent = next;
+                    flap.style.transition = "none";
+                    flap.style.transform = "rotateX(0deg)";
+                    s.busy = false;
+                }, 400);
+            }
+
+            const END = new Date("2026-06-25T23:59:59");
+            function tick() {
+                const diff = Math.max(END - new Date(), 0);
+                doFlip("days", pad(Math.floor(diff / 864e5)));
+                doFlip("hrs", pad(Math.floor((diff % 864e5) / 36e5)));
+                doFlip("mins", pad(Math.floor((diff % 36e5) / 6e4)));
+                doFlip("secs", pad(Math.floor((diff % 6e4) / 1e3)));
+            }
+            tick();
+            setInterval(tick, 1000);
+        </script>
+    </body>
+</html>

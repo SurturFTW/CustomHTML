@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>10 Years – Anniversary Offer</title>
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --red: #c41e1e;
+                --red-dark: #8b0000;
+                --red-mid: #a31515;
+                --grey: #5a5a5a;
+                --grey-light: #8a8a8a;
+                --grey-pale: #aaaaaa;
+                --black: #1a1a1a;
+                --white: #ffffff;
+                --off-white: #f5f5f5;
+                --border: #e0e0e0;
+
+                /* System-font stacks. The original file shipped 4 embedded
+                   base64 fonts (300KB+ of markup). That is what was breaking
+                   things inside the CleverTap iframe: the popup HTML payload
+                   got too large / the data-URI fonts were silently dropped,
+                   so the logo never had room to load and the price numerals
+                   fell back to a non-condensed font while keeping the
+                   condensed font's tight negative letter-spacing, which is
+                   what caused the digits to collide. Using safe system
+                   fonts fixes both issues and shrinks the file dramatically. */
+                --font-body: Helvetica, Arial, sans-serif;
+                --font-display: Helvetica, Arial, sans-serif;
+                --font-condensed:
+                    "Arial Narrow", "Helvetica Neue Condensed", Helvetica,
+                    Arial, sans-serif;
+                --font-label: "Arial Narrow", Helvetica, Arial, sans-serif;
+                --font-serif: Georgia, "Times New Roman", serif;
+            }
+
+            html,
+            body {
+                width: 100%;
+                height: fit-content;
+                background: transparent;
+                overflow-x: hidden;
+                overflow-y: hidden;
+                font-family: var(--font-body);
+            }
+
+            .page {
+                width: 680px;
+                height: auto;
+                background: #ffffff;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                position: relative;
+                overflow: hidden;
+                padding-bottom: 30px;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                border: none;
+                background: rgba(0, 0, 0, 0.15);
+                color: #000;
+                font-size: 14px;
+                line-height: 1;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999;
+            }
+
+            .close-btn:hover {
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+            /* ========== LEFT ========== */
+            .left {
+                grid-column: 1;
+                grid-row: 1 / 3;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 10px 10px 10px 14px;
+                border-right: 1px solid var(--border);
+                position: relative;
+                z-index: 2;
+            }
+
+            .flip-cal {
+                width: 170px;
+                height: 240px;
+                position: relative;
+                margin-bottom: 10px;
+                flex-shrink: 0;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            }
+
+            .flip-top {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 52%;
+                background: #b81818;
+                overflow: hidden;
+            }
+
+            .flip-bottom {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 48%;
+                background: #3a3a3a;
+                overflow: hidden;
+            }
+
+            .flip-spine {
+                position: absolute;
+                top: 52%;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: #e8e8e8;
+                z-index: 3;
+                transform: translateY(-50%);
+            }
+
+            .num-top {
+                font-family: var(--font-condensed);
+                font-weight: 700;
+                font-size: 185px;
+                letter-spacing: -2px;
+                line-height: 1;
+                color: #6a0e13;
+                user-select: none;
+                position: absolute;
+                top: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
+            }
+
+            .num-bottom {
+                font-family: var(--font-condensed);
+                font-weight: 700;
+                font-size: 185px;
+                letter-spacing: -2px;
+                line-height: 1;
+                color: #5a5a5a;
+                user-select: none;
+                position: absolute;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
+            }
+
+            .taglines {
+                text-align: left;
+                width: 100%;
+                white-space: nowrap;
+                margin: 5px;
+            }
+            .tag-red {
+                font-family: var(--font-serif);
+                font-size: 16px;
+                border-bottom: 1px solid var(--border);
+                color: var(--red);
+                letter-spacing: 0.01em;
+                line-height: 1.4;
+                margin-bottom: 1px;
+            }
+            .tag-black {
+                font-family: var(--font-body);
+                font-size: 15px;
+                color: var(--black);
+                letter-spacing: 0.03em;
+                line-height: 1.4;
+            }
+
+            /* ========== RIGHT ========== */
+            .right {
+                grid-column: 2;
+                grid-row: 1 / 3;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 8px;
+                padding: 10px 12px 10px 10px;
+                position: relative;
+                z-index: 2;
+            }
+
+            .right-top {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 26px;
+            }
+
+            /* Logo: constrained so it can never overflow/distort, plus a
+               text fallback that shows automatically if the image fails
+               to load (slow network, blocked domain, stripped markup,
+               etc.) so the header is never left blank/broken. */
+            .logo-img {
+                height: auto;
+                max-height: 56px;
+                max-width: 300px;
+                width: auto;
+                object-fit: contain;
+                display: block;
+            }
+
+            .logo-fallback {
+                display: none;
+                align-items: center;
+                gap: 5px;
+            }
+            .logo-fallback.show {
+                display: flex;
+            }
+            .logo-sq {
+                width: 14px;
+                height: 14px;
+                background: var(--red);
+                border-radius: 2px;
+                flex-shrink: 0;
+            }
+            .logo-word {
+                font-family: var(--font-display);
+                font-weight: 700;
+                font-size: 10px;
+                letter-spacing: 0.02em;
+                color: var(--black);
+                white-space: nowrap;
+            }
+
+            /* Countdown */
+            .countdown-section {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .cd-label {
+                font-family: var(--font-label);
+                font-size: 11px;
+                letter-spacing: 0.22em;
+                font-weight: bold;
+                text-transform: uppercase;
+                color: black;
+                margin-bottom: 6px;
+            }
+
+            .countdown {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .count-box {
+                background: var(--off-white);
+                border: 1px solid var(--border);
+                border-radius: 5px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 9px 4px 7px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .count-box::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: var(--red);
+                opacity: 0.7;
+            }
+
+            .count-num {
+                font-family: var(--font-display);
+                font-weight: 700;
+                font-size: 31px;
+                color: var(--black);
+                line-height: 1;
+                letter-spacing: -0.5px;
+                transition: color 0.25s ease;
+            }
+            .count-num.tick {
+                color: var(--red);
+            }
+
+            .count-unit {
+                font-family: var(--font-label);
+                font-size: 8px;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                color: var(--grey-pale);
+                margin-top: 3px;
+            }
+
+            /* Price — rebuilt on baseline alignment with no negative
+               margins, so the strikethrough price and the big new price
+               can never visually collide regardless of which fallback
+               font the browser ends up rendering with. */
+            .price-section {
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+                padding: 7px 0 8px;
+            }
+
+            .offer-eyebrow {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
+                gap: 6px;
+            }
+
+            .offer-label {
+                font-family: var(--font-label);
+                font-size: 11px;
+                letter-spacing: 0.18em;
+                font-weight: bold;
+                text-transform: uppercase;
+                color: black;
+                white-space: nowrap;
+            }
+
+            .save-tag {
+                background: #fff0f0;
+                border: 1px solid #ffcccc;
+                color: var(--red);
+                font-family: var(--font-label);
+                font-size: 9px;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                padding: 3px 8px;
+                border-radius: 2px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .price-row {
+                display: flex;
+                align-items: baseline;
+            }
+
+            .old-row {
+                margin-bottom: 3px;
+            }
+
+            .old-p {
+                font-family: var(--font-body);
+                font-size: 15px;
+                color: var(--grey-pale);
+                text-decoration: line-through;
+                text-decoration-color: var(--red);
+                line-height: 1;
+            }
+
+            .new-row {
+                gap: 4px;
+            }
+
+            .r-sym {
+                font-family: var(--font-serif);
+                font-size: 22px;
+                color: var(--black);
+                line-height: 1;
+            }
+
+            .new-p {
+                font-family: var(--font-condensed);
+                font-weight: 700;
+                font-size: 54px;
+                color: var(--black);
+                line-height: 1;
+                letter-spacing: -0.5px;
+            }
+
+            .per-yr {
+                font-family: var(--font-label);
+                font-size: 12px;
+                color: var(--grey-pale);
+                margin-left: 2px;
+            }
+
+            .validity-row {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .v-dot {
+                width: 5px;
+                height: 5px;
+                background: var(--red);
+                border-radius: 50%;
+                flex-shrink: 0;
+                animation: blink 1.6s ease-in-out infinite;
+            }
+
+            @keyframes blink {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.2;
+                }
+            }
+
+            .v-text {
+                font-family: var(--font-label);
+                font-size: 14px;
+                color: var(--grey);
+                letter-spacing: 0.04em;
+                line-height: 1.5;
+            }
+            .v-text strong {
+                display: block;
+                font-family: var(--font-body);
+                font-weight: 700;
+                font-size: 12px;
+                color: var(--black);
+                letter-spacing: 0.06em;
+            }
+
+            /* CTA */
+            .cta-btn {
+                display: block;
+                width: 100%;
+                background: var(--red);
+                color: #fff;
+                font-family: var(--font-display);
+                font-weight: 700;
+                font-size: 14px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                text-align: center;
+                border: none;
+                border-radius: 5px;
+                padding: 15px 16px;
+                cursor: pointer;
+                text-decoration: none;
+                position: relative;
+                overflow: hidden;
+                transition: background 0.2s ease;
+                margin-top: 0;
+            }
+            .cta-btn::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.18),
+                    transparent
+                );
+                animation: sweep 2.4s ease-in-out infinite;
+            }
+            @keyframes sweep {
+                0% {
+                    left: -80%;
+                }
+                100% {
+                    left: 150%;
+                }
+            }
+            .cta-btn:active {
+                background: var(--red-dark);
+            }
+
+            /* Ticker */
+            .ticker {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                overflow: hidden;
+                padding: 5px 0;
+                background: var(--black);
+                z-index: 5;
+            }
+            .ticker-inner {
+                display: flex;
+                white-space: nowrap;
+                animation: tick 16s linear infinite;
+            }
+            .t-item {
+                font-family: var(--font-label);
+                font-size: 11px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.55);
+                padding: 0 14px;
+                flex-shrink: 0;
+            }
+            .t-dot {
+                color: var(--red);
+                font-size: 6px;
+                align-self: center;
+                flex-shrink: 0;
+            }
+            @keyframes tick {
+                from {
+                    transform: translateX(0);
+                }
+                to {
+                    transform: translateX(-50%);
+                }
+            }
+
+            /* ========== MOBILE ========== */
+            @media (max-width: 480px) {
+                .page {
+                    width: 100%;
+                    grid-template-columns: 1fr;
+                    padding-bottom: 28px;
+                }
+
+                .left {
+                    grid-column: 1;
+                    grid-row: 1;
+                    border-right: none;
+                    border-bottom: 1px solid var(--border);
+                    padding: 16px 12px 12px;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 14px;
+                    justify-content: center;
+                }
+
+                .flip-cal {
+                    width: 90px;
+                    height: 126px;
+                    margin-bottom: 0;
+                    flex-shrink: 0;
+                }
+
+                .num-top,
+                .num-bottom {
+                    font-size: 100px;
+                }
+
+                .num-top {
+                    top: 14px;
+                }
+
+                .num-bottom {
+                    bottom: 14px;
+                }
+
+                .taglines {
+                    text-align: left;
+                    margin: 0;
+                    white-space: normal;
+                }
+
+                .tag-red {
+                    font-size: 14px;
+                }
+
+                .tag-black {
+                    font-size: 13px;
+                }
+
+                .right {
+                    grid-column: 1;
+                    grid-row: 2;
+                    padding: 12px 14px;
+                    gap: 10px;
+                }
+
+                .logo-img {
+                    max-height: 40px;
+                    max-width: 100%;
+                }
+
+                .offer-eyebrow {
+                    flex-wrap: wrap;
+                }
+
+                .offer-label {
+                    white-space: normal;
+                }
+
+                .v-text strong {
+                    letter-spacing: 0.02em;
+                }
+
+                .right,
+                .left,
+                .countdown,
+                .price-section,
+                .validity-row {
+                    max-width: 100%;
+                    overflow: hidden;
+                }
+
+                .cd-label {
+                    font-size: 10px;
+                }
+
+                .count-num {
+                    font-size: 24px;
+                }
+
+                .count-unit {
+                    font-size: 7px;
+                }
+
+                .new-p {
+                    font-size: 44px;
+                }
+
+                .r-sym {
+                    font-size: 18px;
+                }
+
+                .cta-btn {
+                    font-size: 13px;
+                    padding: 13px 12px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <button class="close-btn" onclick="closePopup()" aria-label="Close">
+                x
+            </button>
+
+            <!-- LEFT -->
+            <div class="left">
+                <div class="flip-cal">
+                    <div class="flip-top"><span class="num-top">10</span></div>
+                    <div class="flip-spine"></div>
+                    <div class="flip-bottom">
+                        <span class="num-bottom">10</span>
+                    </div>
+                </div>
+                <div class="taglines">
+                    <div class="tag-red">years of digital insight.</div>
+                    <div class="tag-black">days to access it.</div>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="right">
+                <div class="right-top">
+                    <img
+                        class="logo-img"
+                        src="https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/fb0abe5121ea49fdbb47db7ac5c57bcc.png"
+                        alt="Business Standard"
+                        onerror="
+                            this.onerror = null;
+                            this.style.display = 'none';
+                            document
+                                .getElementById('logoFallback')
+                                .classList.add('show');
+                        "
+                    />
+                    <div class="logo-fallback" id="logoFallback">
+                        <span class="logo-sq"></span>
+                        <span class="logo-word">BUSINESS STANDARD</span>
+                    </div>
+                </div>
+
+                <div class="countdown-section">
+                    <div class="cd-label">Offer ends in</div>
+                    <div class="countdown">
+                        <div class="count-box">
+                            <span class="count-num" id="cd-days">00</span>
+                            <span class="count-unit">Days</span>
+                        </div>
+                        <div class="count-box">
+                            <span class="count-num" id="cd-hours">00</span>
+                            <span class="count-unit">Hours</span>
+                        </div>
+                        <div class="count-box">
+                            <span class="count-num" id="cd-mins">00</span>
+                            <span class="count-unit">Mins</span>
+                        </div>
+                        <div class="count-box">
+                            <span class="count-num" id="cd-secs">00</span>
+                            <span class="count-unit">Secs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <div class="offer-eyebrow">
+                        <span class="offer-label">Anniversary Offer</span>
+                        <span class="save-tag">Save 63%</span>
+                    </div>
+                    <div class="price-row old-row">
+                        <span class="old-p">₹2,700 / yr</span>
+                    </div>
+                    <div class="price-row new-row">
+                        <span class="r-sym">₹</span>
+                        <span class="new-p">999</span>
+                        <span class="per-yr">/ year</span>
+                    </div>
+                </div>
+
+                <a
+                    class="cta-btn"
+                    href="https://www.business-standard.com/special-subscription-offer"
+                    target="_blank"
+                    rel="noopener"
+                    onclick="closePopupAfterClick()"
+                    >Subscribe Now →</a
+                >
+
+                <div class="validity-row">
+                    <div class="v-dot"></div>
+                    <div class="v-text">
+                        <strong>Offer ending on 24 June 2026</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticker -->
+            <div class="ticker">
+                <div class="ticker-inner">
+                    <span class="t-item">10 Years</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">₹999 / Year</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">Only Few Days Left</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">Till June 24</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">Limited Offer</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">63% Off</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">10 Years</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">₹999 / Year</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">Only Few Days Left</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">Till June 24</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">Limited Offer</span
+                    ><span class="t-dot">●</span>
+                    <span class="t-item">63% Off</span
+                    ><span class="t-dot">●</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            console.log("Popup Loaded!!");
+
+            // ---------- Countdown ----------
+            const target = new Date("2026-06-24T23:59:59+05:30");
+            const fields = ["cd-days", "cd-hours", "cd-mins", "cd-secs"];
+            const divisors = [86400, 3600, 60, 1];
+
+            function tick() {
+                const total = Math.max(
+                    0,
+                    Math.floor((target - Date.now()) / 1000),
+                );
+                const parts = divisors.map(
+                    (d, i) =>
+                        Math.floor(total / d) %
+                        (i === 0 ? Infinity : divisors[i - 1] / d),
+                );
+
+                fields.forEach((id, i) => {
+                    const el = document.getElementById(id);
+                    const val = String(parts[i]).padStart(2, "0");
+                    if (el.textContent !== val) {
+                        el.textContent = val;
+                        el.classList.add("tick");
+                        setTimeout(() => el.classList.remove("tick"), 280);
+                    }
+                });
+            }
+
+            tick();
+            setInterval(tick, 1000);
+
+            // Closes the CleverTap Web Popup by removing the SDK's own
+            // wrapper/backdrop elements on the parent page.  Falls back to
+            // hiding the local .page when previewed standalone.
+            function closePopup() {
+                try {
+                    var overlay =
+                        window.parent.document.getElementById(
+                            "intentOpacityDiv",
+                        );
+                    var wrapper =
+                        window.parent.document.getElementById("intentPreview");
+                    if (overlay) overlay.remove();
+                    if (wrapper) wrapper.remove();
+                } catch (error) {
+                    console.error("Error removing parent elements:", error);
+                }
+                var page = document.querySelector(".page");
+                if (page) page.style.display = "none";
+            }
+
+            function closePopupAfterClick() {
+                setTimeout(closePopup, 1500);
+            }
+        </script>
+    </body>
+</html>
