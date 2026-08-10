@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OTP Login</title>
+
+        <script src="https://accounts.google.com/gsi/client" async></script>
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            /* OVERLAY */
+            .overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.65);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translateY(30px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes shake {
+                0%,
+                100% {
+                    transform: translateX(0);
+                }
+                25% {
+                    transform: translateX(-8px);
+                }
+                75% {
+                    transform: translateX(8px);
+                }
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* MODAL */
+            .modal {
+                background: #fff;
+                border-radius: 6px;
+                width: 92%;
+                max-width: 400px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+                border-top: 4px solid #e31837;
+                position: relative;
+                overflow: hidden;
+                animation: slideUp 0.4s ease-out;
+            }
+
+            /* CLOSE BUTTON */
+            .close-icon {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                width: 28px;
+                height: 28px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 2px;
+                z-index: 20;
+                transition: background 0.2s ease;
+            }
+
+            .close-icon:hover {
+                background: #f5f5f5;
+            }
+
+            .close-icon span {
+                font-size: 22px;
+                font-weight: bold;
+                color: #333;
+                line-height: 1;
+            }
+
+            /* LOGO */
+            .logo-row {
+                text-align: center;
+                padding: 22px 0 4px;
+            }
+
+            .logo-row img {
+                max-width: 150px;
+                width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+
+            /* STEP */
+            .step {
+                display: none;
+            }
+
+            .step.active {
+                display: block;
+                animation: slideDown 0.3s ease;
+            }
+
+            .step-header {
+                padding: 6px 32px 20px;
+                text-align: center;
+                border-bottom: 1px solid #e5e5e5;
+            }
+
+            .step-header h2 {
+                margin: 0 0 8px;
+                font-size: 21px;
+                font-weight: 600;
+                color: #1a1a1a;
+                line-height: 1.3;
+            }
+
+            .step-header p {
+                margin: 0;
+                font-size: 14px;
+                color: #666;
+                line-height: 1.6;
+            }
+
+            .step-header p .highlight {
+                color: #1a1a1a;
+                font-weight: 600;
+            }
+
+            .step-body {
+                background: #fafafa;
+                padding: 28px 32px 32px;
+            }
+
+            /* INPUT LABEL */
+            .input-label {
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .input-wrapper {
+                margin-bottom: 4px;
+            }
+
+            /* EMAIL INPUT */
+            input[type="email"] {
+                width: 100%;
+                padding: 13px 14px;
+                border: 1px solid #d1d1d1;
+                border-radius: 2px;
+                font-size: 15px;
+                font-family: inherit;
+                color: #333;
+                background: #fff;
+                outline: none;
+                transition: all 0.2s ease;
+            }
+
+            input[type="email"]:focus {
+                border-color: #e31837;
+                box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
+            }
+
+            input[type="email"].error {
+                border-color: #e31837;
+            }
+
+            ::placeholder {
+                color: #999;
+            }
+
+            /* ERROR TEXT */
+            .error-text {
+                color: #e31837;
+                font-size: 13px;
+                font-weight: 500;
+                text-align: left;
+                min-height: 14px;
+                margin-top: 8px;
+            }
+
+            .error-text.show {
+                animation: shake 0.4s ease;
+            }
+
+            /* PRIMARY BUTTON */
+            .btn-primary {
+                width: 100%;
+                margin-top: 18px;
+                padding: 14px 24px;
+                background: #b01116;
+                color: #fff;
+                border: none;
+                border-radius: 2px;
+                font-size: 14px;
+                font-weight: 600;
+                font-family: inherit;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .btn-primary:hover:not(:disabled) {
+                background: #970f13;
+                box-shadow: 0 2px 8px rgba(176, 17, 22, 0.3);
+            }
+
+            .btn-primary:active:not(:disabled) {
+                transform: translateY(1px);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.65;
+                cursor: not-allowed;
+            }
+
+            .spinner {
+                width: 14px;
+                height: 14px;
+                border: 2px solid rgba(255, 255, 255, 0.4);
+                border-top-color: #fff;
+                border-radius: 50%;
+                animation: spin 0.7s linear infinite;
+                display: none;
+            }
+
+            .btn-primary.loading .spinner {
+                display: inline-block;
+            }
+
+            /* DIVIDER */
+            .divider {
+                display: flex;
+                align-items: center;
+                margin: 20px 0;
+                color: #999;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .divider::before,
+            .divider::after {
+                content: "";
+                flex: 1;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .divider span {
+                padding: 0 12px;
+            }
+
+            .google-btn-wrapper {
+                display: flex;
+                justify-content: center;
+                min-height: 40px;
+            }
+
+            /* OTP BOXES */
+            .otp-row {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .otp-box {
+                width: 44px;
+                height: 52px;
+                text-align: center;
+                font-size: 22px;
+                font-weight: 700;
+                color: #1a1a1a;
+                border: 1px solid #d1d1d1;
+                border-radius: 4px;
+                background: #fff;
+                outline: none;
+                transition: all 0.2s ease;
+            }
+
+            .otp-box:focus {
+                border-color: #e31837;
+                box-shadow: 0 0 0 2px rgba(227, 24, 55, 0.1);
+            }
+
+            .otp-box.error {
+                border-color: #e31837;
+            }
+
+            /* LINKS */
+            .link-row {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 18px;
+                font-size: 13px;
+            }
+
+            .link-btn {
+                background: none;
+                border: none;
+                color: #b01116;
+                font-weight: 600;
+                cursor: pointer;
+                font-size: 13px;
+                font-family: inherit;
+                padding: 0;
+            }
+
+            .link-btn:hover:not(:disabled) {
+                text-decoration: underline;
+            }
+
+            .link-btn:disabled {
+                color: #999;
+                cursor: not-allowed;
+                text-decoration: none;
+            }
+
+            /* SUCCESS STEP */
+            .success-body {
+                background: #fafafa;
+                padding: 40px 32px 44px;
+                text-align: center;
+            }
+
+            .tick-circle {
+                width: 68px;
+                height: 68px;
+                border-radius: 50%;
+                background: #fff;
+                border: 4px solid #b01116;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                animation: slideDown 0.4s ease;
+            }
+
+            .tick {
+                color: #b01116;
+                font-size: 36px;
+                font-weight: 900;
+            }
+
+            .success-body h2 {
+                color: #1a1a1a;
+                font-size: 20px;
+                margin: 0 0 8px;
+            }
+
+            .success-body p {
+                font-size: 14px;
+                color: #666;
+                margin: 0;
+            }
+
+            @media (max-width: 480px) {
+                .modal {
+                    width: 90vw;
+                }
+                .step-header,
+                .step-body {
+                    padding-left: 22px;
+                    padding-right: 22px;
+                }
+                .otp-box {
+                    width: 38px;
+                    height: 48px;
+                    font-size: 20px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="overlay" id="popup">
+            <div class="modal">
+                <button
+                    class="close-icon"
+                    onclick="closePopup()"
+                    aria-label="Close"
+                >
+                    <span>&times;</span>
+                </button>
+
+                <div class="logo-row">
+                    <img
+                        src="https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/fb0abe5121ea49fdbb47db7ac5c57bcc.png"
+                        alt="Business Standard"
+                    />
+                </div>
+
+                <!-- STEP 1: EMAIL -->
+                <div id="emailStep" class="step active">
+                    <div class="step-header">
+                        <h2>Login to continue</h2>
+                        <p>
+                            Enter your email address, we'll send you a one-time
+                            password.
+                        </p>
+                    </div>
+
+                    <div class="step-body">
+                        <div class="input-wrapper">
+                            <label class="input-label" for="email"
+                                >Email Address</label
+                            >
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="your.email@example.com"
+                                autocomplete="email"
+                            />
+                        </div>
+                        <div id="emailError" class="error-text"></div>
+
+                        <button
+                            id="sendOtpBtn"
+                            class="btn-primary"
+                            onclick="sendOtp()"
+                        >
+                            <span class="spinner"></span>
+                            <span class="btn-label">Send OTP</span>
+                        </button>
+
+                        <div class="divider"><span>OR</span></div>
+
+                        <div
+                            id="googleSignInDiv"
+                            class="google-btn-wrapper"
+                        ></div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: OTP -->
+                <div id="otpStep" class="step">
+                    <div class="step-header">
+                        <h2>Enter OTP</h2>
+                        <p>
+                            We've sent a 6-digit code to
+                            <span class="highlight" id="otpEmailDisplay"></span>
+                        </p>
+                    </div>
+
+                    <div class="step-body">
+                        <div class="otp-row" id="otpRow">
+                            <input
+                                class="otp-box"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="1"
+                            />
+                            <input
+                                class="otp-box"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="1"
+                            />
+                            <input
+                                class="otp-box"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="1"
+                            />
+                            <input
+                                class="otp-box"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="1"
+                            />
+                            <input
+                                class="otp-box"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="1"
+                            />
+                            <input
+                                class="otp-box"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="1"
+                            />
+                        </div>
+                        <div
+                            id="otpError"
+                            class="error-text"
+                            style="text-align: center"
+                        ></div>
+
+                        <button
+                            id="verifyOtpBtn"
+                            class="btn-primary"
+                            onclick="verifyOtp()"
+                        >
+                            <span class="spinner"></span>
+                            <span class="btn-label">Verify &amp; Login</span>
+                        </button>
+
+                        <div class="link-row">
+                            <button class="link-btn" onclick="goBackToEmail()">
+                                Edit email
+                            </button>
+                            <button
+                                id="resendBtn"
+                                class="link-btn"
+                                onclick="sendOtp(true)"
+                            >
+                                Resend OTP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: SUCCESS -->
+                <div id="successStep" class="step">
+                    <div class="success-body">
+                        <div class="tick-circle">
+                            <span class="tick">&#10003;</span>
+                        </div>
+                        <h2>You're logged in</h2>
+                        <p>
+                            Welcome back! This window will close automatically.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const SEND_OTP_ENDPOINT = "http://localhost:3000/api/send-otp";
+            const VERIFY_OTP_ENDPOINT = "http://localhost:3000/api/verify-otp";
+
+            /* =====================================================================
+               GOOGLE SIGN-IN CONFIG — replace with your real OAuth Client ID.
+               =====================================================================
+               Create one in Google Cloud Console > APIs & Services > Credentials
+               > OAuth client ID > Web application. Add the origin this HTML file
+               is actually served from (the iframe's own origin, not the parent
+               page's) under "Authorized JavaScript origins".
+               ===================================================================== */
+            const GOOGLE_CLIENT_ID =
+                "426950952151-dl5vn670r0fe7nbsrdgtg7e4la00s8di.apps.googleusercontent.com";
+
+            const RESEND_COOLDOWN_SECONDS = 30;
+
+            let currentEmail = "";
+            let resendTimer = null;
+
+            const otpBoxes = Array.from(document.querySelectorAll(".otp-box"));
+
+            function showStep(stepId) {
+                document
+                    .querySelectorAll(".step")
+                    .forEach((el) => el.classList.remove("active"));
+                document.getElementById(stepId).classList.add("active");
+            }
+
+            function friendlyErrorMessage(err) {
+                if (err instanceof TypeError) {
+                    return "Network error. Please check your connection and try again.";
+                }
+                return err.message || "Something went wrong. Please try again.";
+            }
+
+            function isValidEmail(value) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+            }
+
+            function setFieldError(errorId, message, fieldEls) {
+                const errorEl = document.getElementById(errorId);
+                errorEl.textContent = message;
+                errorEl.classList.toggle("show", !!message);
+                if (fieldEls) {
+                    fieldEls.forEach((el) =>
+                        el.classList.toggle("error", !!message),
+                    );
+                }
+            }
+
+            function setButtonLoading(btnId, isLoading) {
+                const btn = document.getElementById(btnId);
+                btn.disabled = isLoading;
+                btn.classList.toggle("loading", isLoading);
+            }
+
+            function getOtpValue() {
+                return otpBoxes.map((box) => box.value).join("");
+            }
+
+            function clearOtpBoxes() {
+                otpBoxes.forEach((box) => (box.value = ""));
+                otpBoxes[0].focus();
+            }
+
+            otpBoxes.forEach((box, index) => {
+                box.addEventListener("input", (e) => {
+                    e.target.value = e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 1);
+                    if (e.target.value && index < otpBoxes.length - 1) {
+                        otpBoxes[index + 1].focus();
+                    }
+                });
+
+                box.addEventListener("keydown", (e) => {
+                    if (e.key === "Backspace" && !box.value && index > 0) {
+                        otpBoxes[index - 1].focus();
+                    }
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        verifyOtp();
+                    }
+                });
+
+                box.addEventListener("paste", (e) => {
+                    e.preventDefault();
+                    const digits = (e.clipboardData.getData("text") || "")
+                        .replace(/\D/g, "")
+                        .slice(0, otpBoxes.length);
+                    digits.split("").forEach((digit, i) => {
+                        if (otpBoxes[i]) otpBoxes[i].value = digit;
+                    });
+                    const nextEmpty = otpBoxes.findIndex((b) => !b.value);
+                    otpBoxes[
+                        nextEmpty === -1 ? otpBoxes.length - 1 : nextEmpty
+                    ].focus();
+                });
+            });
+
+            async function sendOtp(isResend) {
+                const email = document.getElementById("email").value.trim();
+                const emailInput = document.getElementById("email");
+                const targetEmail = isResend ? currentEmail : email;
+
+                if (!isResend) {
+                    setFieldError("emailError", "", [emailInput]);
+                    if (!isValidEmail(email)) {
+                        setFieldError(
+                            "emailError",
+                            "Please enter a valid email address.",
+                            [emailInput],
+                        );
+                        return;
+                    }
+                    currentEmail = email;
+                }
+
+                const btnId = isResend ? "resendBtn" : "sendOtpBtn";
+                if (!isResend) setButtonLoading(btnId, true);
+
+                try {
+                    const response = await fetch(SEND_OTP_ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: targetEmail }),
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+
+                    if (!response.ok || data.success === false) {
+                        throw new Error(
+                            data.message || "Could not send OTP. Try again.",
+                        );
+                    }
+
+                    // pushToCleverTap("OTP Requested", { Email: targetEmail });
+
+                    document.getElementById("otpEmailDisplay").textContent =
+                        targetEmail;
+                    setFieldError("otpError", "", otpBoxes);
+                    clearOtpBoxes();
+                    showStep("otpStep");
+                    startResendCooldown();
+                } catch (err) {
+                    console.error("Send OTP failed:", err);
+                    const errorId = isResend ? "otpError" : "emailError";
+                    const fieldEls = isResend ? otpBoxes : [emailInput];
+                    setFieldError(errorId, friendlyErrorMessage(err), fieldEls);
+                } finally {
+                    if (!isResend) setButtonLoading(btnId, false);
+                }
+            }
+
+            async function verifyOtp() {
+                const otp = getOtpValue();
+                setFieldError("otpError", "", otpBoxes);
+
+                if (!/^\d{6}$/.test(otp)) {
+                    setFieldError(
+                        "otpError",
+                        "Please enter the 6-digit OTP.",
+                        otpBoxes,
+                    );
+                    return;
+                }
+
+                setButtonLoading("verifyOtpBtn", true);
+
+                try {
+                    const response = await fetch(VERIFY_OTP_ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: currentEmail, otp: otp }),
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+
+                    if (!response.ok || data.success === false) {
+                        throw new Error(
+                            data.message || "Incorrect OTP. Please try again.",
+                        );
+                    }
+
+                    loginUser(currentEmail, data.token, "OTP");
+                } catch (err) {
+                    console.error("Verify OTP failed:", err);
+                    setFieldError(
+                        "otpError",
+                        friendlyErrorMessage(err),
+                        otpBoxes,
+                    );
+                } finally {
+                    setButtonLoading("verifyOtpBtn", false);
+                }
+            }
+
+            function loginUser(email, token, method) {
+                try {
+                    if (window.parent !== window && window.parent.clevertap) {
+                        window.parent.clevertap.onUserLogin.push({
+                            Site: {
+                                Identity: email,
+                                Email: email,
+                            },
+                        });
+                    }
+                } catch (error) {
+                    console.error(
+                        "Error pushing onUserLogin to CleverTap:",
+                        error,
+                    );
+                }
+
+                pushToCleverTap("Login Successful", {
+                    Email: email,
+                    "Login Method": method || "OTP",
+                });
+
+                showStep("successStep");
+
+                setTimeout(closePopup, 1800);
+            }
+
+            function decodeJwt(token) {
+                const payload = token.split(".")[1];
+                const decoded = decodeURIComponent(
+                    atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+                        .split("")
+                        .map(
+                            (c) =>
+                                "%" +
+                                c.charCodeAt(0).toString(16).padStart(2, "0"),
+                        )
+                        .join(""),
+                );
+                return JSON.parse(decoded);
+            }
+
+            function handleGoogleCredentialResponse(response) {
+                try {
+                    const payload = decodeJwt(response.credential);
+                    if (!payload.email) {
+                        throw new Error(
+                            "Could not read your Google account email.",
+                        );
+                    }
+                    loginUser(payload.email, response.credential, "Google");
+                } catch (err) {
+                    console.error("Google Sign-In failed:", err);
+                    setFieldError(
+                        "emailError",
+                        "Google sign-in failed. Please try again.",
+                        [],
+                    );
+                }
+            }
+
+            function initGoogleSignIn() {
+                if (typeof google === "undefined") {
+                    console.warn("Google Identity Services failed to load.");
+                    return;
+                }
+
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredentialResponse,
+                });
+
+                google.accounts.id.renderButton(
+                    document.getElementById("googleSignInDiv"),
+                    {
+                        theme: "outline",
+                        size: "large",
+                        width: 300,
+                        text: "continue_with",
+                    },
+                );
+            }
+
+            window.addEventListener("load", initGoogleSignIn);
+
+            function goBackToEmail() {
+                clearInterval(resendTimer);
+                showStep("emailStep");
+            }
+
+            function startResendCooldown() {
+                const resendBtn = document.getElementById("resendBtn");
+                let secondsLeft = RESEND_COOLDOWN_SECONDS;
+
+                clearInterval(resendTimer);
+                resendBtn.disabled = true;
+                resendBtn.textContent = `Resend OTP (${secondsLeft}s)`;
+
+                resendTimer = setInterval(() => {
+                    secondsLeft -= 1;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendBtn.disabled = false;
+                        resendBtn.textContent = "Resend OTP";
+                    } else {
+                        resendBtn.textContent = `Resend OTP (${secondsLeft}s)`;
+                    }
+                }, 1000);
+            }
+
+            // Close function with CleverTap parent element removal
+            function closePopup() {
+                try {
+                    if (window.parent !== window) {
+                        var overlay =
+                            window.parent.document.getElementById(
+                                "intentOpacityDiv",
+                            );
+                        var wrapper =
+                            window.parent.document.getElementById(
+                                "intentPreview",
+                            );
+                        if (overlay) overlay.remove();
+                        if (wrapper) wrapper.remove();
+                    }
+                } catch (error) {
+                    console.error("Error removing parent elements:", error);
+                }
+
+                document.getElementById("popup").style.display = "none";
+
+                try {
+                    window.close();
+                } catch (e) {
+                    console.log("Cannot close window programmatically");
+                }
+            }
+
+            function pushToCleverTap(eventName, eventData) {
+                try {
+                    if (
+                        window.parent &&
+                        window.parent.clevertap &&
+                        window.parent.clevertap.event &&
+                        window.parent.clevertap.event.push
+                    ) {
+                        window.parent.clevertap.event.push(
+                            eventName,
+                            eventData,
+                        );
+                        return;
+                    }
+
+                    if (
+                        typeof clevertap !== "undefined" &&
+                        clevertap.event &&
+                        clevertap.event.push
+                    ) {
+                        clevertap.event.push(eventName, eventData);
+                        return;
+                    }
+
+                    console.warn(
+                        "CleverTap not initialized. Event data:",
+                        eventName,
+                        eventData,
+                    );
+                } catch (error) {
+                    console.error("Error pushing to CleverTap:", error);
+                }
+            }
+
+            // Enter key support for email step
+            document
+                .getElementById("email")
+                .addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        sendOtp();
+                    }
+                });
+        </script>
+    </body>
+</html>
