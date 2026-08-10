@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Blueprint Offer</title>
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: transparent;
+                font-family: "Roboto", sans-serif;
+            }
+
+            .offer-box {
+                width: 500px;
+                margin: 0px auto;
+                background: #fcfcfc;
+                padding: 20px 30px;
+                color: #151515;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid #eee;
+                background: url(https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/c27b0499756a45d48690584c3210bc2a.jpg);
+                background-size: cover;
+                background-position: right;
+                text-align: left;
+            }
+
+            .offer-box h2 {
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 28px;
+                text-transform: uppercase;
+                color: #151515;
+            }
+            .offer-box h1 {
+                font-size: 22px;
+                line-height: 27px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            .offer-box h1 span {
+                font-style: italic;
+            }
+
+            .offer-img {
+                width: 100%;
+                margin: 20px 0;
+            }
+
+            .offer-img img {
+                width: 100%;
+                display: block;
+            }
+
+            .special {
+                color: #b21f24;
+                font-style: italic;
+                font-weight: 400;
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+
+            .plan {
+                font-size: 23px;
+                margin-bottom: 1px;
+            }
+            .price {
+                font-size: 25px;
+                font-weight: 500;
+                color: #b21f24;
+            }
+
+            .price small {
+                font-size: 16px;
+                color: #333;
+                font-weight: 500;
+            }
+
+            .old-price {
+                color: #b21f24;
+                margin-top: 5px;
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+            .voucher {
+                background: #b21f24;
+                color: #fff;
+                border-radius: 8px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                margin: 20px 0;
+            }
+            .plan small {
+                font-size: 14px;
+            }
+            .voucher div {
+                width: 25%;
+                padding: 10px 10px;
+                text-align: center;
+                font-size: 12px;
+                border-right: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .voucher div:last-child {
+                border-right: none;
+            }
+
+            .footer {
+                display: flex;
+                justify-content: center;
+                margin-top: 25px;
+            }
+
+            .logo h3 {
+                font-size: 15px;
+                color: #b21f24;
+            }
+
+            .logo h1 {
+                font-size: 34px;
+                line-height: 34px;
+            }
+
+            .logo p {
+                font-size: 11px;
+                letter-spacing: 3px;
+            }
+
+            .subscribe {
+                text-align: right;
+            }
+
+            .subscribe p {
+                font-size: 16px;
+            }
+
+            .sub-btn {
+                display: block;
+                width: 100%;
+                padding: 12px 22px;
+                background: #b21f24;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                text-align: center;
+                font-family: "Roboto", sans-serif;
+                letter-spacing: 0.03em;
+                margin-bottom: 8px;
+                transition:
+                    background 0.15s,
+                    transform 0.1s;
+            }
+            .sub-btn:hover {
+                background: #8f1a1e;
+            }
+            .sub-btn:active {
+                transform: scale(0.98);
+            }
+            .countdown {
+                text-align: center;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .cd-head {
+                font-size: 14px;
+                margin-bottom: 12px;
+                text-transform: uppercase;
+            }
+
+            .cd-blocks {
+                display: flex;
+                justify-content: center;
+                align-items: flex-end;
+            }
+
+            .cd-b {
+                display: flex;
+                align-items: flex-end;
+            }
+
+            .cd-n {
+                font-size: 25px;
+                font-weight: 700;
+                color: #111;
+                line-height: 1;
+            }
+
+            .cd-u {
+                font-size: 16px;
+                color: #222;
+                margin-left: 6px;
+                margin-bottom: 5px;
+                text-transform: lowercase;
+            }
+
+            .cd-sep {
+                font-size: 14px;
+                font-weight: 700;
+                margin: 0 12px 5px;
+                color: #111;
+            }
+            .logo {
+                width: 200px;
+                margin: 0 auto 20px;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(0, 0, 0, 0.18);
+                color: #fff;
+                font-size: 14px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                line-height: 1;
+                transition: background 0.15s;
+            }
+            .close-btn:hover {
+                background: rgba(0, 0, 0, 0.35);
+            }
+
+            @media (max-width: 600px) {
+                .offer-box {
+                    width: 95%;
+                    padding: 15px 20px;
+                    background-position: center;
+                }
+                .logo {
+                    width: 150px;
+                    margin-bottom: 15px;
+                }
+                .offer-box h2 {
+                    font-size: 14px;
+                }
+                .offer-box h1 {
+                    font-size: 19px;
+                    line-height: 24px;
+                }
+                .special {
+                    font-size: 16px;
+                }
+                .plan {
+                    font-size: 20px;
+                }
+                .price {
+                    font-size: 22px;
+                }
+                .plan small {
+                    font-size: 13px;
+                }
+                .voucher div {
+                    padding: 8px 5px;
+                }
+                .cd-head {
+                    font-size: 12px;
+                }
+                .cd-n {
+                    font-size: 22px;
+                }
+                .cd-u {
+                    font-size: 14px;
+                }
+                .footer {
+                    margin-top: 15px;
+                }
+                .subscribe a {
+                    padding: 10px 19px;
+                    border-radius: 6px;
+                    margin-bottom: 0;
+                    font-size: 14px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="offer-box" id="overlay">
+            <button
+                class="close-btn"
+                id="close-btn"
+                aria-label="Close"
+                onclick="closePopup()"
+            >
+                ✕
+            </button>
+
+            <div class="logo">
+                <img
+                    src="https://d16nmctz6udcu8.cloudfront.net/1704350464/assets/cae74c8e11494db19a459a456bfb7535.png"
+                    width="100% "
+                    alt=""
+                />
+            </div>
+
+            <h2>THE BALANCE OF POWER IS SHIFTING.</h2>
+
+            <h1>
+                GO BEYOND THE HEADLINES<br />
+                <span> WITH BLUEPRINT.</span>
+            </h1>
+
+            <div class="offer-img"></div>
+
+            <div class="special">Special offer</div>
+
+            <div class="plan">Blueprint Complete</div>
+
+            <div class="plan">
+                at <span class="price">₹1,800</span>
+                <small>(Digital + Print)</small>
+            </div>
+
+            <div class="old-price">₹4,500 plan - ₹2,700 back in rewards</div>
+
+            <div class="voucher">
+                <div>₹500<br />Cashback</div>
+                <div>₹750 Uber<br />Voucher</div>
+                <div>₹750 Couple<br />Movie Voucher</div>
+                <div>₹750 Pizza<br />Voucher</div>
+            </div>
+
+            <div class="countdown">
+                <div class="cd-head">Offer expires in:</div>
+
+                <div class="cd-blocks">
+                    <div class="cd-b">
+                        <div class="cd-n" id="cd-d">02</div>
+                        <div class="cd-u">days</div>
+                    </div>
+
+                    <div class="cd-sep">:</div>
+
+                    <div class="cd-b">
+                        <div class="cd-n" id="cd-h">14</div>
+                        <div class="cd-u">hours</div>
+                    </div>
+
+                    <div class="cd-sep">:</div>
+
+                    <div class="cd-b">
+                        <div class="cd-n" id="cd-m">31</div>
+                        <div class="cd-u">mins</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="subscribe">
+                    <button
+                        class="sub-btn"
+                        id="sub-btn"
+                        onclick="
+                            window.open(
+                                'https://www.business-standard.com/subscribe?plan=blueprint-complete&offer=july2026',
+                                '_blank',
+                            );
+                            setTimeout(closePopup, 300);
+                        "
+                    >
+                        Subscribe Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Set the offer expiry date & time
+            const endDate = new Date("2026-07-09T23:59:59").getTime();
+
+            function countdown() {
+                const now = new Date().getTime();
+                const diff = endDate - now;
+
+                if (diff <= 0) {
+                    document.getElementById("cd-d").innerHTML = "00";
+                    document.getElementById("cd-h").innerHTML = "00";
+                    document.getElementById("cd-m").innerHTML = "00";
+                    clearInterval(timer);
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(
+                    (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+                );
+                const mins = Math.floor(
+                    (diff % (1000 * 60 * 60)) / (1000 * 60),
+                );
+
+                document.getElementById("cd-d").textContent = String(
+                    days,
+                ).padStart(2, "0");
+                document.getElementById("cd-h").textContent = String(
+                    hours,
+                ).padStart(2, "0");
+                document.getElementById("cd-m").textContent = String(
+                    mins,
+                ).padStart(2, "0");
+            }
+
+            countdown();
+            const timer = setInterval(countdown, 1000);
+
+            function closePopup() {
+                try {
+                    // Remove CleverTap's parent wrapper elements
+                    var overlay =
+                        window.parent.document.getElementById(
+                            "intentOpacityDiv",
+                        );
+                    var wrapper =
+                        window.parent.document.getElementById("intentPreview");
+                    if (overlay) overlay.remove();
+                    if (wrapper) wrapper.remove();
+                } catch (error) {
+                    console.error("Error removing parent elements:", error);
+                }
+                // Fallback: hide the local overlay too
+                document.getElementById("overlay").style.display = "none";
+            }
+        </script>
+    </body>
+</html>
