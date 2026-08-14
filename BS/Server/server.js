@@ -6,7 +6,6 @@ const cors = require("cors");
 const articleRoutes = require("./routes/articleRoutes");
 const otpRoutes = require("./routes/otpRoutes");
 const healthRoutes = require("./routes/healthRoutes");
-const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
