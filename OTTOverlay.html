@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OTT Overlay</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: transparent;
+                color: #fff;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+            }
+
+            .video-container {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 78%;
+                max-width: 320px;
+                aspect-ratio: 9 / 16;
+                border-radius: 20px;
+                overflow: hidden;
+                background: #000;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            }
+
+            video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .mute-btn {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                background: rgba(255, 255, 255, 0.3);
+                padding: 6px;
+                border: none;
+                cursor: pointer;
+                border-radius: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2;
+            }
+
+            .mute-btn img {
+                width: 18px;
+                height: 18px;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: -18px;
+                right: -18px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #fff;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+                z-index: 5;
+            }
+
+            .close-btn span {
+                font-size: 22px;
+                line-height: 1;
+                color: #000;
+                font-weight: 600;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="backdrop" id="backdrop"></div>
+        <div class="video-container" id="video-container">
+            <video id="video" autoplay loop playsinline disablePictureInPicture>
+                <source
+                    src="https://d23mk5mh84bgg8.cloudfront.net/1678791296/assets/16852d7036ff4967b10fba0410713c83.mp4"
+                    type="video/mp4"
+                />
+                Your browser does not support HTML5 video.
+            </video>
+            <button id="mute-btn" class="mute-btn">
+                <img
+                    id="mute-icon"
+                    src="https://cdn-icons-png.flaticon.com/512/1705/1705050.png"
+                    alt="Mute"
+                />
+            </button>
+            <!-- <button id="close-btn" class="close-btn" onclick="close_btn()">
+                <span>×</span>
+            </button> -->
+        </div>
+
+        <script>
+            const video = document.getElementById("video");
+            const muteBtn = document.getElementById("mute-btn");
+            const muteIcon = document.getElementById("mute-icon");
+            const videoContainer = document.getElementById("video-container");
+            const backdrop = document.getElementById("backdrop");
+
+            // URLs for redirection
+            const androidUrl = "https://google.com/";
+            const iosUrl = "https://google.com/";
+
+            const muteImage =
+                "https://cdn-icons-png.flaticon.com/512/5949/5949045.png";
+            const unmuteImage =
+                "https://cdn-icons-png.flaticon.com/512/1705/1705050.png";
+            let isMuted = false;
+
+            // Mute/unmute logic
+            muteBtn.addEventListener("click", () => {
+                isMuted = !isMuted;
+                video.muted = isMuted;
+                video.volume = isMuted ? 0 : 1;
+                muteIcon.src = isMuted ? muteImage : unmuteImage;
+
+                // Call Android interface
+                var android_props = { C2A: "umute" };
+                if (window.CleverTap) {
+                    // CleverTap.pushEvent("inapp_action", JSON.stringify(android_props));
+                } else {
+                    //call ios interface
+                    var ios_props = { C2A: "umute" };
+                    var message = {
+                        action: "recordEventWithProps",
+                        event: "inapp_action",
+                        properties: ios_props,
+                    };
+                    if (
+                        window.webkit &&
+                        window.webkit.messageHandlers &&
+                        window.webkit.messageHandlers.clevertap
+                    ) {
+                        // window.webkit.messageHandlers.clevertap.postMessage(message);
+                    }
+                }
+            });
+
+            // Attempt unmuted autoplay; fall back to muted if the browser blocks it
+            document.addEventListener("DOMContentLoaded", () => {
+                isMuted = false;
+                video.muted = false;
+                video.defaultMuted = false;
+                video.volume = 1;
+                muteIcon.src = unmuteImage;
+                video.play().catch((error) => {
+                    console.log("Unmuted autoplay failed:", error);
+                });
+            });
+
+            // Detect platform and redirect on video click
+            video.addEventListener("click", () => {
+                if (window.CleverTap) {
+                    window.location.href = androidUrl;
+                } else {
+                    // For IOS
+                    window.location.href = iosUrl;
+                }
+            });
+
+            // Function to handle close
+            function close_btn() {
+                console.log("Close button triggered");
+                if (window.CleverTap) {
+                    var android_props = { C2A: "close" };
+                    // CleverTap.pushEvent("inapp_action", JSON.stringify(android_props));
+                    CleverTap.dismissInAppNotification();
+                } else {
+                    //call ios interface
+                    var ios_props = { C2A: "close" };
+                    var message = {
+                        action: "recordEventWithProps",
+                        event: "inapp_action",
+                        properties: ios_props,
+                    };
+                    if (
+                        window.webkit &&
+                        window.webkit.messageHandlers &&
+                        window.webkit.messageHandlers.clevertap
+                    ) {
+                        // window.webkit.messageHandlers.clevertap.postMessage(message);
+                    }
+                    const messageData = {
+                        action: "triggerInAppAction",
+                        actionJson: {
+                            type: "close",
+                            text: "",
+                            android: "",
+                            ios: "",
+                            kv: {},
+                            templateId: "",
+                            templateName: "",
+                            vars: {},
+                        },
+                        callToAction: "Dismiss Button",
+                        buttonId: "dismissButton",
+                    };
+                    // window.webkit.messageHandlers.clevertap.postMessage(messageData);
+                }
+            }
+
+            // Tapping the backdrop dismisses the overlay
+            backdrop.addEventListener("click", () => {
+                var android_props = { C2A: "background" };
+                if (window.CleverTap) {
+                    // CleverTap.pushEvent("inapp_action", JSON.stringify(android_props));
+                    CleverTap.dismissInAppNotification();
+                } else {
+                    var ios_props = { C2A: "background" };
+                    var message = {
+                        action: "recordEventWithProps",
+                        event: "inapp_action",
+                        properties: ios_props,
+                    };
+                    if (
+                        window.webkit &&
+                        window.webkit.messageHandlers &&
+                        window.webkit.messageHandlers.clevertap
+                    ) {
+                        // window.webkit.messageHandlers.clevertap.postMessage(message);
+                    }
+                    const messageData = {
+                        action: "triggerInAppAction",
+                        actionJson: {
+                            type: "close",
+                            text: "",
+                            android: "",
+                            ios: "",
+                            kv: {},
+                            templateId: "",
+                            templateName: "",
+                            vars: {},
+                        },
+                        callToAction: "Dismiss Button",
+                        buttonId: "dismissButton",
+                    };
+                    // window.webkit.messageHandlers.clevertap.postMessage(messageData);
+                }
+            });
+        </script>
+    </body>
+</html>
